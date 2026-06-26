@@ -3,17 +3,17 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from .views import login, register, home, hosting, eventdetails, bookingcheckout, about, careers, terms, profile, privacy, support
-from .. import accounts
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
     # API Routes
-    path('accounts/', include(accounts.urls)),
-    path('bookings/',include('bookings.urls')),
-    path('hosting/',include('hosting.urls')),
-    path('support/',include('support.urls')),
-    
+    #path('accounts/', include('accounts.urls')),
+    #path('bookings/',include('bookings.urls')),
+    #path('hosting/',include('hosting.urls')),
+    #path('support/',include('support.urls')),
+
     # Frontend pages
     path('', home, name='home'),
     path('home/', home, name='home'),
