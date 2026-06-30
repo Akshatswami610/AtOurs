@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import SupportViewSet
+from .views import SupportView
 
 urlpatterns = [
-    path('', SupportViewSet.as_view(), name='support'),
+    path('', SupportView.as_view(), name='support'),
 ]
