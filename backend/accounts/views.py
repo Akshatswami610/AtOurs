@@ -1,9 +1,11 @@
 from django.contrib.auth import authenticate
+
 from rest_framework import generics, permissions, status
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
 from .serializers import RegisterSerializer, LoginSerializer
 
 
@@ -30,7 +32,7 @@ class MeView(APIView):
         user.email = request.data.get("email", user.email)
         user.phone_number = request.data.get(
             "phone_number",
-            user.phone_number
+            user.phone_number,
         )
 
         if "date_of_birth" in request.data:
@@ -47,7 +49,7 @@ class MeView(APIView):
 # REGISTER
 # -----------------------------
 class RegisterView(generics.CreateAPIView):
-    serializer_class = SignupSerializer
+    serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
 
 
@@ -61,13 +63,10 @@ class LoginView(APIView):
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        email = serializer.validated_data["email"]
-        password = serializer.validated_data["password"]
-
         user = authenticate(
             request,
-            email=email,
-            password=password
+            email=serializer.validated_data["email"],
+            password=serializer.validated_data["password"],
         )
 
         if user is None:
