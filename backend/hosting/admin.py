@@ -1,49 +1,10 @@
 from django.contrib import admin
-from .models import *
+from .models import Event
 
-
-class PartyPosterInline(admin.TabularInline):
-    model = PartyPoster
-    extra = 1
-
-
-@admin.register(Party)
+@admin.register(Event)
 class PartyAdmin(admin.ModelAdmin):
-    list_display = (
-        "party_name",
-        "user",
-        "party_category",
-        "party_date",
-        "party_time",
-        "max_members",
-        "fee",
-        "gender",
-    )
+    list_display = ["event_name", "user", "event_date","fee",]
 
-    list_filter = (
-        "party_category",
-        "gender",
-        "party_date",
-    )
+    list_filter = ["event_category", "gender"]
 
-    search_fields = (
-        "party_name",
-        "location",
-        "description",
-        "user__username",
-    )
-
-    ordering = (
-        "party_date",
-        "party_time",
-    )
-
-    inlines = [PartyPosterInline]
-
-
-@admin.register(PartyPoster)
-class PartyPosterAdmin(admin.ModelAdmin):
-    list_display = (
-        "poster_id",
-        "party",
-    )
+    search_fields = ["event_name", "event_category", "gender"]
