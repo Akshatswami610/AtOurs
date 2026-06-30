@@ -12,7 +12,7 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     #path('bookings/',include('bookings.urls')),
     path('hosting/',include('hosting.urls')),
-    #path('support/',include('support.urls')),
+    path('support/',include('support.urls')),
 
     # Frontend pages
     path('', home, name='home'),
