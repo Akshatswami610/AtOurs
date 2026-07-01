@@ -1,10 +1,295 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block title %}
+Login
+{% endblock %}
+
+{% block css %}
+
+<style>
+
+    .auth-wrap {
+        min-height: calc(100vh - 260px);
+        display: flex;
+        align-items: center;
+        padding: 40px 0;
+    }
+
+    .auth-card {
+        padding: 44px 40px;
+        animation: fadeInUp .5s var(--ease) both;
+    }
+
+    .auth-logo {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        background: var(--accent-dim);
+        border: 1px solid rgba(245, 200, 76, .3);
+        color: var(--accent);
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 22px;
+    }
+
+    .auth-title {
+        text-align: center;
+        font-size: 1.55rem;
+        margin-bottom: 6px;
+    }
+
+    .auth-subtitle {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: .9rem;
+        margin-bottom: 30px;
+    }
+
+    .auth-card .form-control {
+        padding: .78rem 1rem;
+    }
+
+    .auth-card .btn-primary {
+        padding: .78rem 1rem;
+        font-size: .95rem;
+        margin-top: 6px;
+    }
+
+    .auth-divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 26px 0;
+        color: var(--text-muted);
+        font-size: .78rem;
+    }
+
+    .auth-divider::before,
+    .auth-divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+    }
+
+    .auth-card p.text-center a {
+        color: var(--accent);
+        font-weight: 600;
+        transition: opacity .25s var(--ease);
+    }
+
+    .auth-card p.text-center a:hover {
+        opacity: .8;
+    }
+
+    #message span {
+        font-size: .87rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    #message .text-danger {
+        color: #f7a5ab !important;
+    }
+
+    #message .text-success {
+        color: #9fe8bb !important;
+    }
+
+    .btn-loading {
+        pointer-events: none;
+        opacity: .75;
+    }
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="auth-wrap">
+
+    <div class="row justify-content-center w-100">
+
+        <div class="col-md-5">
+
+            <div class="card auth-card">
+
+                <div class="auth-logo">
+                    <i class="bi bi-stars"></i>
+                </div>
+
+                <h2 class="auth-title fw-bold">
+                    Welcome Back
+                </h2>
+
+                <p class="auth-subtitle">
+                    Log in to keep discovering and hosting great events.
+                </p>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="username"
+                        class="form-control"
+                        placeholder="you@example.com"
+                        autocomplete="email">
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        class="form-control"
+                        placeholder="Enter your password"
+                        autocomplete="current-password">
+
+                </div>
+
+                <button
+                    id="loginBtn"
+                    class="btn btn-primary w-100"
+                    onclick="login()">
+
+                    Login
+
+                </button>
+
+                <div class="auth-divider">or</div>
+
+                <p class="text-center mb-0">
+
+                    Don't have an account?
+
+                    <a href="/register/">
+
+                        Register
+
+                    </a>
+
+                </p>
+
+                <div
+                    id="message"
+                    class="mt-3 text-center">
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block js %}
+
+<script>
+
+async function login(){
+
+    const username=document.getElementById("username").value.trim();
+
+    const password=document.getElementById("password").value;
+
+    const message=document.getElementById("message");
+
+    const btn=document.getElementById("loginBtn");
+
+    message.innerHTML="";
+
+    if(username==="" || password===""){
+
+        message.innerHTML="<span class='text-danger'><i class=\"bi bi-exclamation-circle-fill\"></i> Please fill all fields.</span>";
+
+        return;
+
+    }
+
+    btn.classList.add("btn-loading");
+
+    btn.textContent="Logging in...";
+
+    try{
+
+        const response=await fetch(API_BASE+"/accounts/login/",{
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify({
+
+                email:username,
+
+                password:password
+
+            })
+
+        });
+
+        const data=await response.json();
+
+        if(response.ok){
+
+            localStorage.setItem("access",data.token);
+
+            localStorage.setItem("user",JSON.stringify(data.user || {}));
+
+            message.innerHTML="<span class='text-success'><i class=\"bi bi-check-circle-fill\"></i> Login Successful!</span>";
+
+            setTimeout(()=>{
+
+                window.location="/";
+
+            },800);
+
+        }
+
+        else{
+
+            message.innerHTML=`<span class="text-danger"><i class="bi bi-exclamation-circle-fill"></i> ${data.error || data.detail || "Invalid Credentials"}</span>`;
+
+            btn.classList.remove("btn-loading");
+
+            btn.textContent="Login";
+
+        }
+
+    }
+
+    catch(error){
+
+        message.innerHTML="<span class='text-danger'><i class=\"bi bi-exclamation-circle-fill\"></i> Server Error</span>";
+
+        btn.classList.remove("btn-loading");
+
+        btn.textContent="Login";
+
+    }
+
+}
+
+</script>
+
+{% endblock %}
