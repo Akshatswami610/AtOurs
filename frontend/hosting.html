@@ -1,10 +1,282 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block title %}
+Host Event
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+
+    <div class="col-lg-4">
+
+        <div class="card">
+
+            <div class="card-body">
+
+                <h3 class="mb-3">
+
+                    Create Event
+
+                </h3>
+
+                <input
+                    class="form-control mb-3"
+                    id="title"
+                    placeholder="Event Title">
+
+                <textarea
+                    class="form-control mb-3"
+                    id="description"
+                    rows="4"
+                    placeholder="Description"></textarea>
+
+                <select
+                    id="category"
+                    class="form-select mb-3">
+
+                    <option>House Party</option>
+                    <option>Dinner Party</option>
+                    <option>Game Night</option>
+                    <option>Movie Night</option>
+                    <option>Networking</option>
+                    <option>Live Music</option>
+                    <option>Workshop</option>
+
+                </select>
+
+                <input
+                    class="form-control mb-3"
+                    id="ticket_price"
+                    type="number"
+                    placeholder="Ticket Price">
+
+                <input
+                    class="form-control mb-3"
+                    id="max_guests"
+                    type="number"
+                    placeholder="Maximum Guests">
+
+                <button
+                    class="btn btn-success w-100"
+                    onclick="createEvent()">
+
+                    Create Event
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-8">
+
+        <h3 class="mb-3">
+
+            My Hosted Events
+
+        </h3>
+
+        <div id="eventList"></div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block js %}
+
+<script>
+
+loadEvents();
+
+async function loadEvents(){
+
+    const events=await api("/hosting/events/");
+
+    let html="";
+
+    if(events.length==0){
+
+        html=`
+
+        <div class="alert alert-info">
+
+            No Events Found.
+
+        </div>
+
+        `;
+
+    }
+
+    events.forEach(event=>{
+
+        html+=`
+
+        <div class="card mb-3">
+
+            <div class="card-body">
+
+                <h4>
+
+                    ${event.title}
+
+                </h4>
+
+                <p>
+
+                    ${event.description}
+
+                </p>
+
+                <div class="row">
+
+                    <div class="col">
+
+                        <strong>Category</strong>
+
+                        <br>
+
+                        ${event.category}
+
+                    </div>
+
+                    <div class="col">
+
+                        <strong>Price</strong>
+
+                        <br>
+
+                        ₹${event.ticket_price}
+
+                    </div>
+
+                    <div class="col">
+
+                        <strong>Guests</strong>
+
+                        <br>
+
+                        ${event.max_guests}
+
+                    </div>
+
+                </div>
+
+                <hr>
+
+                <button
+                    class="btn btn-primary btn-sm"
+                    onclick="viewEvent(${event.id})">
+
+                    View
+
+                </button>
+
+                <button
+                    class="btn btn-warning btn-sm"
+                    onclick="editEvent(${event.id})">
+
+                    Edit
+
+                </button>
+
+                <button
+                    class="btn btn-danger btn-sm"
+                    onclick="deleteEvent(${event.id})">
+
+                    Delete
+
+                </button>
+
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+    document.getElementById("eventList").innerHTML=html;
+
+}
+
+async function createEvent(){
+
+    const body={
+
+        title:document.getElementById("title").value,
+
+        description:document.getElementById("description").value,
+
+        category:document.getElementById("category").value,
+
+        ticket_price:document.getElementById("ticket_price").value,
+
+        max_guests:document.getElementById("max_guests").value
+
+    };
+
+    await api("/hosting/events/","POST",body);
+
+    alert("Event Created Successfully");
+
+    location.reload();
+
+}
+
+function viewEvent(id){
+
+    window.location=`/event-details/${id}/`;
+
+}
+
+async function deleteEvent(id){
+
+    if(!confirm("Delete this event?")){
+
+        return;
+
+    }
+
+    await api(`/hosting/events/${id}/`,"DELETE");
+
+    loadEvents();
+
+}
+
+async function editEvent(id){
+
+    const title=prompt("Enter New Title");
+
+    if(title==null){
+
+        return;
+
+    }
+
+    await api(
+
+        `/hosting/events/${id}/`,
+
+        "PATCH",
+
+        {
+
+            title:title
+
+        }
+
+    );
+
+    loadEvents();
+
+}
+
+</script>
+
+{% endblock %}
