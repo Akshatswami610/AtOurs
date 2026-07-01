@@ -1,0 +1,842 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}
+        House Party Marketplace
+        {% endblock %}
+    </title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+
+        :root {
+            --bg: #0B0B0C;
+            --bg-secondary: #121214;
+            --card: #1A1A1E;
+            --border: rgba(255, 255, 255, .08);
+            --text-primary: #FFFFFF;
+            --text-secondary: #A1A1AA;
+            --text-muted: #71717A;
+            --accent: #F5C84C;
+            --accent-dim: rgba(245, 200, 76, .12);
+            --radius-lg: 18px;
+            --radius-md: 14px;
+            --radius-sm: 10px;
+            --ease: cubic-bezier(.4, 0, .2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        ::selection {
+            background: var(--accent-dim);
+            color: var(--accent);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #26262b;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #333338;
+        }
+
+        /* ===== Navbar ===== */
+
+        .navbar {
+            background: rgba(11, 11, 12, .72);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+            padding-top: 14px;
+            padding-bottom: 14px;
+            transition: background .3s var(--ease);
+        }
+
+        .navbar-brand {
+            color: var(--text-primary) !important;
+            font-weight: 800;
+            font-size: 1.15rem;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: opacity .25s var(--ease);
+        }
+
+        .navbar-brand:hover {
+            opacity: .82;
+        }
+
+        .navbar .nav-link {
+            color: var(--text-secondary) !important;
+            font-weight: 500;
+            font-size: .93rem;
+            padding: 8px 16px !important;
+            position: relative;
+            transition: color .25s var(--ease);
+        }
+
+        .navbar .nav-link::after {
+            content: '';
+            position: absolute;
+            left: 16px;
+            right: 16px;
+            bottom: 2px;
+            height: 2px;
+            border-radius: 2px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transform-origin: center;
+            transition: transform .3s var(--ease);
+        }
+
+        .navbar .nav-link:hover {
+            color: var(--text-primary) !important;
+        }
+
+        .navbar .nav-link:hover::after {
+            transform: scaleX(1);
+        }
+
+        .navbar .nav-link.active {
+            color: var(--text-primary) !important;
+        }
+
+        .navbar-toggler {
+            border: 1px solid var(--border) !important;
+            background: var(--card) !important;
+            border-radius: var(--radius-sm) !important;
+            box-shadow: none !important;
+            padding: 6px 10px !important;
+        }
+
+        .navbar-toggler-icon {
+            filter: invert(1);
+            width: 1.1em;
+            height: 1.1em;
+        }
+
+        /* ===== Layout / Main ===== */
+
+        main.page-content {
+            flex: 1;
+            animation: fadeInUp .5s var(--ease) both;
+        }
+
+        /* ===== Hero (kept for any block reuse) ===== */
+
+        .hero {
+            background: radial-gradient(120% 140% at 50% 0%, rgba(245, 200, 76, .08), transparent 60%), var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 80px 20px;
+            border-radius: var(--radius-lg);
+            margin-top: 30px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        /* ===== Cards ===== */
+
+        .card {
+            background: var(--card);
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: var(--radius-lg);
+            transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .35s var(--ease), background .35s var(--ease);
+            box-shadow: 0 1px 0 rgba(255, 255, 255, .04) inset, 0 8px 24px -8px rgba(0, 0, 0, .5);
+            color: var(--text-primary);
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            background: #1c1c20;
+            box-shadow: 0 1px 0 rgba(255, 255, 255, .05) inset, 0 24px 48px -12px rgba(0, 0, 0, .6);
+            border-color: rgba(255, 255, 255, .18);
+        }
+
+        /* ===== Buttons ===== */
+
+        .btn {
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: .92rem;
+            padding: .62rem 1.35rem;
+            border: none;
+            transition: transform .25s var(--ease), box-shadow .25s var(--ease), background .25s var(--ease), color .25s var(--ease);
+        }
+
+        .btn:active {
+            transform: translateY(0) scale(.97);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #1a1400;
+            box-shadow: 0 8px 20px -6px rgba(245, 200, 76, .35);
+        }
+
+        .btn-primary:hover {
+            background: #f7d268;
+            color: #1a1400;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 26px -6px rgba(245, 200, 76, .45);
+        }
+
+        .btn-outline-primary {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid rgba(245, 200, 76, .4);
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--accent-dim);
+            color: var(--accent);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary,
+        .btn-light {
+            background: var(--card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover,
+        .btn-light:hover {
+            background: #202024;
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #2a1416;
+            color: #f7a5ab;
+            border: 1px solid rgba(255, 90, 100, .25);
+        }
+
+        .btn-danger:hover {
+            background: #35171a;
+            color: #ffb3b8;
+            transform: translateY(-2px);
+        }
+
+        .btn-sm {
+            padding: .42rem 1rem;
+            font-size: .82rem;
+            border-radius: 10px;
+        }
+
+        .btn-lg {
+            padding: .85rem 2rem;
+            font-size: 1rem;
+            border-radius: var(--radius-md);
+        }
+
+        /* ===== Inputs / Forms ===== */
+
+        .form-control,
+        .form-select {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            border-radius: var(--radius-sm);
+            padding: .68rem 1rem;
+            font-size: .93rem;
+            transition: border-color .25s var(--ease), box-shadow .25s var(--ease), background .25s var(--ease);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background: #16161a;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(245, 200, 76, .12);
+            color: var(--text-primary);
+        }
+
+        .form-select option {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .form-label {
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: .85rem;
+            letter-spacing: .01em;
+            margin-bottom: .45rem;
+        }
+
+        .form-check-input {
+            background-color: var(--bg-secondary);
+            border-color: var(--border);
+        }
+
+        .form-check-input:checked {
+            background-color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .input-group-text {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        /* ===== Typography helpers ===== */
+
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+
+        .text-secondary {
+            color: var(--text-secondary) !important;
+        }
+
+        .text-accent {
+            color: var(--accent) !important;
+        }
+
+        /* ===== Badges ===== */
+
+        .badge {
+            font-weight: 600;
+            font-size: .72rem;
+            padding: .42em .8em;
+            border-radius: 999px;
+            letter-spacing: .01em;
+        }
+
+        .bg-primary {
+            background: var(--accent) !important;
+            color: #1a1400 !important;
+        }
+
+        .bg-secondary {
+            background: var(--card) !important;
+            color: var(--text-secondary) !important;
+            border: 1px solid var(--border);
+        }
+
+        /* ===== Alerts ===== */
+
+        .alert {
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text-primary);
+        }
+
+        .alert-success {
+            border-color: rgba(120, 220, 150, .25);
+            background: #10201a;
+            color: #9fe8bb;
+        }
+
+        .alert-danger {
+            border-color: rgba(255, 100, 110, .25);
+            background: #241014;
+            color: #f7a5ab;
+        }
+
+        .alert-warning {
+            border-color: rgba(245, 200, 76, .3);
+            background: #201a0d;
+            color: var(--accent);
+        }
+
+        /* ===== Modals ===== */
+
+        .modal-content {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            color: var(--text-primary);
+        }
+
+        .modal-header,
+        .modal-footer {
+            border-color: var(--border);
+        }
+
+        .btn-close {
+            filter: invert(1);
+            opacity: .6;
+        }
+
+        /* ===== Footer ===== */
+
+        footer.site-footer {
+            margin-top: auto;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 56px 20px 28px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1fr 1fr;
+            gap: 32px;
+            max-width: 1140px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 767px) {
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .footer-brand {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-tagline {
+            color: var(--text-muted);
+            font-size: .86rem;
+            line-height: 1.6;
+            max-width: 260px;
+        }
+
+        .footer-col h6 {
+            color: var(--text-primary);
+            font-size: .8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin-bottom: 16px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 11px;
+        }
+
+        .footer-col a {
+            color: var(--text-secondary);
+            font-size: .87rem;
+            font-weight: 500;
+            transition: color .25s var(--ease);
+        }
+
+        .footer-col a:hover {
+            color: var(--accent);
+        }
+
+        .footer-bottom {
+            max-width: 1140px;
+            margin: 40px auto 0;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .footer-bottom p {
+            color: var(--text-muted);
+            font-size: .82rem;
+            margin: 0;
+            letter-spacing: .01em;
+        }
+
+        .footer-bottom small {
+            color: var(--text-muted);
+            font-size: .82rem;
+            letter-spacing: .01em;
+        }
+
+        /* ===== Loading ===== */
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .loading .spinner-border {
+            color: var(--accent);
+        }
+
+        /* ===== Tables ===== */
+
+        .table {
+            color: var(--text-primary);
+            border-color: var(--border);
+        }
+
+        .table > :not(caption) > * > * {
+            background: transparent;
+            color: var(--text-primary);
+            border-bottom-color: var(--border);
+        }
+
+        /* ===== Animations ===== */
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn .4s var(--ease) both;
+        }
+
+        .slide-up {
+            animation: fadeInUp .5s var(--ease) both;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: .001ms !important;
+                transition-duration: .001ms !important;
+            }
+        }
+
+    </style>
+
+    {% block css %}
+    {% endblock %}
+
+</head>
+
+<body>
+
+    <!-- Navbar -->
+
+    <nav class="navbar navbar-expand-lg">
+
+        <div class="container">
+
+            <a class="navbar-brand fw-bold" href="/">
+                🎉 House Party
+            </a>
+
+            <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu">
+
+                <span class="navbar-toggler-icon"></span>
+
+            </button>
+
+            <div class="collapse navbar-collapse" id="menu">
+
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+
+                    <li class="nav-item">
+                        <a href="/" class="nav-link">
+                            Home
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="/hosting/" class="nav-link">
+                            Host Event
+                        </a>
+                    </li>
+
+                    <li class="nav-item" id="profileNavItem" style="display:none;">
+                        <a href="/profile/" class="nav-link">
+                            Profile
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="/support/" class="nav-link">
+                            Support
+                        </a>
+                    </li>
+
+                    <li class="nav-item ms-lg-2" id="loginNavItem">
+                        <a href="/login/" class="nav-link btn btn-primary btn-sm px-3">
+                            Login
+                        </a>
+                    </li>
+
+                    <li class="nav-item ms-lg-2" id="logoutNavItem" style="display:none;">
+                        <a href="#" class="nav-link btn btn-secondary btn-sm px-3" onclick="logout(); return false;">
+                            Logout
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+    <!-- Main -->
+
+    <main class="page-content">
+
+        <div class="container py-4">
+
+            {% block content %}
+
+            {% endblock %}
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+
+    <footer class="site-footer">
+
+        <div class="footer-grid">
+
+            <div class="footer-col">
+
+                <div class="footer-brand">
+                    🎉 House Party
+                </div>
+
+                <p class="footer-tagline">
+
+                    Discover unique house parties, meet new people, and host unforgettable events of your own.
+
+                </p>
+
+            </div>
+
+            <div class="footer-col">
+
+                <h6>Explore</h6>
+
+                <ul>
+
+                    <li><a href="/">Home</a></li>
+
+                    <li><a href="/hosting/">Host Event</a></li>
+
+                    <li><a href="/support/">Support</a></li>
+
+                </ul>
+
+            </div>
+
+            <div class="footer-col">
+
+                <h6>Company</h6>
+
+                <ul>
+
+                    <li><a href="/about/">About</a></li>
+
+                    <li><a href="/careers/">Careers</a></li>
+
+                </ul>
+
+            </div>
+
+            <div class="footer-col">
+
+                <h6>Legal</h6>
+
+                <ul>
+
+                    <li><a href="/privacy-policy/">Privacy Policy</a></li>
+
+                    <li><a href="/terms-and-conditions/">Terms &amp; Conditions</a></li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+
+            <p class="mb-0">
+                © 2026 House Party Marketplace
+            </p>
+
+            <small>
+
+                Meet New People • Host Amazing Events
+
+            </small>
+
+        </div>
+
+    </footer>
+
+    <!-- Bootstrap -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Common JS -->
+
+    <script>
+
+        const API_BASE = "http://127.0.0.1:8000";
+
+        function getToken() {
+
+            return localStorage.getItem("access");
+
+        }
+
+        async function api(url, method = "GET", body = null) {
+
+            const headers = {
+
+                "Content-Type": "application/json"
+
+            };
+
+            const token = getToken();
+
+            if (token) {
+
+                headers["Authorization"] = `Token ${token}`;
+
+            }
+
+            const response = await fetch(API_BASE + url, {
+
+                method,
+
+                headers,
+
+                body: body ? JSON.stringify(body) : null
+
+            });
+
+            return response.json();
+
+        }
+
+        function logout() {
+
+            localStorage.removeItem("access");
+
+            localStorage.removeItem("refresh");
+
+            localStorage.removeItem("user");
+
+            window.location = "/login/";
+
+        }
+
+        function updateNavForAuth() {
+
+            const loggedIn = !!getToken();
+
+            const loginItem = document.getElementById("loginNavItem");
+
+            const logoutItem = document.getElementById("logoutNavItem");
+
+            const profileItem = document.getElementById("profileNavItem");
+
+            if (loginItem) {
+                loginItem.style.display = loggedIn ? "none" : "";
+            }
+
+            if (logoutItem) {
+                logoutItem.style.display = loggedIn ? "" : "none";
+            }
+
+            if (profileItem) {
+                profileItem.style.display = loggedIn ? "" : "none";
+            }
+
+        }
+
+        updateNavForAuth();
+
+    </script>
+
+    {% block js %}
+    {% endblock %}
+
+</body>
+
+</html>
