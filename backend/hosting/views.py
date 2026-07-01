@@ -5,7 +5,6 @@ from .serializers import EventSerializer
 
 
 class IsOwnerOrReadOnly(BasePermission):
-
     def has_object_permission(self, request, view, obj):
         # Read permissions for everyone
         if request.method in permissions.SAFE_METHODS:
