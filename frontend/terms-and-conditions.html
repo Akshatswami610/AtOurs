@@ -1,10 +1,223 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block title %}
+Terms & Conditions
+{% endblock %}
+
+{% block css %}
+
+<style>
+
+    .legal-header {
+        text-align: center;
+        padding: 20px 20px 8px;
+    }
+
+    .legal-header .hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--accent);
+        font-weight: 600;
+        font-size: .82rem;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        background: var(--accent-dim);
+        border: 1px solid rgba(245, 200, 76, .25);
+        padding: 6px 14px;
+        border-radius: 999px;
+        margin-bottom: 18px;
+    }
+
+    .legal-header h1 {
+        font-size: clamp(1.9rem, 4vw, 2.4rem);
+        margin-bottom: 8px;
+    }
+
+    .legal-card {
+        max-width: 820px;
+        margin: 32px auto 0;
+        padding: 12px;
+    }
+
+    .legal-card h3 {
+        font-size: 1.15rem;
+        margin: 36px 0 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .legal-card h3:first-of-type {
+        margin-top: 0;
+    }
+
+    .legal-card h3 i {
+        color: var(--accent);
+        font-size: 1rem;
+    }
+
+    .legal-card p {
+        color: var(--text-secondary);
+        font-size: .93rem;
+        line-height: 1.75;
+        margin-bottom: 0;
+    }
+
+    .legal-card hr {
+        border-color: var(--border);
+        opacity: 1;
+        margin: 24px 0;
+    }
+
+    .legal-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .legal-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        color: var(--text-secondary);
+        font-size: .93rem;
+        line-height: 1.6;
+    }
+
+    .legal-list li::before {
+        content: '\F26B';
+        font-family: "bootstrap-icons";
+        color: var(--accent);
+        font-size: .85rem;
+        margin-top: 2px;
+    }
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="fade-in">
+
+    <div class="legal-header">
+
+        <span class="hero-eyebrow">
+            <i class="bi bi-file-earmark-text-fill"></i>
+            Legal
+        </span>
+
+        <h1 class="fw-bold">
+
+            Terms &amp; Conditions
+
+        </h1>
+
+    </div>
+
+    <div class="card legal-card">
+
+        <div class="card-body">
+
+            <h3><i class="bi bi-check-circle-fill"></i> Acceptance of Terms</h3>
+
+            <p>
+
+                By using House Party Marketplace, you agree to comply with these terms and all applicable laws.
+
+            </p>
+
+            <hr>
+
+            <h3><i class="bi bi-person-fill"></i> User Responsibilities</h3>
+
+            <ul class="legal-list">
+
+                <li>Provide accurate information.</li>
+
+                <li>Respect hosts and guests.</li>
+
+                <li>Do not engage in illegal activities.</li>
+
+                <li>Follow event rules.</li>
+
+                <li>Respect community guidelines.</li>
+
+            </ul>
+
+            <hr>
+
+            <h3><i class="bi bi-house-fill"></i> Host Responsibilities</h3>
+
+            <ul class="legal-list">
+
+                <li>Provide accurate event details.</li>
+
+                <li>Maintain a safe environment.</li>
+
+                <li>Respect guest privacy.</li>
+
+                <li>Honor confirmed bookings.</li>
+
+            </ul>
+
+            <hr>
+
+            <h3><i class="bi bi-people-fill"></i> Guest Responsibilities</h3>
+
+            <ul class="legal-list">
+
+                <li>Arrive on time.</li>
+
+                <li>Respect host property.</li>
+
+                <li>Follow event guidelines.</li>
+
+                <li>Behave respectfully toward other guests.</li>
+
+            </ul>
+
+            <hr>
+
+            <h3><i class="bi bi-credit-card-fill"></i> Payments</h3>
+
+            <p>
+
+                All payments are processed securely.
+                Refunds are subject to the cancellation policy of the event host.
+
+            </p>
+
+            <hr>
+
+            <h3><i class="bi bi-exclamation-octagon-fill"></i> Account Suspension</h3>
+
+            <p>
+
+                Accounts violating our policies may be suspended or permanently removed without prior notice.
+
+            </p>
+
+            <hr>
+
+            <h3><i class="bi bi-envelope-fill"></i> Contact</h3>
+
+            <p>
+
+                For any questions regarding these Terms, please visit the
+
+                <a href="/support/" style="color: var(--accent); font-weight: 600;">Support</a> page.
+
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
