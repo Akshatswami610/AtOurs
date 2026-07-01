@@ -1,10 +1,444 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block title %}
+Register
+{% endblock %}
+
+{% block css %}
+
+<style>
+
+    .auth-wrap {
+        min-height: calc(100vh - 260px);
+        display: flex;
+        align-items: center;
+        padding: 40px 0;
+    }
+
+    .auth-card {
+        padding: 44px 40px;
+        animation: fadeInUp .5s var(--ease) both;
+    }
+
+    .auth-logo {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        background: var(--accent-dim);
+        border: 1px solid rgba(245, 200, 76, .3);
+        color: var(--accent);
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 22px;
+    }
+
+    .auth-title {
+        text-align: center;
+        font-size: 1.55rem;
+        margin-bottom: 6px;
+    }
+
+    .auth-subtitle {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: .9rem;
+        margin-bottom: 30px;
+    }
+
+    .auth-card .form-control {
+        padding: .78rem 1rem;
+    }
+
+    .auth-card .btn-primary {
+        padding: .78rem 1rem;
+        font-size: .95rem;
+        margin-top: 10px;
+    }
+
+    .form-row-split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    @media (max-width: 576px) {
+        .form-row-split {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .field-hint {
+        color: var(--text-muted);
+        font-size: .76rem;
+        margin-top: 6px;
+    }
+
+    .auth-divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 26px 0;
+        color: var(--text-muted);
+        font-size: .78rem;
+    }
+
+    .auth-divider::before,
+    .auth-divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+    }
+
+    .auth-card p.text-center a {
+        color: var(--accent);
+        font-weight: 600;
+        transition: opacity .25s var(--ease);
+    }
+
+    .auth-card p.text-center a:hover {
+        opacity: .8;
+    }
+
+    #message span {
+        font-size: .87rem;
+        font-weight: 500;
+        display: block;
+        line-height: 1.6;
+    }
+
+    #message .text-danger {
+        color: #f7a5ab !important;
+    }
+
+    #message .text-success {
+        color: #9fe8bb !important;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-loading {
+        pointer-events: none;
+        opacity: .75;
+    }
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="auth-wrap">
+
+    <div class="row justify-content-center w-100">
+
+        <div class="col-md-7">
+
+            <div class="card auth-card">
+
+                <div class="auth-logo">
+                    <i class="bi bi-stars"></i>
+                </div>
+
+                <h2 class="auth-title fw-bold">
+                    Create Your Account
+                </h2>
+
+                <p class="auth-subtitle">
+                    Join House Party to discover and host unforgettable events.
+                </p>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Full Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="full_name"
+                        class="form-control"
+                        placeholder="John Doe"
+                        autocomplete="name">
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        class="form-control"
+                        placeholder="john@gmail.com"
+                        autocomplete="email">
+
+                </div>
+
+                <div class="form-row-split mb-3">
+
+                    <div>
+
+                        <label class="form-label">
+                            Phone Number
+                        </label>
+
+                        <input
+                            type="text"
+                            id="phone_number"
+                            class="form-control"
+                            placeholder="9876543210"
+                            autocomplete="tel">
+
+                    </div>
+
+                    <div>
+
+                        <label class="form-label">
+                            Date of Birth
+                        </label>
+
+                        <input
+                            type="date"
+                            id="date_of_birth"
+                            class="form-control"
+                            autocomplete="bday">
+
+                    </div>
+
+                </div>
+
+                <p class="field-hint mb-3" style="margin-top:-8px;">
+
+                    You must be 18 or older to register.
+
+                </p>
+
+                <div class="form-row-split mb-3">
+
+                    <div>
+
+                        <label class="form-label">
+                            Password
+                        </label>
+
+                        <input
+                            type="password"
+                            id="password"
+                            class="form-control"
+                            placeholder="********"
+                            autocomplete="new-password">
+
+                    </div>
+
+                    <div>
+
+                        <label class="form-label">
+                            Confirm Password
+                        </label>
+
+                        <input
+                            type="password"
+                            id="confirm_password"
+                            class="form-control"
+                            placeholder="********"
+                            autocomplete="new-password">
+
+                    </div>
+
+                </div>
+
+                <button
+                    id="registerBtn"
+                    class="btn btn-primary w-100"
+                    onclick="register()">
+
+                    Register
+
+                </button>
+
+                <div class="auth-divider">or</div>
+
+                <p class="text-center mb-0">
+
+                    Already have an account?
+
+                    <a href="/login/">
+
+                        Login
+
+                    </a>
+
+                </p>
+
+                <div
+                    id="message"
+                    class="mt-3 text-center">
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block js %}
+
+<script>
+
+async function register(){
+
+    const full_name=document.getElementById("full_name").value.trim();
+
+    const email=document.getElementById("email").value.trim();
+
+    const phone_number=document.getElementById("phone_number").value.trim();
+
+    const date_of_birth=document.getElementById("date_of_birth").value;
+
+    const password=document.getElementById("password").value;
+
+    const confirm_password=document.getElementById("confirm_password").value;
+
+    const message=document.getElementById("message");
+
+    const btn=document.getElementById("registerBtn");
+
+    message.innerHTML="";
+
+    if(
+
+        full_name==="" ||
+
+        email==="" ||
+
+        phone_number==="" ||
+
+        date_of_birth==="" ||
+
+        password==="" ||
+
+        confirm_password===""
+
+    ){
+
+        message.innerHTML="<span class='text-danger'>Please fill all fields.</span>";
+
+        return;
+
+    }
+
+    if(password!==confirm_password){
+
+        message.innerHTML="<span class='text-danger'>Passwords do not match.</span>";
+
+        return;
+
+    }
+
+    btn.classList.add("btn-loading");
+
+    btn.textContent="Creating account...";
+
+    try{
+
+        const response=await fetch(API_BASE+"/accounts/register/",{
+
+            method:"POST",
+
+            headers:{
+
+                "Content-Type":"application/json"
+
+            },
+
+            body:JSON.stringify({
+
+                name:full_name,
+
+                email,
+
+                phone_number,
+
+                date_of_birth,
+
+                password,
+
+                confirm_password
+
+            })
+
+        });
+
+        const data=await response.json();
+
+        if(response.ok){
+
+            message.innerHTML="<span class='text-success'><i class=\"bi bi-check-circle-fill\"></i> Registration Successful.</span>";
+
+            setTimeout(()=>{
+
+                window.location="/login/";
+
+            },1200);
+
+        }
+
+        else{
+
+            if(typeof data==="object" && data!==null){
+
+                let errors="";
+
+                Object.values(data).forEach(error=>{
+
+                    const text=Array.isArray(error) ? error.join(" ") : error;
+
+                    errors+=text+"<br>";
+
+                });
+
+                message.innerHTML=`<span class="text-danger">${errors}</span>`;
+
+            }
+
+            else{
+
+                message.innerHTML="<span class='text-danger'>Registration Failed.</span>";
+
+            }
+
+            btn.classList.remove("btn-loading");
+
+            btn.textContent="Register";
+
+        }
+
+    }
+
+    catch(error){
+
+        message.innerHTML="<span class='text-danger'>Server Error.</span>";
+
+        btn.classList.remove("btn-loading");
+
+        btn.textContent="Register";
+
+    }
+
+}
+
+</script>
+
+{% endblock %}
