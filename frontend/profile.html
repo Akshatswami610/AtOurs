@@ -203,17 +203,6 @@ My Profile
 
                     </div>
 
-                    <div class="info-row">
-
-                        <div class="info-icon"><i class="bi bi-calendar-check-fill"></i></div>
-
-                        <div>
-                            <span class="info-label">Joined</span>
-                            <span class="info-value" id="joined">-</span>
-                        </div>
-
-                    </div>
-
                 </div>
 
             </div>
@@ -251,8 +240,6 @@ async function loadProfile(){
         document.getElementById("phone2").textContent=user.phone_number || "Not available";
 
         document.getElementById("dob").textContent=user.date_of_birth || "Not available";
-
-        document.getElementById("joined").textContent=user.date_joined || "Not available";
 
         document.getElementById("avatar").src=
         `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=0D0D0D&color=F5C84C&size=150`;
