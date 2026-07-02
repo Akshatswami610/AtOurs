@@ -1,0 +1,367 @@
+{% extends "base.html" %}
+
+{% block title %}
+Payment
+{% endblock %}
+
+{% block css %}
+
+<style>
+
+    .payment-header {
+        text-align: center;
+        margin-bottom: 28px;
+    }
+
+    .payment-header h1 {
+        font-size: 1.6rem;
+        margin-bottom: 6px;
+    }
+
+    .payment-header p {
+        color: var(--text-muted);
+        font-size: .88rem;
+        margin: 0;
+    }
+
+    .order-summary-card .card-body {
+        padding: 26px;
+    }
+
+    .order-summary-card h5 {
+        font-size: 1rem;
+        margin-bottom: 18px;
+    }
+
+    .order-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: .9rem;
+    }
+
+    .order-row:last-of-type {
+        border-bottom: none;
+    }
+
+    .order-row .label {
+        color: var(--text-muted);
+    }
+
+    .order-row .value {
+        color: var(--text-primary);
+        font-weight: 600;
+        text-align: right;
+    }
+
+    .order-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 18px;
+        margin-top: 6px;
+        border-top: 1px solid var(--border);
+    }
+
+    .order-total-row .label {
+        color: var(--text-secondary);
+        font-weight: 600;
+        font-size: .95rem;
+    }
+
+    .order-total-row .value {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--accent);
+    }
+
+    .secure-note {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-muted);
+        font-size: .8rem;
+        margin-top: 18px;
+        justify-content: center;
+    }
+
+    .secure-note i {
+        color: var(--accent);
+    }
+
+    .pay-methods {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 16px;
+        color: var(--text-muted);
+        font-size: 1.3rem;
+    }
+
+    #paymentStatus .alert {
+        font-size: .87rem;
+    }
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center fade-in">
+
+    <div class="col-lg-6">
+
+        <div class="payment-header">
+
+            <h1 class="fw-bold">Complete Your Payment</h1>
+
+            <p>Secure checkout powered by Razorpay.</p>
+
+        </div>
+
+        <div class="card order-summary-card">
+
+            <div class="card-body">
+
+                <h5 class="fw-bold">Order Summary</h5>
+
+                <div class="order-row">
+                    <span class="label">Event</span>
+                    <span class="value" id="event_title">Loading...</span>
+                </div>
+
+                <div class="order-row">
+                    <span class="label">Tickets</span>
+                    <span class="value">1</span>
+                </div>
+
+                <div class="order-row">
+                    <span class="label">Price per Ticket</span>
+                    <span class="value">₹<span id="unit_price">0</span></span>
+                </div>
+
+                <div class="order-total-row">
+                    <span class="label">Total Payable</span>
+                    <span class="value">₹<span id="total_amount">0</span></span>
+                </div>
+
+                <button
+                    id="payBtn"
+                    class="btn btn-primary btn-lg w-100 mt-4"
+                    onclick="payNow()">
+
+                    <i class="bi bi-shield-lock-fill me-1"></i>
+
+                    Pay ₹<span id="pay_btn_amount">0</span>
+
+                </button>
+
+                <div id="paymentStatus" class="mt-3"></div>
+
+                <div class="secure-note">
+                    <i class="bi bi-lock-fill"></i>
+                    Payments are encrypted and processed securely by Razorpay.
+                </div>
+
+                <div class="pay-methods">
+                    <i class="bi bi-credit-card-2-front" title="Cards"></i>
+                    <i class="bi bi-phone" title="UPI"></i>
+                    <i class="bi bi-bank" title="Netbanking"></i>
+                    <i class="bi bi-wallet2" title="Wallets"></i>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block js %}
+
+<!-- Razorpay Checkout -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+
+const params=new URLSearchParams(window.location.search);
+
+const eventId=params.get("event");
+
+let eventName="Event";
+
+let totalAmount=0;
+
+let currentUser={name:"", email:"", phone_number:""};
+
+loadOrderDetails();
+
+async function loadOrderDetails(){
+
+    try{
+
+        const event=await api(`/hosting/events/${eventId}/`);
+
+        eventName=event.event_name || "Event";
+
+        totalAmount=parseFloat(event.fee) || 0;
+
+        document.getElementById("event_title").textContent=eventName;
+
+        document.getElementById("unit_price").textContent=totalAmount;
+
+        document.getElementById("total_amount").textContent=totalAmount;
+
+        document.getElementById("pay_btn_amount").textContent=totalAmount;
+
+    }
+
+    catch(error){
+
+        document.getElementById("event_title").textContent="Unable to load event";
+
+    }
+
+    try{
+
+        const user=await api("/accounts/me/");
+
+        currentUser={
+
+            name:user.name || "",
+
+            email:user.email || "",
+
+            phone_number:user.phone_number || ""
+
+        };
+
+    }
+
+    catch(error){
+
+        // Not logged in — Razorpay prefill will just be left blank.
+
+    }
+
+}
+
+function payNow(){
+
+    const status=document.getElementById("paymentStatus");
+
+    status.innerHTML="";
+
+    if(!eventId || totalAmount<=0){
+
+        status.innerHTML="<div class='alert alert-danger'>Unable to start payment. Please go back and try again.</div>";
+
+        return;
+
+    }
+
+    /*
+        ---------------------------------------------------------------
+        BACKEND REQUIRED FOR PRODUCTION USE:
+
+        1) Before opening Checkout, call your backend to create a
+           Razorpay Order using your Key Secret, e.g.:
+
+               const order = await api("/payments/create-order/", "POST", {
+                   event: eventId,
+                   amount: totalAmount * 100
+               });
+
+           and pass `order.id` below as `order_id`. This prevents the
+           amount from being tampered with on the client.
+
+        2) In the `handler` callback below, POST the returned
+           razorpay_payment_id / razorpay_order_id / razorpay_signature
+           to a backend endpoint (e.g. /payments/verify/) that verifies
+           the signature using your Key Secret before marking the
+           booking as paid.
+
+        Neither endpoint exists yet in this project, so this is wired
+        as a client-only Razorpay Checkout for now. Replace the TODOs
+        below once the payments app is built.
+        ---------------------------------------------------------------
+    */
+
+    const options={
+
+        key:"rzp_test_YOUR_KEY_ID", // TODO: replace with your real Razorpay Key ID
+
+        amount:Math.round(totalAmount*100), // paise
+
+        currency:"INR",
+
+        name:"House Party Marketplace",
+
+        description:eventName,
+
+        // order_id: order.id, // TODO: uncomment once backend order creation exists
+
+        prefill:{
+
+            name:currentUser.name,
+
+            email:currentUser.email,
+
+            contact:currentUser.phone_number
+
+        },
+
+        theme:{
+
+            color:"#F5C84C"
+
+        },
+
+        handler:function(response){
+
+            // TODO: verify response.razorpay_payment_id / order_id / signature
+            // on the backend via POST /payments/verify/ before confirming.
+
+            status.innerHTML=`<div class="alert alert-success">Payment successful! Payment ID: ${response.razorpay_payment_id}</div>`;
+
+            setTimeout(()=>{
+
+                window.location="/";
+
+            },1800);
+
+        },
+
+        modal:{
+
+            ondismiss:function(){
+
+                status.innerHTML="<div class='alert alert-danger'>Payment was cancelled.</div>";
+
+            }
+
+        }
+
+    };
+
+    const rzp=new Razorpay(options);
+
+    rzp.on("payment.failed",function(response){
+
+        status.innerHTML=`<div class="alert alert-danger">Payment failed: ${response.error.description}</div>`;
+
+    });
+
+    rzp.open();
+
+}
+
+</script>
+
+{% endblock %}
