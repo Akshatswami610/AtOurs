@@ -1,10 +1,381 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block title %}
+Checkout
+{% endblock %}
+
+{% block css %}
+
+<style>
+
+    .checkout-header {
+        text-align: center;
+        margin-bottom: 28px;
+    }
+
+    .checkout-header h1 {
+        font-size: 1.6rem;
+        margin-bottom: 6px;
+    }
+
+    .checkout-header p {
+        color: var(--text-muted);
+        font-size: .88rem;
+        margin: 0;
+    }
+
+    .event-summary-card {
+        display: flex;
+        gap: 18px;
+        padding: 20px;
+        align-items: center;
+    }
+
+    .event-summary-media {
+        width: 84px;
+        height: 84px;
+        border-radius: var(--radius-sm);
+        background: linear-gradient(135deg, #1c1c20, #131316);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-size: 1.5rem;
+        flex-shrink: 0;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .event-summary-media img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .event-summary-info h4 {
+        font-size: 1.1rem;
+        margin-bottom: 4px;
+    }
+
+    .event-summary-info .badge-category {
+        display: inline-block;
+        background: var(--accent-dim);
+        color: var(--accent);
+        border: 1px solid rgba(245, 200, 76, .25);
+        font-size: .7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        padding: 4px 10px;
+        border-radius: 999px;
+    }
+
+    .info-list {
+        margin-top: 4px;
+    }
+
+    .info-list .info-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 4px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .info-list .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-list .info-icon {
+        width: 34px;
+        height: 34px;
+        flex-shrink: 0;
+        border-radius: 9px;
+        background: var(--accent-dim);
+        border: 1px solid rgba(245, 200, 76, .25);
+        color: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .9rem;
+    }
+
+    .info-list .info-label {
+        display: block;
+        font-size: .72rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--text-muted);
+        margin-bottom: 2px;
+    }
+
+    .info-list .info-value {
+        font-size: .92rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .ticket-qty-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 4px 0;
+    }
+
+    .qty-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border);
+        padding: 8px 16px;
+        border-radius: 999px;
+        font-weight: 700;
+        color: var(--text-primary);
+        font-size: .92rem;
+    }
+
+    .qty-note {
+        color: var(--text-muted);
+        font-size: .78rem;
+        margin-top: 6px;
+    }
+
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px 0 6px;
+        border-top: 1px solid var(--border);
+        margin-top: 18px;
+    }
+
+    .total-row .total-label {
+        color: var(--text-secondary);
+        font-size: .95rem;
+        font-weight: 600;
+    }
+
+    .total-row .total-value {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--accent);
+    }
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center fade-in">
+
+    <div class="col-lg-7">
+
+        <div class="checkout-header">
+
+            <h1 class="fw-bold">Booking Checkout</h1>
+
+            <p>Review your event and booking details before payment.</p>
+
+        </div>
+
+        <div class="card event-summary-card mb-4">
+
+            <div class="event-summary-media" id="posterWrap">
+                <i class="bi bi-image"></i>
+            </div>
+
+            <div class="event-summary-info">
+
+                <h4 id="event_title">Loading...</h4>
+
+                <span class="badge-category" id="category">-</span>
+
+            </div>
+
+        </div>
+
+        <div class="card mb-4">
+
+            <div class="card-body">
+
+                <div class="info-list">
+
+                    <div class="info-row">
+
+                        <div class="info-icon"><i class="bi bi-calendar-event"></i></div>
+
+                        <div>
+                            <span class="info-label">Date &amp; Time</span>
+                            <span class="info-value" id="event_date">-</span>
+                        </div>
+
+                    </div>
+
+                    <div class="info-row">
+
+                        <div class="info-icon"><i class="bi bi-geo-alt-fill"></i></div>
+
+                        <div>
+                            <span class="info-label">Location</span>
+                            <span class="info-value" id="location">-</span>
+                        </div>
+
+                    </div>
+
+                    <div class="info-row">
+
+                        <div class="info-icon"><i class="bi bi-person-fill"></i></div>
+
+                        <div>
+                            <span class="info-label">Hosted By</span>
+                            <span class="info-value" id="host_name">-</span>
+                        </div>
+
+                    </div>
+
+                    <div class="info-row">
+
+                        <div class="info-icon"><i class="bi bi-ticket-perforated-fill"></i></div>
+
+                        <div>
+                            <span class="info-label">Booking For</span>
+                            <span class="info-value" id="booking_user">-</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <div class="card-body">
+
+                <div class="ticket-qty-row">
+
+                    <span class="info-label" style="text-transform:none; font-size:.85rem; color:var(--text-secondary);">Number of Tickets</span>
+
+                    <span class="qty-badge"><i class="bi bi-ticket-perforated-fill"></i> 1 Ticket</span>
+
+                </div>
+
+                <p class="qty-note">Only one ticket can be booked per person for this event.</p>
+
+                <div class="total-row">
+
+                    <span class="total-label">Total Amount</span>
+
+                    <span class="total-value">₹<span id="total">0</span></span>
+
+                </div>
+
+                <button
+                    class="btn btn-primary btn-lg w-100 mt-3"
+                    onclick="proceedToPay()">
+
+                    <i class="bi bi-lock-fill me-1"></i>
+
+                    Proceed to Pay
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block js %}
+
+<script>
+
+const params=new URLSearchParams(window.location.search);
+
+const eventId=params.get("event");
+
+let ticketPrice=0;
+
+loadEvent();
+
+loadCurrentUser();
+
+async function loadEvent(){
+
+    try{
+
+        const event=await api(`/hosting/events/${eventId}/`);
+
+        document.getElementById("event_title").textContent=event.event_name || "Event";
+
+        document.getElementById("category").textContent=event.event_category || "-";
+
+        const eventDate=event.event_date || "Not Available";
+        const eventTime=event.event_time || "";
+
+        document.getElementById("event_date").textContent=eventTime ? `${eventDate} at ${eventTime}` : eventDate;
+
+        document.getElementById("location").textContent=event.location || "Not Available";
+
+        const host=event.user || event.host || null;
+
+        document.getElementById("host_name").textContent=(host && host.name) || event.host_name || "Host";
+
+        if(event.poster){
+
+            document.getElementById("posterWrap").innerHTML=`<img src="${event.poster}" alt="${event.event_name}">`;
+
+        }
+
+        ticketPrice=parseFloat(event.fee) || 0;
+
+        document.getElementById("total").textContent=ticketPrice;
+
+    }
+
+    catch(error){
+
+        document.getElementById("event_title").textContent="Unable to load event";
+
+    }
+
+}
+
+async function loadCurrentUser(){
+
+    try{
+
+        const user=await api("/accounts/me/");
+
+        document.getElementById("booking_user").textContent=`${user.name} (${user.email})`;
+
+    }
+
+    catch(error){
+
+        document.getElementById("booking_user").textContent="Please log in to continue";
+
+    }
+
+}
+
+function proceedToPay(){
+
+    window.location=`/booking-checkout/payment/?event=${eventId}`;
+
+}
+
+</script>
+
+{% endblock %}
