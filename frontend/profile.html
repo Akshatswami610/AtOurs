@@ -52,6 +52,41 @@ My Profile
         width: 100%;
     }
 
+    .danger-zone {
+        margin-top: 10px;
+        padding-top: 14px;
+        border-top: 1px dashed var(--border);
+    }
+
+    .btn-text-danger {
+        background: transparent;
+        border: none;
+        color: #f7a5ab;
+        font-size: .82rem;
+        font-weight: 600;
+        padding: 6px 8px;
+        transition: color .2s var(--ease);
+    }
+
+    .btn-text-danger:hover {
+        color: #ff6b74;
+        text-decoration: underline;
+    }
+
+    #deleteAccountModal .modal-dialog {
+        max-width: 440px;
+    }
+
+    #deleteConfirmInput {
+        margin-top: 10px;
+    }
+
+    #deleteStatus .alert {
+        font-size: .85rem;
+        margin-top: 12px;
+        margin-bottom: 0;
+    }
+
     .info-panel h3 {
         font-size: 1.2rem;
         margin-bottom: 0;
@@ -103,13 +138,77 @@ My Profile
         color: var(--text-primary);
     }
 
+    .auth-required-card {
+        text-align: center;
+        padding: 56px 24px;
+    }
+
+    .auth-required-card i {
+        font-size: 2.4rem;
+        color: var(--accent);
+        margin-bottom: 18px;
+        display: block;
+    }
+
+    .auth-required-card h3 {
+        font-size: 1.25rem;
+        margin-bottom: 8px;
+    }
+
+    .auth-required-card p {
+        color: var(--text-secondary);
+        font-size: .92rem;
+        margin-bottom: 24px;
+    }
+
+    .auth-required-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .auth-required-actions .btn {
+        min-width: 140px;
+    }
+
 </style>
 
 {% endblock %}
 
 {% block content %}
 
-<div class="row fade-in">
+<div class="row fade-in" id="authRequired" style="display:none;">
+
+    <div class="col-md-6 offset-md-3">
+
+        <div class="card">
+
+            <div class="card-body auth-required-card">
+
+                <i class="bi bi-person-lock"></i>
+
+                <h3>You're not logged in</h3>
+
+                <p>Log in or create an account to view your profile.</p>
+
+                <div class="auth-required-actions">
+
+                    <a href="/login/" class="btn btn-primary">Login</a>
+
+                    <a href="/register/" class="btn btn-secondary">Create Account</a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="row fade-in" id="profileContent" style="display:none;">
 
     <div class="col-md-4">
 
@@ -138,6 +237,21 @@ My Profile
                     Logout
 
                 </button>
+
+                <div class="danger-zone">
+
+                    <button
+                        type="button"
+                        class="btn-text-danger"
+                        data-bs-toggle="modal"
+                        data-bs-target="#deleteAccountModal">
+
+                        <i class="bi bi-trash3 me-1"></i>
+                        Delete Account
+
+                    </button>
+
+                </div>
 
             </div>
 
@@ -213,6 +327,59 @@ My Profile
 
 </div>
 
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title fw-bold" id="deleteAccountModalLabel">Delete Account</h5>
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <p class="mb-2">This permanently deletes your account, your hosted events, and your bookings. This can't be undone.</p>
+
+                <label class="form-label mb-1 d-block" for="deleteConfirmInput">Type <strong>DELETE</strong> to confirm</label>
+                <input
+                    class="form-control"
+                    id="deleteConfirmInput"
+                    autocomplete="off"
+                    placeholder="DELETE">
+
+                <div id="deleteStatus"></div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+
+                <button
+                    id="deleteAccountBtn"
+                    class="btn btn-danger"
+                    disabled
+                    onclick="deleteAccount()">
+
+                    <i class="bi bi-trash3 me-1"></i>
+                    Delete My Account
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 {% endblock %}
 
 {% block js %}
@@ -254,7 +421,143 @@ async function loadProfile(){
 
 }
 
-loadProfile();
+if(getToken()){
+
+    document.getElementById("profileContent").style.display="";
+
+    loadProfile();
+
+}
+
+else{
+
+    document.getElementById("authRequired").style.display="";
+
+}
+
+const deleteConfirmInput=document.getElementById("deleteConfirmInput");
+
+const deleteAccountBtn=document.getElementById("deleteAccountBtn");
+
+deleteConfirmInput.addEventListener("input",function(){
+
+    deleteAccountBtn.disabled=this.value.trim()!=="DELETE";
+
+});
+
+document.getElementById("deleteAccountModal").addEventListener("hidden.bs.modal",function(){
+
+    deleteConfirmInput.value="";
+
+    deleteAccountBtn.disabled=true;
+
+    deleteAccountBtn.innerHTML=`<i class="bi bi-trash3 me-1"></i> Delete My Account`;
+
+    document.getElementById("deleteStatus").innerHTML="";
+
+});
+
+async function deleteAccount(){
+
+    const status=document.getElementById("deleteStatus");
+
+    const btn=deleteAccountBtn;
+
+    status.innerHTML="";
+
+    if(deleteConfirmInput.value.trim()!=="DELETE"){
+
+        status.innerHTML="<div class='alert alert-danger'>Please type DELETE to confirm.</div>";
+
+        return;
+
+    }
+
+    btn.disabled=true;
+
+    btn.innerHTML=`<span class="spinner-border spinner-border-sm me-2" role="status"></span> Deleting...`;
+
+    try{
+
+        const token=getToken();
+
+        const headers={};
+
+        if(token){
+
+            headers["Authorization"]=`Token ${token}`;
+
+        }
+
+        const response=await fetch(API_BASE+"/accounts/me/",{
+
+            method:"DELETE",
+
+            headers:headers
+
+        });
+
+        if(response.ok){
+
+            localStorage.removeItem("access");
+
+            localStorage.removeItem("refresh");
+
+            localStorage.removeItem("user");
+
+            window.location="/";
+
+            return;
+
+        }
+
+        let data={};
+
+        try{
+
+            data=await response.json();
+
+        }
+
+        catch(parseError){
+
+            data={};
+
+        }
+
+        let errors="";
+
+        if(typeof data==="object" && data!==null){
+
+            Object.values(data).forEach(error=>{
+
+                const text=Array.isArray(error) ? error.join(" ") : error;
+
+                errors+=text+"<br>";
+
+            });
+
+        }
+
+        status.innerHTML=`<div class="alert alert-danger">${errors || "Unable to delete account. Please try again."}</div>`;
+
+        btn.disabled=false;
+
+        btn.innerHTML=`<i class="bi bi-trash3 me-1"></i> Delete My Account`;
+
+    }
+
+    catch(error){
+
+        status.innerHTML="<div class='alert alert-danger'>Something went wrong. Please try again.</div>";
+
+        btn.disabled=false;
+
+        btn.innerHTML=`<i class="bi bi-trash3 me-1"></i> Delete My Account`;
+
+    }
+
+}
 
 </script>
 
