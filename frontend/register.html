@@ -125,6 +125,64 @@ Register
         opacity: .75;
     }
 
+    .password-field {
+        position: relative;
+    }
+
+    .password-field .form-control {
+        padding-right: 2.6rem;
+    }
+
+    .password-toggle {
+        position: absolute;
+        top: 50%;
+        right: 12px;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        font-size: 1.05rem;
+        cursor: pointer;
+        padding: 4px;
+        line-height: 1;
+    }
+
+    .password-toggle:hover {
+        color: var(--text-primary);
+    }
+
+    .terms-check {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 18px;
+    }
+
+    .terms-check input[type="checkbox"] {
+        margin-top: 3px;
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+        cursor: pointer;
+        accent-color: var(--accent);
+    }
+
+    .terms-check label {
+        font-size: .84rem;
+        color: var(--text-secondary);
+        line-height: 1.5;
+        cursor: pointer;
+    }
+
+    .terms-check a {
+        color: var(--accent);
+        font-weight: 600;
+    }
+
+    .terms-check a:hover {
+        opacity: .8;
+    }
+
 </style>
 
 {% endblock %}
@@ -228,12 +286,26 @@ Register
                             Password
                         </label>
 
-                        <input
-                            type="password"
-                            id="password"
-                            class="form-control"
-                            placeholder="********"
-                            autocomplete="new-password">
+                        <div class="password-field">
+
+                            <input
+                                type="password"
+                                id="password"
+                                class="form-control"
+                                placeholder="********"
+                                autocomplete="new-password">
+
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                onclick="togglePassword('password', this)"
+                                aria-label="Show password">
+
+                                <i class="bi bi-eye"></i>
+
+                            </button>
+
+                        </div>
 
                     </div>
 
@@ -243,14 +315,48 @@ Register
                             Confirm Password
                         </label>
 
-                        <input
-                            type="password"
-                            id="confirm_password"
-                            class="form-control"
-                            placeholder="********"
-                            autocomplete="new-password">
+                        <div class="password-field">
+
+                            <input
+                                type="password"
+                                id="confirm_password"
+                                class="form-control"
+                                placeholder="********"
+                                autocomplete="new-password">
+
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                onclick="togglePassword('confirm_password', this)"
+                                aria-label="Show password">
+
+                                <i class="bi bi-eye"></i>
+
+                            </button>
+
+                        </div>
 
                     </div>
+
+                </div>
+
+                <div class="terms-check">
+
+                    <input
+                        type="checkbox"
+                        id="agreeTerms">
+
+                    <label for="agreeTerms">
+
+                        I have read and agree to the
+
+                        <a href="/privacy-policy/" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+
+                        and
+
+                        <a href="/terms-and-conditions/" target="_blank" rel="noopener noreferrer">Terms and Conditions</a>
+
+                    </label>
 
                 </div>
 
@@ -296,6 +402,38 @@ Register
 {% block js %}
 
 <script>
+
+function togglePassword(fieldId, btn){
+
+    const input=document.getElementById(fieldId);
+
+    const icon=btn.querySelector("i");
+
+    if(input.type==="password"){
+
+        input.type="text";
+
+        icon.classList.remove("bi-eye");
+
+        icon.classList.add("bi-eye-slash");
+
+        btn.setAttribute("aria-label","Hide password");
+
+    }
+
+    else{
+
+        input.type="password";
+
+        icon.classList.remove("bi-eye-slash");
+
+        icon.classList.add("bi-eye");
+
+        btn.setAttribute("aria-label","Show password");
+
+    }
+
+}
 
 async function register(){
 
@@ -347,6 +485,16 @@ async function register(){
 
     }
 
+    const agreeTerms=document.getElementById("agreeTerms");
+
+    if(!agreeTerms.checked){
+
+        message.innerHTML="<span class='text-danger'>Please agree to the Privacy Policy and Terms and Conditions to continue.</span>";
+
+        return;
+
+    }
+
     btn.classList.add("btn-loading");
 
     btn.textContent="Creating account...";
@@ -385,11 +533,19 @@ async function register(){
 
         if(response.ok){
 
+            if(data.token){
+
+                localStorage.setItem("access",data.token);
+
+                localStorage.setItem("user",JSON.stringify(data.user || {}));
+
+            }
+
             message.innerHTML="<span class='text-success'><i class=\"bi bi-check-circle-fill\"></i> Registration Successful.</span>";
 
             setTimeout(()=>{
 
-                window.location="/login/";
+                window.location=data.token ? "/" : "/login/";
 
             },1200);
 
