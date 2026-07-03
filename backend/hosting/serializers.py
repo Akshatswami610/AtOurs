@@ -47,9 +47,3 @@ class EventSerializer(serializers.ModelSerializer):
 
     def get_host_events(self, obj):
         return Event.objects.filter(user=obj.user).count()
-
-    def create(self, validated_data):
-        return Event.objects.create(
-            user=self.context["request"].user,
-            **validated_data
-        )
