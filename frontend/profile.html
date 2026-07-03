@@ -386,6 +386,15 @@ My Profile
 
                 </div>
 
+                <label class="form-label mb-1 d-block" for="deletePasswordInput">Enter your password</label>
+
+                <input
+                    type="password"
+                    class="form-control mb-3"
+                    id="deletePasswordInput"
+                    autocomplete="current-password"
+                    placeholder="Password">
+
                 <label class="form-label mb-1 d-block" for="deleteConfirmInput">Type <strong>DELETE</strong> to confirm</label>
 
                 <input
@@ -478,17 +487,31 @@ else{
 
 const deleteConfirmInput=document.getElementById("deleteConfirmInput");
 
+const deletePasswordInput=document.getElementById("deletePasswordInput");
+
 const deleteAccountBtn=document.getElementById("deleteAccountBtn");
 
 const deleteAccountModalEl=document.getElementById("deleteAccountModal");
 
+function updateDeleteBtnState(){
+
+    const confirmed=deleteConfirmInput && deleteConfirmInput.value.trim()==="DELETE";
+
+    const hasPassword=deletePasswordInput && deletePasswordInput.value.trim()!=="";
+
+    deleteAccountBtn.disabled=!(confirmed && hasPassword);
+
+}
+
 if(deleteConfirmInput && deleteAccountBtn){
 
-    deleteConfirmInput.addEventListener("input",function(){
+    deleteConfirmInput.addEventListener("input",updateDeleteBtnState);
 
-        deleteAccountBtn.disabled=this.value.trim()!=="DELETE";
+}
 
-    });
+if(deletePasswordInput && deleteAccountBtn){
+
+    deletePasswordInput.addEventListener("input",updateDeleteBtnState);
 
 }
 
@@ -499,6 +522,12 @@ if(deleteAccountModalEl){
         if(deleteConfirmInput){
 
             deleteConfirmInput.value="";
+
+        }
+
+        if(deletePasswordInput){
+
+            deletePasswordInput.value="";
 
         }
 
@@ -530,7 +559,9 @@ async function deleteAccount(){
 
     const input=document.getElementById("deleteConfirmInput");
 
-    if(!status || !btn || !input){
+    const passwordInput=document.getElementById("deletePasswordInput");
+
+    if(!status || !btn || !input || !passwordInput){
 
         alert("Something went wrong loading the delete confirmation. Please refresh the page and try again.");
 
@@ -548,6 +579,14 @@ async function deleteAccount(){
 
     }
 
+    if(passwordInput.value.trim()===""){
+
+        status.innerHTML="<div class='alert alert-danger'>Please enter your password.</div>";
+
+        return;
+
+    }
+
     btn.disabled=true;
 
     btn.innerHTML=`<span class="spinner-border spinner-border-sm me-2" role="status"></span> Deleting...`;
@@ -556,7 +595,11 @@ async function deleteAccount(){
 
         const token=getToken();
 
-        const headers={};
+        const headers={
+
+            "Content-Type":"application/json"
+
+        };
 
         if(token){
 
@@ -568,7 +611,13 @@ async function deleteAccount(){
 
             method:"DELETE",
 
-            headers:headers
+            headers:headers,
+
+            body:JSON.stringify({
+
+                password:passwordInput.value
+
+            })
 
         });
 
@@ -616,7 +665,9 @@ async function deleteAccount(){
 
         status.innerHTML=`<div class="alert alert-danger">${errors || "Unable to delete account. Please try again."}</div>`;
 
-        btn.disabled=false;
+        passwordInput.value="";
+
+        btn.disabled=true;
 
         btn.innerHTML=`<i class="bi bi-trash3 me-1"></i> Delete My Account`;
 
@@ -626,7 +677,9 @@ async function deleteAccount(){
 
         status.innerHTML="<div class='alert alert-danger'>Something went wrong. Please try again.</div>";
 
-        btn.disabled=false;
+        passwordInput.value="";
+
+        btn.disabled=true;
 
         btn.innerHTML=`<i class="bi bi-trash3 me-1"></i> Delete My Account`;
 
