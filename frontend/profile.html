@@ -53,32 +53,64 @@ My Profile
     }
 
     .danger-zone {
-        margin-top: 10px;
-        padding-top: 14px;
+        margin-top: 16px;
+        padding-top: 16px;
         border-top: 1px dashed var(--border);
     }
 
-    .btn-text-danger {
-        background: transparent;
-        border: none;
-        color: #f7a5ab;
-        font-size: .82rem;
-        font-weight: 600;
-        padding: 6px 8px;
-        transition: color .2s var(--ease);
+    .danger-zone-label {
+        color: var(--text-muted);
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin-bottom: 10px;
     }
 
-    .btn-text-danger:hover {
-        color: #ff6b74;
-        text-decoration: underline;
+    .btn-outline-danger {
+        width: 100%;
+        background: transparent;
+        color: #f7a5ab;
+        border: 1px solid rgba(255, 90, 100, .3);
+    }
+
+    .btn-outline-danger:hover {
+        background: #2a1416;
+        color: #ffb3b8;
+        border-color: rgba(255, 90, 100, .5);
+        transform: translateY(-2px);
     }
 
     #deleteAccountModal .modal-dialog {
         max-width: 440px;
     }
 
+    #deleteAccountModal .warning-box {
+        display: flex;
+        gap: 12px;
+        padding: 14px;
+        border-radius: var(--radius-sm);
+        background: #241014;
+        border: 1px solid rgba(255, 90, 100, .25);
+        margin-bottom: 18px;
+    }
+
+    #deleteAccountModal .warning-box i {
+        color: #f7a5ab;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    #deleteAccountModal .warning-box p {
+        color: #f7c8cc;
+        font-size: .85rem;
+        line-height: 1.55;
+        margin: 0;
+    }
+
     #deleteConfirmInput {
-        margin-top: 10px;
+        margin-top: 8px;
     }
 
     #deleteStatus .alert {
@@ -240,9 +272,11 @@ My Profile
 
                 <div class="danger-zone">
 
+                    <div class="danger-zone-label">Danger Zone</div>
+
                     <button
                         type="button"
-                        class="btn-text-danger"
+                        class="btn btn-outline-danger"
                         data-bs-toggle="modal"
                         data-bs-target="#deleteAccountModal">
 
@@ -344,9 +378,16 @@ My Profile
 
             <div class="modal-body">
 
-                <p class="mb-2">This permanently deletes your account, your hosted events, and your bookings. This can't be undone.</p>
+                <div class="warning-box">
+
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+
+                    <p>This permanently deletes your account, your hosted events, and your bookings. This action cannot be undone.</p>
+
+                </div>
 
                 <label class="form-label mb-1 d-block" for="deleteConfirmInput">Type <strong>DELETE</strong> to confirm</label>
+
                 <input
                     class="form-control"
                     id="deleteConfirmInput"
@@ -439,33 +480,67 @@ const deleteConfirmInput=document.getElementById("deleteConfirmInput");
 
 const deleteAccountBtn=document.getElementById("deleteAccountBtn");
 
-deleteConfirmInput.addEventListener("input",function(){
+const deleteAccountModalEl=document.getElementById("deleteAccountModal");
 
-    deleteAccountBtn.disabled=this.value.trim()!=="DELETE";
+if(deleteConfirmInput && deleteAccountBtn){
 
-});
+    deleteConfirmInput.addEventListener("input",function(){
 
-document.getElementById("deleteAccountModal").addEventListener("hidden.bs.modal",function(){
+        deleteAccountBtn.disabled=this.value.trim()!=="DELETE";
 
-    deleteConfirmInput.value="";
+    });
 
-    deleteAccountBtn.disabled=true;
+}
 
-    deleteAccountBtn.innerHTML=`<i class="bi bi-trash3 me-1"></i> Delete My Account`;
+if(deleteAccountModalEl){
 
-    document.getElementById("deleteStatus").innerHTML="";
+    deleteAccountModalEl.addEventListener("hidden.bs.modal",function(){
 
-});
+        if(deleteConfirmInput){
+
+            deleteConfirmInput.value="";
+
+        }
+
+        if(deleteAccountBtn){
+
+            deleteAccountBtn.disabled=true;
+
+            deleteAccountBtn.innerHTML=`<i class="bi bi-trash3 me-1"></i> Delete My Account`;
+
+        }
+
+        const deleteStatusEl=document.getElementById("deleteStatus");
+
+        if(deleteStatusEl){
+
+            deleteStatusEl.innerHTML="";
+
+        }
+
+    });
+
+}
 
 async function deleteAccount(){
 
     const status=document.getElementById("deleteStatus");
 
-    const btn=deleteAccountBtn;
+    const btn=document.getElementById("deleteAccountBtn");
+
+    const input=document.getElementById("deleteConfirmInput");
+
+    if(!status || !btn || !input){
+
+        alert("Something went wrong loading the delete confirmation. Please refresh the page and try again.");
+
+        return;
+
+    }
 
     status.innerHTML="";
 
-    if(deleteConfirmInput.value.trim()!=="DELETE"){
+    if(input.value.trim()!=="DELETE"){
 
         status.innerHTML="<div class='alert alert-danger'>Please type DELETE to confirm.</div>";
 
