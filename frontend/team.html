@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+
+{% block title %}
+Our Team
+{% endblock %}
+
+{% block css %}
+
+<style>
+
+    .page-hero {
+        text-align: center;
+        padding: 20px 20px 40px;
+    }
+
+    .page-hero .hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--accent);
+        font-weight: 600;
+        font-size: .82rem;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        background: var(--accent-dim);
+        border: 1px solid rgba(245, 200, 76, .25);
+        padding: 6px 14px;
+        border-radius: 999px;
+        margin-bottom: 20px;
+    }
+
+    .page-hero h1 {
+        font-size: clamp(1.9rem, 4vw, 2.4rem);
+        margin-bottom: 10px;
+    }
+
+    .page-hero p {
+        color: var(--text-secondary);
+        max-width: 520px;
+        margin: 0 auto;
+        font-size: .96rem;
+    }
+
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        margin-bottom: 44px;
+    }
+
+    @media (max-width: 992px) {
+        .team-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 576px) {
+        .team-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .team-card {
+        padding: 32px 24px;
+        text-align: center;
+    }
+
+    .team-avatar {
+        width: 76px;
+        height: 76px;
+        border-radius: 50%;
+        background: var(--accent-dim);
+        border: 1px solid rgba(245, 200, 76, .3);
+        color: var(--accent);
+        font-size: 1.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 18px;
+    }
+
+    .team-card h5 {
+        font-size: 1.08rem;
+        margin-bottom: 2px;
+    }
+
+    .team-role {
+        color: var(--accent);
+        font-size: .82rem;
+        font-weight: 600;
+        margin-bottom: 14px;
+    }
+
+    .team-bio {
+        color: var(--text-secondary);
+        font-size: .87rem;
+        line-height: 1.6;
+        margin-bottom: 18px;
+    }
+
+    .team-socials {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .team-socials a {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .92rem;
+        transition: color .25s var(--ease), border-color .25s var(--ease), transform .25s var(--ease);
+    }
+
+    .team-socials a:hover {
+        color: var(--accent);
+        border-color: rgba(245, 200, 76, .4);
+        transform: translateY(-2px);
+    }
+
+    .team-cta {
+        text-align: center;
+        padding: 48px 24px;
+        background: radial-gradient(120% 140% at 50% 0%, rgba(245, 200, 76, .08), transparent 60%), var(--bg-secondary);
+    }
+
+    .team-cta h3 {
+        font-size: 1.4rem;
+        margin-bottom: 8px;
+    }
+
+    .team-cta p {
+        color: var(--text-secondary);
+        font-size: .92rem;
+        max-width: 440px;
+        margin: 0 auto 22px;
+    }
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="page-hero fade-in">
+
+    <span class="hero-eyebrow">
+        <i class="bi bi-people-fill"></i>
+        The People Behind the Parties
+    </span>
+
+    <h1 class="fw-bold">
+        Meet the Team
+    </h1>
+
+    <p>
+        We're a small crew obsessed with getting strangers into the same room and turning it into a good night. Here's who's behind House Party.
+    </p>
+
+</div>
+
+<div class="team-grid">
+
+    <div class="card team-card">
+        <div class="team-avatar">
+            <i class="bi bi-person-fill"></i>
+        </div>
+        <h5 class="fw-bold">Aarav Mehta</h5>
+        <div class="team-role">Founder &amp; CEO</div>
+        <p class="team-bio">
+            Started House Party after one too many events with a broken RSVP link. Still hosts every month.
+        </p>
+        <div class="team-socials">
+            <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+            <a href="#" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+            <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+        </div>
+    </div>
+
+    <div class="card team-card">
+        <div class="team-avatar">
+            <i class="bi bi-person-fill"></i>
+        </div>
+        <h5 class="fw-bold">Priya Nair</h5>
+        <div class="team-role">Head of Community</div>
+        <p class="team-bio">
+            Makes sure hosts get the guests they want and guests get the parties worth showing up for.
+        </p>
+        <div class="team-socials">
+            <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+            <a href="#" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+            <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+        </div>
+    </div>
+
+    <div class="card team-card">
+        <div class="team-avatar">
+            <i class="bi bi-person-fill"></i>
+        </div>
+        <h5 class="fw-bold">Rohan Kapoor</h5>
+        <div class="team-role">Lead Engineer</div>
+        <p class="team-bio">
+            Builds and ships everything you're clicking on right now. Prefers dark mode in code and in life.
+        </p>
+        <div class="team-socials">
+            <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+            <a href="#" aria-label="GitHub"><i class="bi bi-github"></i></a>
+            <a href="#" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+        </div>
+    </div>
+
+    <div class="card team-card">
+        <div class="team-avatar">
+            <i class="bi bi-person-fill"></i>
+        </div>
+        <h5 class="fw-bold">Sana Iyer</h5>
+        <div class="team-role">Design Lead</div>
+        <p class="team-bio">
+            Shapes how House Party looks and feels, from the poster upload flow to the confetti on your screen.
+        </p>
+        <div class="team-socials">
+            <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+            <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+            <a href="#" aria-label="Dribbble"><i class="bi bi-dribbble"></i></a>
+        </div>
+    </div>
+
+    <div class="card team-card">
+        <div class="team-avatar">
+            <i class="bi bi-person-fill"></i>
+        </div>
+        <h5 class="fw-bold">Vikram Shah</h5>
+        <div class="team-role">Trust &amp; Safety Lead</div>
+        <p class="team-bio">
+            Keeps events and guests safe, so hosts can focus on the party instead of the paperwork.
+        </p>
+        <div class="team-socials">
+            <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+            <a href="#" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+        </div>
+    </div>
+
+    <div class="card team-card">
+        <div class="team-avatar">
+            <i class="bi bi-person-fill"></i>
+        </div>
+        <h5 class="fw-bold">Meera Joshi</h5>
+        <div class="team-role">Partnerships Lead</div>
+        <p class="team-bio">
+            Works with venues, vendors, and brands so hosts have everything they need to throw a great event.
+        </p>
+        <div class="team-socials">
+            <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+            <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+        </div>
+    </div>
+
+</div>
+
+<div class="card team-cta slide-up">
+
+    <h3 class="fw-bold">Want to build the party with us?</h3>
+
+    <p>
+        We're always looking for people who care about bringing others together. Check out our open roles.
+    </p>
+
+    <a href="/careers/" class="btn btn-primary">
+        <i class="bi bi-briefcase-fill me-1"></i>
+        View Open Roles
+    </a>
+
+</div>
+
+{% endblock %}
