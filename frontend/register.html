@@ -102,24 +102,6 @@ Register
         opacity: .8;
     }
 
-    #message span {
-        font-size: .87rem;
-        font-weight: 500;
-        display: block;
-        line-height: 1.6;
-    }
-
-    #message .text-danger {
-        color: #f7a5ab !important;
-    }
-
-    #message .text-success {
-        color: #9fe8bb !important;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-    }
-
     .btn-loading {
         pointer-events: none;
         opacity: .75;
@@ -183,11 +165,108 @@ Register
         opacity: .8;
     }
 
+    /* Toast notifications */
+
+    #toastContainer {
+        z-index: 1080;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+        pointer-events: none;
+    }
+
+    .site-toast {
+        pointer-events: auto;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        width: 320px;
+        max-width: calc(100vw - 40px);
+        padding: 14px 16px;
+        border-radius: var(--radius-sm, 10px);
+        background: #1c1c20;
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--accent);
+        box-shadow: 0 14px 32px -8px rgba(0, 0, 0, .55);
+        animation: toastIn .3s var(--ease, ease) both;
+    }
+
+    .site-toast.hiding {
+        animation: toastOut .22s var(--ease, ease) both;
+    }
+
+    .site-toast.success {
+        border-left-color: #4ecb8d;
+    }
+
+    .site-toast.danger {
+        border-left-color: #ef5b6a;
+    }
+
+    .site-toast .toast-icon {
+        flex-shrink: 0;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .95rem;
+        margin-top: 1px;
+    }
+
+    .site-toast.success .toast-icon {
+        background: rgba(78, 203, 141, .15);
+        color: #4ecb8d;
+    }
+
+    .site-toast.danger .toast-icon {
+        background: rgba(239, 91, 106, .15);
+        color: #ef5b6a;
+    }
+
+    .site-toast .toast-message {
+        flex: 1;
+        font-size: .87rem;
+        line-height: 1.4;
+        color: var(--text-secondary, #e6e6e6);
+        padding-top: 3px;
+    }
+
+    .site-toast .toast-close {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        font-size: 1rem;
+        line-height: 1;
+        padding: 2px;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .site-toast .toast-close:hover {
+        color: var(--text-secondary, #e6e6e6);
+    }
+
+    @keyframes toastIn {
+        from { transform: translateX(24px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes toastOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(24px); opacity: 0; }
+    }
+
 </style>
 
 {% endblock %}
 
 {% block content %}
+
+<!-- Toast notifications -->
+<div id="toastContainer" class="position-fixed top-0 end-0 p-3"></div>
 
 <div class="auth-wrap">
 
@@ -383,12 +462,6 @@ Register
 
                 </p>
 
-                <div
-                    id="message"
-                    class="mt-3 text-center">
-
-                </div>
-
             </div>
 
         </div>
@@ -402,6 +475,49 @@ Register
 {% block js %}
 
 <script>
+
+// Site-styled toast notifications, shown top-right.
+function showToast(message,type="success"){
+
+    const container=document.getElementById("toastContainer");
+
+    if(!container){
+
+        return;
+
+    }
+
+    const icon=(type==="success") ? "bi-check-circle-fill" : "bi-exclamation-circle-fill";
+
+    const toastEl=document.createElement("div");
+
+    toastEl.className=`site-toast ${type}`;
+
+    toastEl.innerHTML=`
+        <div class="toast-icon"><i class="bi ${icon}"></i></div>
+        <div class="toast-message">${message}</div>
+        <button type="button" class="toast-close" aria-label="Close"><i class="bi bi-x-lg"></i></button>
+    `;
+
+    container.appendChild(toastEl);
+
+    let dismissTimer;
+
+    function dismiss(){
+
+        clearTimeout(dismissTimer);
+
+        toastEl.classList.add("hiding");
+
+        toastEl.addEventListener("animationend",()=>toastEl.remove(),{once:true});
+
+    }
+
+    toastEl.querySelector(".toast-close").addEventListener("click",dismiss);
+
+    dismissTimer=setTimeout(dismiss,4000);
+
+}
 
 function togglePassword(fieldId, btn){
 
@@ -449,11 +565,7 @@ async function register(){
 
     const confirm_password=document.getElementById("confirm_password").value;
 
-    const message=document.getElementById("message");
-
     const btn=document.getElementById("registerBtn");
-
-    message.innerHTML="";
 
     if(
 
@@ -471,7 +583,7 @@ async function register(){
 
     ){
 
-        message.innerHTML="<span class='text-danger'>Please fill all fields.</span>";
+        showToast("Please fill all fields.","danger");
 
         return;
 
@@ -479,7 +591,7 @@ async function register(){
 
     if(password!==confirm_password){
 
-        message.innerHTML="<span class='text-danger'>Passwords do not match.</span>";
+        showToast("Passwords do not match.","danger");
 
         return;
 
@@ -489,7 +601,7 @@ async function register(){
 
     if(!agreeTerms.checked){
 
-        message.innerHTML="<span class='text-danger'>Please agree to the Privacy Policy and Terms and Conditions to continue.</span>";
+        showToast("Please agree to the Privacy Policy and Terms and Conditions to continue.","danger");
 
         return;
 
@@ -541,7 +653,7 @@ async function register(){
 
             }
 
-            message.innerHTML="<span class='text-success'><i class=\"bi bi-check-circle-fill\"></i> Registration Successful.</span>";
+            showToast("Registration successful.","success");
 
             setTimeout(()=>{
 
@@ -565,13 +677,13 @@ async function register(){
 
                 });
 
-                message.innerHTML=`<span class="text-danger">${errors}</span>`;
+                showToast(errors || "Registration failed.","danger");
 
             }
 
             else{
 
-                message.innerHTML="<span class='text-danger'>Registration Failed.</span>";
+                showToast("Registration failed.","danger");
 
             }
 
@@ -585,7 +697,7 @@ async function register(){
 
     catch(error){
 
-        message.innerHTML="<span class='text-danger'>Server Error.</span>";
+        showToast("Server error. Please try again.","danger");
 
         btn.classList.remove("btn-loading");
 
