@@ -215,11 +215,190 @@ Home
         margin-bottom: 12px;
     }
 
+    /* Filter bar */
+
+    .filter-bar {
+        padding: 18px;
+        margin-top: 26px;
+        display: grid;
+        grid-template-columns: 1.6fr 1fr 1fr;
+        gap: 12px;
+    }
+
+    @media (max-width: 768px) {
+        .filter-bar {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .filter-bar .search-input-wrap {
+        position: relative;
+    }
+
+    .filter-bar .search-input-wrap i {
+        position: absolute;
+        top: 50%;
+        left: 14px;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: .9rem;
+        pointer-events: none;
+    }
+
+    .filter-bar .search-input-wrap input {
+        padding-left: 38px;
+    }
+
+    .results-count {
+        color: var(--text-muted);
+        font-size: .84rem;
+        margin: 14px 2px 0;
+    }
+
+    /* Event meta */
+
+    .event-meta {
+        flex-wrap: wrap;
+    }
+
+    .event-meta span {
+        max-width: 100%;
+    }
+
+    .event-meta span.truncate {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* Empty / error states */
+
+    .empty-state,
+    .error-state {
+        text-align: center;
+        padding: 70px 20px;
+        color: var(--text-muted);
+    }
+
+    .empty-state i,
+    .error-state i {
+        font-size: 2.4rem;
+        color: var(--text-muted);
+        margin-bottom: 16px;
+        display: block;
+    }
+
+    .error-state i {
+        color: #ef5b6a;
+    }
+
+    .empty-state p,
+    .error-state p {
+        margin-bottom: 18px;
+    }
+
+    /* Toast notifications */
+
+    #toastContainer {
+        z-index: 1080;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+        pointer-events: none;
+    }
+
+    .site-toast {
+        pointer-events: auto;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        width: 320px;
+        max-width: calc(100vw - 40px);
+        padding: 14px 16px;
+        border-radius: var(--radius-sm, 10px);
+        background: #1c1c20;
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--accent);
+        box-shadow: 0 14px 32px -8px rgba(0, 0, 0, .55);
+        animation: toastIn .3s var(--ease, ease) both;
+    }
+
+    .site-toast.hiding {
+        animation: toastOut .22s var(--ease, ease) both;
+    }
+
+    .site-toast.success {
+        border-left-color: #4ecb8d;
+    }
+
+    .site-toast.danger {
+        border-left-color: #ef5b6a;
+    }
+
+    .site-toast .toast-icon {
+        flex-shrink: 0;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .95rem;
+        margin-top: 1px;
+    }
+
+    .site-toast.success .toast-icon {
+        background: rgba(78, 203, 141, .15);
+        color: #4ecb8d;
+    }
+
+    .site-toast.danger .toast-icon {
+        background: rgba(239, 91, 106, .15);
+        color: #ef5b6a;
+    }
+
+    .site-toast .toast-message {
+        flex: 1;
+        font-size: .87rem;
+        line-height: 1.4;
+        color: var(--text-secondary, #e6e6e6);
+        padding-top: 3px;
+    }
+
+    .site-toast .toast-close {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        font-size: 1rem;
+        line-height: 1;
+        padding: 2px;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .site-toast .toast-close:hover {
+        color: var(--text-secondary, #e6e6e6);
+    }
+
+    @keyframes toastIn {
+        from { transform: translateX(24px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes toastOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(24px); opacity: 0; }
+    }
+
 </style>
 
 {% endblock %}
 
 {% block content %}
+
+<!-- Toast notifications -->
+<div id="toastContainer" class="position-fixed top-0 end-0 p-3"></div>
 
 <div class="hero fade-in">
 
@@ -273,7 +452,52 @@ Home
 
 </div>
 
-<div class="row mt-4" id="eventContainer">
+<div class="card filter-bar">
+
+    <div class="search-input-wrap">
+        <i class="bi bi-search"></i>
+        <input
+            type="text"
+            id="searchInput"
+            class="form-control"
+            placeholder="Search by name or location"
+            oninput="handleFiltersChanged()">
+    </div>
+
+    <select id="categoryFilter" class="form-select" onchange="handleFiltersChanged()">
+        <option value="">All Categories</option>
+        <option value="HOUSE_PARTY">House Party</option>
+        <option value="DINNER_PARTY">Dinner Party</option>
+        <option value="GAME_NIGHT">Game Night</option>
+        <option value="LIVE_MUSIC">Live Music</option>
+        <option value="KARAOKE">Karaoke</option>
+        <option value="NETWORKING">Networking</option>
+        <option value="BOOK_CLUB">Book Club</option>
+        <option value="MOVIE_NIGHT">Movie Night</option>
+        <option value="COOKING_CLASS">Cooking Class</option>
+        <option value="WELLNESS">Wellness</option>
+        <option value="ART_CRAFT">Art &amp; Craft</option>
+        <option value="COFFEE_MEETUP">Coffee Meetup</option>
+        <option value="CELEBRATION">Celebration</option>
+        <option value="DANCE_PARTY">Dance Party</option>
+        <option value="WATCH_PARTY">Watch Party</option>
+        <option value="CULTURAL_MEETUP">Cultural Meetup</option>
+        <option value="WORKSHOP">Workshop</option>
+        <option value="OPEN_MIC">Open Mic</option>
+        <option value="OTHER">Other</option>
+    </select>
+
+    <select id="sortFilter" class="form-select" onchange="handleFiltersChanged()">
+        <option value="newest">Newest First</option>
+        <option value="price_low">Price: Low to High</option>
+        <option value="price_high">Price: High to Low</option>
+    </select>
+
+</div>
+
+<p class="results-count" id="resultsCount"></p>
+
+<div class="row mt-2" id="eventContainer">
 
     <div class="loading">
         <div class="spinner-border" role="status"></div>
@@ -288,14 +512,366 @@ Home
 
 <script>
 
+// Maps the Event model's stored category keys to human-readable labels,
+// since the API returns raw enum values like "HOUSE_PARTY".
+const CATEGORY_LABELS={
+
+    HOUSE_PARTY:"House Party",
+
+    DINNER_PARTY:"Dinner Party",
+
+    GAME_NIGHT:"Game Night",
+
+    LIVE_MUSIC:"Live Music",
+
+    KARAOKE:"Karaoke",
+
+    NETWORKING:"Networking",
+
+    BOOK_CLUB:"Book Club",
+
+    MOVIE_NIGHT:"Movie Night",
+
+    COOKING_CLASS:"Cooking Class",
+
+    WELLNESS:"Wellness",
+
+    ART_CRAFT:"Art & Craft",
+
+    COFFEE_MEETUP:"Coffee Meetup",
+
+    CELEBRATION:"Celebration",
+
+    DANCE_PARTY:"Dance Party",
+
+    WATCH_PARTY:"Watch Party",
+
+    CULTURAL_MEETUP:"Cultural Meetup",
+
+    WORKSHOP:"Workshop",
+
+    OPEN_MIC:"Open Mic",
+
+    OTHER:"Other"
+
+};
+
+function categoryLabel(key){
+
+    return CATEGORY_LABELS[key] || key || "Uncategorized";
+
+}
+
+function formatPrice(fee){
+
+    const num=Number(fee);
+
+    if(Number.isNaN(num) || num<=0){
+
+        return "Free";
+
+    }
+
+    return `₹${num}`;
+
+}
+
+function formatEventDate(dateStr){
+
+    if(!dateStr){
+
+        return "";
+
+    }
+
+    const parsed=new Date(dateStr);
+
+    if(Number.isNaN(parsed.getTime())){
+
+        return dateStr;
+
+    }
+
+    return parsed.toLocaleDateString(undefined,{month:"short",day:"numeric"});
+
+}
+
+// Site-styled toast notifications, shown top-right.
+function showToast(message,type="success"){
+
+    const container=document.getElementById("toastContainer");
+
+    if(!container){
+
+        return;
+
+    }
+
+    const icon=(type==="success") ? "bi-check-circle-fill" : "bi-exclamation-circle-fill";
+
+    const toastEl=document.createElement("div");
+
+    toastEl.className=`site-toast ${type}`;
+
+    toastEl.innerHTML=`
+        <div class="toast-icon"><i class="bi ${icon}"></i></div>
+        <div class="toast-message">${message}</div>
+        <button type="button" class="toast-close" aria-label="Close"><i class="bi bi-x-lg"></i></button>
+    `;
+
+    container.appendChild(toastEl);
+
+    let dismissTimer;
+
+    function dismiss(){
+
+        clearTimeout(dismissTimer);
+
+        toastEl.classList.add("hiding");
+
+        toastEl.addEventListener("animationend",()=>toastEl.remove(),{once:true});
+
+    }
+
+    toastEl.querySelector(".toast-close").addEventListener("click",dismiss);
+
+    dismissTimer=setTimeout(dismiss,4000);
+
+}
+
+// All events as loaded from the API, kept as-is so filters/sorts can be
+// re-applied without another network call.
+let allEvents=[];
+
+let searchDebounceTimer=null;
+
+function handleFiltersChanged(){
+
+    clearTimeout(searchDebounceTimer);
+
+    searchDebounceTimer=setTimeout(renderEvents,150);
+
+}
+
+function clearFilters(){
+
+    document.getElementById("searchInput").value="";
+
+    document.getElementById("categoryFilter").value="";
+
+    document.getElementById("sortFilter").value="newest";
+
+    renderEvents();
+
+}
+
+function renderEventCard(event){
+
+    const location=event.location || "";
+
+    const dateLabel=formatEventDate(event.event_date);
+
+    return `
+
+    <div class="col-lg-4 mb-4">
+
+        <div class="card event-card h-100">
+
+            <div class="event-media">
+
+                ${event.poster ? `<img src="${event.poster}" alt="${event.event_name}">` : `<i class="bi bi-image"></i>`}
+
+                <span class="badge-category">${categoryLabel(event.event_category)}</span>
+
+                <span class="badge-price">${formatPrice(event.fee)}</span>
+
+            </div>
+
+            <div class="card-body">
+
+                <h4>
+
+                    ${event.event_name}
+
+                </h4>
+
+                <p class="event-desc">
+
+                    ${event.description || ""}
+
+                </p>
+
+                <div class="event-meta">
+
+                    <span>
+
+                        <i class="bi bi-people-fill"></i>
+
+                        ${event.max_members} guests
+
+                    </span>
+
+                    ${dateLabel ? `
+                    <span>
+                        <i class="bi bi-calendar-event"></i>
+                        ${dateLabel}
+                    </span>
+                    ` : ""}
+
+                    ${location ? `
+                    <span class="truncate" title="${location}">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        ${location}
+                    </span>
+                    ` : ""}
+
+                </div>
+
+                <a href="/event-details/${event.event_id}/"
+
+                   class="btn btn-primary">
+
+                   View Details
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    `;
+
+}
+
+function renderEvents(){
+
+    const container=document.getElementById("eventContainer");
+
+    const resultsCount=document.getElementById("resultsCount");
+
+    const query=document.getElementById("searchInput").value.trim().toLowerCase();
+
+    const category=document.getElementById("categoryFilter").value;
+
+    const sort=document.getElementById("sortFilter").value;
+
+    let filtered=allEvents.filter(event=>{
+
+        const matchesQuery=(query==="") ||
+
+            (event.event_name || "").toLowerCase().includes(query) ||
+
+            (event.location || "").toLowerCase().includes(query);
+
+        const matchesCategory=(category==="") || event.event_category===category;
+
+        return matchesQuery && matchesCategory;
+
+    });
+
+    filtered=filtered.slice().sort((a,b)=>{
+
+        if(sort==="price_low"){
+
+            return Number(a.fee || 0)-Number(b.fee || 0);
+
+        }
+
+        if(sort==="price_high"){
+
+            return Number(b.fee || 0)-Number(a.fee || 0);
+
+        }
+
+        // "newest" — fall back to event id if there's no created_at field.
+        const aKey=a.event_date ? new Date(a.event_date).getTime() : a.event_id;
+
+        const bKey=b.event_date ? new Date(b.event_date).getTime() : b.event_id;
+
+        return bKey-aKey;
+
+    });
+
+    if(allEvents.length===0){
+
+        resultsCount.textContent="";
+
+        container.innerHTML=`
+
+        <div class="col-12">
+
+            <div class="empty-state">
+
+                <i class="bi bi-calendar-x"></i>
+
+                <p>No events available right now. Check back soon, or be the first to host one.</p>
+
+                <a href="/hosting/" class="btn btn-primary">
+
+                    <i class="bi bi-plus-circle-fill me-1"></i> Host an Event
+
+                </a>
+
+            </div>
+
+        </div>
+
+        `;
+
+        return;
+
+    }
+
+    if(filtered.length===0){
+
+        resultsCount.textContent="No events match your filters.";
+
+        container.innerHTML=`
+
+        <div class="col-12">
+
+            <div class="empty-state">
+
+                <i class="bi bi-search"></i>
+
+                <p>No events match your search or filters.</p>
+
+                <button type="button" class="btn btn-secondary" onclick="clearFilters()">
+
+                    Clear Filters
+
+                </button>
+
+            </div>
+
+        </div>
+
+        `;
+
+        return;
+
+    }
+
+    resultsCount.textContent=`Showing ${filtered.length} of ${allEvents.length} event${allEvents.length===1 ? "" : "s"}`;
+
+    container.innerHTML=filtered.map(renderEventCard).join("");
+
+}
+
 async function loadEvents(){
 
     const container=document.getElementById("eventContainer");
 
+    const resultsCount=document.getElementById("resultsCount");
+
+    resultsCount.textContent="";
+
     container.innerHTML=`
         <div class="loading">
             <div class="spinner-border" role="status"></div>
-            <div>Loading...</div>
+            <div>Loading events...</div>
         </div>
     `;
 
@@ -303,99 +879,9 @@ async function loadEvents(){
 
         const events=await api("/hosting/events/");
 
-        if(events.length===0){
+        allEvents=Array.isArray(events) ? events : [];
 
-            container.innerHTML=`
-
-                <div class="col-12">
-
-                    <div class="alert alert-info">
-
-                        No events available.
-
-                    </div>
-
-                </div>
-
-            `;
-
-            return;
-
-        }
-
-        let html="";
-
-        events.forEach(event=>{
-
-            html+=`
-
-            <div class="col-lg-4 mb-4">
-
-                <div class="card event-card h-100">
-
-                    <div class="event-media">
-
-                        ${event.poster ? `<img src="${event.poster}" alt="${event.event_name}">` : `<i class="bi bi-image"></i>`}
-
-                        <span class="badge-category">${event.event_category}</span>
-
-                        <span class="badge-price">₹${event.fee}</span>
-
-                    </div>
-
-                    <div class="card-body">
-
-                        <h4>
-
-                            ${event.event_name}
-
-                        </h4>
-
-                        <p class="event-desc">
-
-                            ${event.description || ""}
-
-                        </p>
-
-                        <div class="event-meta">
-
-                            <span>
-
-                                <i class="bi bi-people-fill"></i>
-
-                                ${event.max_members} guests
-
-                            </span>
-
-                            <span>
-
-                                <i class="bi bi-tag-fill"></i>
-
-                                ₹${event.fee}
-
-                            </span>
-
-                        </div>
-
-                        <a href="/event-details/${event.event_id}/"
-
-                           class="btn btn-primary">
-
-                           View Details
-
-                        </a>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            `;
-
-        });
-
-        container.innerHTML=html;
+        renderEvents();
 
     }
 
@@ -405,15 +891,25 @@ async function loadEvents(){
 
         <div class="col-12">
 
-            <div class="alert alert-danger">
+            <div class="error-state">
 
-                Unable to load events.
+                <i class="bi bi-exclamation-triangle-fill"></i>
+
+                <p>Unable to load events. Please check your connection and try again.</p>
+
+                <button type="button" class="btn btn-primary" onclick="loadEvents()">
+
+                    <i class="bi bi-arrow-clockwise me-1"></i> Retry
+
+                </button>
 
             </div>
 
         </div>
 
         `;
+
+        showToast("Unable to load events right now.","danger");
 
     }
 
