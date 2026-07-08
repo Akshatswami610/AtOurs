@@ -269,6 +269,100 @@ Host Event
         color: var(--accent);
     }
 
+    /* Attendees modal */
+
+    .attendee-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 14px 4px;
+        border-bottom: 1px solid var(--border);
+        flex-wrap: wrap;
+    }
+
+    .attendee-row:last-child {
+        border-bottom: none;
+    }
+
+    .attendee-name {
+        font-weight: 600;
+        font-size: .94rem;
+        margin-bottom: 4px;
+    }
+
+    .attendee-contact {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        color: var(--text-muted);
+        font-size: .82rem;
+    }
+
+    .attendee-contact span {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .attendee-contact i {
+        color: var(--accent);
+    }
+
+    .attendee-meta {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+    }
+
+    .qty-badge {
+        font-size: .78rem;
+        color: var(--text-secondary);
+        background: var(--bg-secondary);
+        border: 1px solid var(--border);
+        padding: 4px 10px;
+        border-radius: 999px;
+        white-space: nowrap;
+    }
+
+    .status-badge {
+        font-size: .74rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+        padding: 4px 10px;
+        border-radius: 999px;
+        white-space: nowrap;
+    }
+
+    .status-paid {
+        background: rgba(78, 203, 141, .15);
+        color: #4ecb8d;
+    }
+
+    .status-pending {
+        background: rgba(245, 200, 76, .15);
+        color: var(--accent);
+    }
+
+    .status-failed {
+        background: rgba(239, 91, 106, .15);
+        color: #ef5b6a;
+    }
+
+    .status-refunded {
+        background: var(--bg-secondary);
+        color: var(--text-muted);
+        border: 1px solid var(--border);
+    }
+
+    .attendees-summary {
+        color: var(--text-muted);
+        font-size: .84rem;
+        margin-bottom: 6px;
+    }
+
     /* Toast notifications */
 
     #toastContainer {
@@ -793,6 +887,46 @@ Host Event
 
 </div>
 
+<!-- Attendees Modal -->
+<div class="modal fade" id="attendeesModal" tabindex="-1" aria-labelledby="attendeesModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title fw-bold" id="attendeesModalLabel">Attendees</h5>
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <div id="attendeesContainer">
+
+                    <div class="loading">
+                        <div class="spinner-border" role="status"></div>
+                        <div>Loading attendees...</div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 {% endblock %}
 
 {% block js %}
@@ -998,6 +1132,14 @@ function renderEventCard(event){
                         onclick="viewEvent(${event.event_id})">
 
                         <i class="bi bi-eye-fill me-1"></i> View
+
+                    </button>
+
+                    <button
+                        class="btn btn-secondary btn-sm"
+                        onclick="viewAttendees(${event.event_id})">
+
+                        <i class="bi bi-people-fill me-1"></i> Attendees
 
                     </button>
 
@@ -1328,6 +1470,148 @@ async function createHostEvent(){
 function viewEvent(id){
 
     window.location=`/event-details/${id}/`;
+
+}
+
+function paymentStatusLabel(status){
+
+    const labels={
+
+        paid:"Paid",
+
+        pending:"Pending",
+
+        failed:"Failed",
+
+        refunded:"Refunded"
+
+    };
+
+    return labels[status] || status || "Unknown";
+
+}
+
+function renderAttendeeRow(booking){
+
+    const status=booking.payment_status || "pending";
+
+    const qty=booking.quantity || 1;
+
+    return `
+
+    <div class="attendee-row">
+
+        <div>
+
+            <div class="attendee-name">${booking.full_name || "Unnamed guest"}</div>
+
+            <div class="attendee-contact">
+
+                <span><i class="bi bi-envelope-fill"></i> ${booking.email || "—"}</span>
+
+                <span><i class="bi bi-telephone-fill"></i> ${booking.phone_number || "—"}</span>
+
+            </div>
+
+        </div>
+
+        <div class="attendee-meta">
+
+            <span class="qty-badge">${qty} ticket${qty===1 ? "" : "s"}</span>
+
+            <span class="status-badge status-${status}">${paymentStatusLabel(status)}</span>
+
+        </div>
+
+    </div>
+
+    `;
+
+}
+
+async function viewAttendees(eventId){
+
+    const event=hostedEventsCache.find(ev=>ev.event_id===eventId);
+
+    const modalLabel=document.getElementById("attendeesModalLabel");
+
+    const container=document.getElementById("attendeesContainer");
+
+    modalLabel.textContent=event ? `Attendees — ${event.event_name}` : "Attendees";
+
+    container.innerHTML=`
+        <div class="loading">
+            <div class="spinner-border" role="status"></div>
+            <div>Loading attendees...</div>
+        </div>
+    `;
+
+    const modal=new bootstrap.Modal(document.getElementById("attendeesModal"));
+
+    modal.show();
+
+    try{
+
+        // NOTE: assumes the booking app is mounted at /bookings/ in your
+        // project's root urls.py. Adjust this path if it's mounted
+        // somewhere else (e.g. /booking/).
+        const bookings=await api(`/bookings/event/${eventId}/attendees/`);
+
+        if(!Array.isArray(bookings)){
+
+            const message=(bookings && (bookings.error || bookings.detail)) || "Unable to load attendees.";
+
+            container.innerHTML=`<div class="alert alert-danger">${message}</div>`;
+
+            return;
+
+        }
+
+        if(bookings.length===0){
+
+            container.innerHTML=`
+
+            <div class="empty-state">
+
+                <i class="bi bi-people"></i>
+
+                <p>No one has booked a ticket for this event yet.</p>
+
+            </div>
+
+            `;
+
+            return;
+
+        }
+
+        const paidCount=bookings.filter(b=>b.payment_status==="paid").length;
+
+        const totalTickets=bookings.reduce((sum,b)=>sum+(b.quantity || 1),0);
+
+        container.innerHTML=`
+
+            <p class="attendees-summary">
+
+                ${bookings.length} booking${bookings.length===1 ? "" : "s"} ·
+
+                ${totalTickets} ticket${totalTickets===1 ? "" : "s"} ·
+
+                ${paidCount} paid
+
+            </p>
+
+            ${bookings.map(renderAttendeeRow).join("")}
+
+        `;
+
+    }
+
+    catch(error){
+
+        container.innerHTML=`<div class="alert alert-danger">Unable to load attendees. Please try again.</div>`;
+
+    }
 
 }
 
