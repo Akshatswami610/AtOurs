@@ -158,6 +158,12 @@ Login
         padding-top: 3px;
     }
 
+    .site-toast .toast-message a {
+        color: var(--accent);
+        font-weight: 600;
+        text-decoration: underline;
+    }
+
     .site-toast .toast-close {
         background: none;
         border: none;
@@ -290,7 +296,7 @@ Login
 <script>
 
 // Site-styled toast notifications, shown top-right.
-function showToast(message,type="success"){
+function showToast(message,type="success",duration=4000){
 
     const container=document.getElementById("toastContainer");
 
@@ -328,7 +334,7 @@ function showToast(message,type="success"){
 
     toastEl.querySelector(".toast-close").addEventListener("click",dismiss);
 
-    dismissTimer=setTimeout(dismiss,4000);
+    dismissTimer=setTimeout(dismiss,duration);
 
 }
 
@@ -392,7 +398,17 @@ async function login(){
 
         else{
 
-            showToast(data.error || data.detail || "Invalid credentials.","danger");
+            if(data.code==="account_not_found"){
+
+                showToast("This email isn't registered yet. <a href=\"/register/\">Create an account</a>.","danger",8000);
+
+            }
+
+            else{
+
+                showToast(data.error || data.detail || "Invalid credentials.","danger");
+
+            }
 
             btn.classList.remove("btn-loading");
 
