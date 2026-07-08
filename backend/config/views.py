@@ -41,3 +41,6 @@ def terms(request):
 
 def team(request):
     return render(request, "team.html")
+
+def mytickets(request):
+    return render(request, "my-tickets.html")
