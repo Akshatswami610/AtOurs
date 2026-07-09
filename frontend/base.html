@@ -591,6 +591,106 @@
             }
         }
 
+        /* ===== Toast notifications (global) ===== */
+
+        #globalToastContainer {
+            z-index: 1080;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .site-toast {
+            pointer-events: auto;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            width: 320px;
+            max-width: calc(100vw - 40px);
+            padding: 14px 16px;
+            border-radius: var(--radius-sm, 10px);
+            background: #1c1c20;
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            box-shadow: 0 14px 32px -8px rgba(0, 0, 0, .55);
+            animation: toastIn .3s var(--ease, ease) both;
+        }
+
+        .site-toast.hiding {
+            animation: toastOut .22s var(--ease, ease) both;
+        }
+
+        .site-toast.success {
+            border-left-color: #4ecb8d;
+        }
+
+        .site-toast.danger {
+            border-left-color: #ef5b6a;
+        }
+
+        .site-toast .toast-icon {
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .95rem;
+            margin-top: 1px;
+        }
+
+        .site-toast.success .toast-icon {
+            background: rgba(78, 203, 141, .15);
+            color: #4ecb8d;
+        }
+
+        .site-toast.danger .toast-icon {
+            background: rgba(239, 91, 106, .15);
+            color: #ef5b6a;
+        }
+
+        .site-toast .toast-message {
+            flex: 1;
+            font-size: .87rem;
+            line-height: 1.4;
+            color: var(--text-secondary, #e6e6e6);
+            padding-top: 3px;
+        }
+
+        .site-toast .toast-message a {
+            color: var(--accent);
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        .site-toast .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1;
+            padding: 2px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .site-toast .toast-close:hover {
+            color: var(--text-secondary, #e6e6e6);
+        }
+
+        @keyframes toastIn {
+            from { transform: translateX(24px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes toastOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(24px); opacity: 0; }
+        }
+
     </style>
 
     {% block css %}
@@ -599,6 +699,9 @@
 </head>
 
 <body>
+
+    <!-- Global toast notifications -->
+    <div id="globalToastContainer" class="position-fixed top-0 end-0 p-3"></div>
 
     <!-- Navbar -->
 
@@ -815,6 +918,101 @@
 
         }
 
+        // Site-styled toast notifications, shown top-right on any page.
+        function showToast(message, type = "success", duration = 4000) {
+
+            const container = document.getElementById("globalToastContainer");
+
+            if (!container) {
+
+                return;
+
+            }
+
+            const icon = (type === "success") ? "bi-check-circle-fill" : "bi-exclamation-circle-fill";
+
+            const toastEl = document.createElement("div");
+
+            toastEl.className = `site-toast ${type}`;
+
+            toastEl.innerHTML = `
+                <div class="toast-icon"><i class="bi ${icon}"></i></div>
+                <div class="toast-message">${message}</div>
+                <button type="button" class="toast-close" aria-label="Close"><i class="bi bi-x-lg"></i></button>
+            `;
+
+            container.appendChild(toastEl);
+
+            let dismissTimer;
+
+            function dismiss() {
+
+                clearTimeout(dismissTimer);
+
+                toastEl.classList.add("hiding");
+
+                toastEl.addEventListener("animationend", () => toastEl.remove(), { once: true });
+
+            }
+
+            toastEl.querySelector(".toast-close").addEventListener("click", dismiss);
+
+            dismissTimer = setTimeout(dismiss, duration);
+
+        }
+
+        // Queue a toast to be shown on the next page (e.g. right before a redirect).
+        function queueToast(message, type = "success", duration = 4000) {
+
+            sessionStorage.setItem("pendingToast", JSON.stringify({ message, type, duration }));
+
+        }
+
+        // If a toast was queued on a previous page, show it now.
+        function showQueuedToast() {
+
+            const queued = sessionStorage.getItem("pendingToast");
+
+            if (!queued) {
+
+                return;
+
+            }
+
+            sessionStorage.removeItem("pendingToast");
+
+            try {
+
+                const { message, type, duration } = JSON.parse(queued);
+
+                showToast(message, type, duration);
+
+            } catch (error) {
+
+                // Ignore malformed queued toast data.
+
+            }
+
+        }
+
+        // Redirect away from a page if the user is already authenticated.
+        // Used on pages like login/register that only make sense when logged out.
+        function redirectIfAuthenticated(destination = "/", message = "You are already logged in.") {
+
+            if (getToken()) {
+
+                queueToast(message, "success");
+
+                window.location = destination;
+
+                return true;
+
+            }
+
+            return false;
+
+        }
+
         function updateNavForAuth() {
 
             const loggedIn = !!getToken();
@@ -840,6 +1038,8 @@
         }
 
         updateNavForAuth();
+
+        showQueuedToast();
 
     </script>
 
