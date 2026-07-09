@@ -74,13 +74,15 @@ Login
         background: var(--border);
     }
 
-    .auth-card p.text-center a {
+    .auth-card p.text-center a,
+    .auth-card p.text-end a {
         color: var(--accent);
         font-weight: 600;
         transition: opacity .25s var(--ease);
     }
 
-    .auth-card p.text-center a:hover {
+    .auth-card p.text-center a:hover,
+    .auth-card p.text-end a:hover {
         opacity: .8;
     }
 
@@ -239,14 +241,38 @@ Login
                         Password
                     </label>
 
-                    <input
-                        type="password"
-                        id="password"
-                        class="form-control"
-                        placeholder="Enter your password"
-                        autocomplete="current-password">
+                    <div class="password-field">
+
+                        <input
+                            type="password"
+                            id="password"
+                            class="form-control"
+                            placeholder="Enter your password"
+                            autocomplete="current-password">
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            aria-label="Show password"
+                            onclick="togglePasswordVisibility('password', this)">
+
+                            <i class="bi bi-eye"></i>
+
+                        </button>
+
+                    </div>
 
                 </div>
+
+                <p class="text-end mb-3" style="font-size:.85rem; margin-top:-8px;">
+
+                    <a href="/reset-password/">
+
+                        Forgot password?
+
+                    </a>
+
+                </p>
 
                 <button
                     id="loginBtn"
