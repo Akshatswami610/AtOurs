@@ -691,6 +691,37 @@
             to { transform: translateX(24px); opacity: 0; }
         }
 
+        /* ===== Password field with show/hide toggle (global) ===== */
+
+        .password-field {
+            position: relative;
+        }
+
+        .password-field .form-control {
+            padding-right: 44px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 4px;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.05rem;
+        }
+
+        .password-toggle:hover {
+            color: var(--text-secondary, #e6e6e6);
+        }
+
     </style>
 
     {% block css %}
@@ -1010,6 +1041,37 @@
             }
 
             return false;
+
+        }
+
+        // Toggles a password input between hidden and visible, swapping the
+        // eye / eye-slash icon on the trigger button. Usage:
+        // <button type="button" class="password-toggle" onclick="togglePasswordVisibility('password', this)">
+        function togglePasswordVisibility(inputId, btn) {
+
+            const input = document.getElementById(inputId);
+
+            if (!input) {
+
+                return;
+
+            }
+
+            const icon = btn.querySelector("i");
+
+            const showing = input.type === "text";
+
+            input.type = showing ? "password" : "text";
+
+            if (icon) {
+
+                icon.classList.toggle("bi-eye", showing);
+
+                icon.classList.toggle("bi-eye-slash", !showing);
+
+            }
+
+            btn.setAttribute("aria-label", showing ? "Show password" : "Hide password");
 
         }
 
