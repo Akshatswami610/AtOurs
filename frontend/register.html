@@ -476,6 +476,10 @@ Register
 
 <script>
 
+// If the user is already registered, this page isn't relevant to them —
+// bounce them home and let them know via a toast on the next page.
+redirectIfAuthenticated("/", "You're already registered.");
+
 // Site-styled toast notifications, shown top-right.
 function showToast(message,type="success"){
 
