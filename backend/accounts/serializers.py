@@ -76,3 +76,35 @@ class LoginSerializer(serializers.Serializer):
 
     def validate_email(self, value):
         return value.lower().strip()
+
+class ForgotPasswordSerializer(serializers.Serializer):
+
+    email = serializers.EmailField()
+
+
+class VerifyOTPSerializer(serializers.Serializer):
+
+    email = serializers.EmailField()
+
+    otp = serializers.CharField(max_length=6)
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+
+    email = serializers.EmailField()
+
+    otp = serializers.CharField(max_length=6)
+
+    password = serializers.CharField(write_only=True)
+
+    confirm_password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+
+        if attrs["password"] != attrs["confirm_password"]:
+
+            raise serializers.ValidationError(
+                "Passwords do not match."
+            )
+
+        return attrs
