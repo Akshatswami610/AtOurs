@@ -215,44 +215,12 @@ Home
         margin-bottom: 12px;
     }
 
-    /* Filter bar */
+    /* Explore more button */
 
-    .filter-bar {
-        padding: 18px;
-        margin-top: 26px;
-        display: grid;
-        grid-template-columns: 1.6fr 1fr 1fr;
-        gap: 12px;
-    }
-
-    @media (max-width: 768px) {
-        .filter-bar {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    .filter-bar .search-input-wrap {
-        position: relative;
-    }
-
-    .filter-bar .search-input-wrap i {
-        position: absolute;
-        top: 50%;
-        left: 14px;
-        transform: translateY(-50%);
-        color: var(--text-muted);
-        font-size: .9rem;
-        pointer-events: none;
-    }
-
-    .filter-bar .search-input-wrap input {
-        padding-left: 38px;
-    }
-
-    .results-count {
-        color: var(--text-muted);
-        font-size: .84rem;
-        margin: 14px 2px 0;
+    .explore-more-wrap {
+        display: flex;
+        justify-content: center;
+        margin-top: 36px;
     }
 
     /* Event meta */
@@ -427,7 +395,7 @@ Home
 
         </a>
 
-        <a href="#eventsSection" class="btn btn-secondary btn-lg">
+        <a href="/events/" class="btn btn-secondary btn-lg">
 
             Browse Events
 
@@ -452,51 +420,6 @@ Home
 
 </div>
 
-<div class="card filter-bar">
-
-    <div class="search-input-wrap">
-        <i class="bi bi-search"></i>
-        <input
-            type="text"
-            id="searchInput"
-            class="form-control"
-            placeholder="Search by name or location"
-            oninput="handleFiltersChanged()">
-    </div>
-
-    <select id="categoryFilter" class="form-select" onchange="handleFiltersChanged()">
-        <option value="">All Categories</option>
-        <option value="HOUSE_PARTY">House Party</option>
-        <option value="DINNER_PARTY">Dinner Party</option>
-        <option value="GAME_NIGHT">Game Night</option>
-        <option value="LIVE_MUSIC">Live Music</option>
-        <option value="KARAOKE">Karaoke</option>
-        <option value="NETWORKING">Networking</option>
-        <option value="BOOK_CLUB">Book Club</option>
-        <option value="MOVIE_NIGHT">Movie Night</option>
-        <option value="COOKING_CLASS">Cooking Class</option>
-        <option value="WELLNESS">Wellness</option>
-        <option value="ART_CRAFT">Art &amp; Craft</option>
-        <option value="COFFEE_MEETUP">Coffee Meetup</option>
-        <option value="CELEBRATION">Celebration</option>
-        <option value="DANCE_PARTY">Dance Party</option>
-        <option value="WATCH_PARTY">Watch Party</option>
-        <option value="CULTURAL_MEETUP">Cultural Meetup</option>
-        <option value="WORKSHOP">Workshop</option>
-        <option value="OPEN_MIC">Open Mic</option>
-        <option value="OTHER">Other</option>
-    </select>
-
-    <select id="sortFilter" class="form-select" onchange="handleFiltersChanged()">
-        <option value="newest">Newest First</option>
-        <option value="price_low">Price: Low to High</option>
-        <option value="price_high">Price: High to Low</option>
-    </select>
-
-</div>
-
-<p class="results-count" id="resultsCount"></p>
-
 <div class="row mt-2" id="eventContainer">
 
     <div class="loading">
@@ -504,6 +427,13 @@ Home
         <div>Loading events...</div>
     </div>
 
+</div>
+
+<div class="explore-more-wrap">
+    <a href="/events/" class="btn btn-secondary btn-lg">
+        Explore More Events
+        <i class="bi bi-arrow-right ms-1"></i>
+    </a>
 </div>
 
 {% endblock %}
@@ -639,31 +569,11 @@ function showToast(message,type="success"){
 
 }
 
-// All events as loaded from the API, kept as-is so filters/sorts can be
-// re-applied without another network call.
+// All events as loaded from the API.
 let allEvents=[];
 
-let searchDebounceTimer=null;
-
-function handleFiltersChanged(){
-
-    clearTimeout(searchDebounceTimer);
-
-    searchDebounceTimer=setTimeout(renderEvents,150);
-
-}
-
-function clearFilters(){
-
-    document.getElementById("searchInput").value="";
-
-    document.getElementById("categoryFilter").value="";
-
-    document.getElementById("sortFilter").value="newest";
-
-    renderEvents();
-
-}
+// Only this many events are shown on the home page.
+const HOME_EVENTS_LIMIT=3;
 
 function renderEventCard(event){
 
@@ -749,54 +659,7 @@ function renderEvents(){
 
     const container=document.getElementById("eventContainer");
 
-    const resultsCount=document.getElementById("resultsCount");
-
-    const query=document.getElementById("searchInput").value.trim().toLowerCase();
-
-    const category=document.getElementById("categoryFilter").value;
-
-    const sort=document.getElementById("sortFilter").value;
-
-    let filtered=allEvents.filter(event=>{
-
-        const matchesQuery=(query==="") ||
-
-            (event.event_name || "").toLowerCase().includes(query) ||
-
-            (event.location || "").toLowerCase().includes(query);
-
-        const matchesCategory=(category==="") || event.event_category===category;
-
-        return matchesQuery && matchesCategory;
-
-    });
-
-    filtered=filtered.slice().sort((a,b)=>{
-
-        if(sort==="price_low"){
-
-            return Number(a.fee || 0)-Number(b.fee || 0);
-
-        }
-
-        if(sort==="price_high"){
-
-            return Number(b.fee || 0)-Number(a.fee || 0);
-
-        }
-
-        // "newest" — fall back to event id if there's no created_at field.
-        const aKey=a.event_date ? new Date(a.event_date).getTime() : a.event_id;
-
-        const bKey=b.event_date ? new Date(b.event_date).getTime() : b.event_id;
-
-        return bKey-aKey;
-
-    });
-
     if(allEvents.length===0){
-
-        resultsCount.textContent="";
 
         container.innerHTML=`
 
@@ -824,49 +687,26 @@ function renderEvents(){
 
     }
 
-    if(filtered.length===0){
+    // Newest first — fall back to event id if there's no event_date field.
+    const sorted=allEvents.slice().sort((a,b)=>{
 
-        resultsCount.textContent="No events match your filters.";
+        const aKey=a.event_date ? new Date(a.event_date).getTime() : a.event_id;
 
-        container.innerHTML=`
+        const bKey=b.event_date ? new Date(b.event_date).getTime() : b.event_id;
 
-        <div class="col-12">
+        return bKey-aKey;
 
-            <div class="empty-state">
+    });
 
-                <i class="bi bi-search"></i>
+    const visibleEvents=sorted.slice(0,HOME_EVENTS_LIMIT);
 
-                <p>No events match your search or filters.</p>
-
-                <button type="button" class="btn btn-secondary" onclick="clearFilters()">
-
-                    Clear Filters
-
-                </button>
-
-            </div>
-
-        </div>
-
-        `;
-
-        return;
-
-    }
-
-    resultsCount.textContent=`Showing ${filtered.length} of ${allEvents.length} event${allEvents.length===1 ? "" : "s"}`;
-
-    container.innerHTML=filtered.map(renderEventCard).join("");
+    container.innerHTML=visibleEvents.map(renderEventCard).join("");
 
 }
 
 async function loadEvents(){
 
     const container=document.getElementById("eventContainer");
-
-    const resultsCount=document.getElementById("resultsCount");
-
-    resultsCount.textContent="";
 
     container.innerHTML=`
         <div class="loading">
