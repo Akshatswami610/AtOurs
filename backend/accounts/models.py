@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.core.validators import RegexValidator
 from django.db import models
+from django.utils import timezone
+from datetime import timedelta
 
 
 phone_validator = RegexValidator(
@@ -80,17 +82,9 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=150)
 
-    email = models.EmailField(
-        unique=True,
-        db_index=True
-    )
+    email = models.EmailField( unique=True, db_index=True )
 
-    phone_number = models.CharField(
-        max_length=15,
-        unique=True,
-        db_index=True,
-        validators=[phone_validator]
-    )
+    phone_number = models.CharField( max_length=15, unique=True, db_index=True, validators=[phone_validator] )
 
     date_of_birth = models.DateField()
 
@@ -107,3 +101,25 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.name} ({self.email})"
+
+class PasswordResetOTP(models.Model):
+
+    user = models.ForeignKey( User, on_delete=models.CASCADE, related_name="password_reset_otps" )
+
+    otp = models.CharField(max_length=6)
+
+    is_verified = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    expires_at = models.DateTimeField()
+
+    def save(self, *args, **kwargs):
+
+        if not self.expires_at:
+            self.expires_at = timezone.now() + timedelta(minutes=5)
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.user.email} - {self.otp}"
