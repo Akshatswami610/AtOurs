@@ -11,6 +11,10 @@ from rest_framework.views import APIView
 from .models import OTPVerification
 from .serializers import  *
 from django.contrib.auth import authenticate
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+
 
 User = get_user_model()
 
@@ -27,30 +31,39 @@ class OTPThrottle(AnonRateThrottle):
 # --------------------------------------------------
 
 def send_otp_email(email, otp, purpose):
-
     subject = f"House Party Marketplace - {purpose}"
 
-    message = f"""
+    # Plain text fallback
+    text_content = f"""
 Hello,
 
-Your OTP is:
-
-{otp}
+Your OTP is: {otp}
 
 This OTP is valid for 5 minutes.
 
-If you didn't request this, ignore this email.
+If you didn't request this, please ignore this email.
 
 House Party Marketplace
 """
 
-    send_mail(
-        subject=subject,
-        message=message,
-        from_email=None,
-        recipient_list=[email],
-        fail_silently=False,
+    # Render HTML template
+    html_content = render_to_string(
+        "otp-mail.html",
+        {
+            "otp": otp,
+            "purpose": purpose,
+        },
     )
+
+    email_message = EmailMultiAlternatives(
+        subject=subject,
+        body=text_content,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[email],
+    )
+
+    email_message.attach_alternative(html_content, "text/html")
+    email_message.send()
 
 
 # --------------------------------------------------
