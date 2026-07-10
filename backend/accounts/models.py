@@ -5,11 +5,7 @@ from django.utils import timezone
 from datetime import timedelta
 
 
-phone_validator = RegexValidator(
-    regex=r"^\+?\d{10,15}$",
-    message="Enter a valid phone number."
-)
-
+phone_validator = RegexValidator( regex=r"^\+?\d{10,15}$", message="Enter a valid phone number.")
 
 class UserManager(BaseUserManager):
     def create_user(
@@ -102,24 +98,26 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return f"{self.name} ({self.email})"
 
-class PasswordResetOTP(models.Model):
 
-    user = models.ForeignKey( User, on_delete=models.CASCADE, related_name="password_reset_otps" )
-
+OTP_TYPES = [
+    ("register", "Register"),
+    ("login", "Login"),
+    ("reset_password", "Reset Password"),
+]
+class OTPVerification(models.Model):
+    user = models.ForeignKey( User, on_delete=models.CASCADE, null=True, blank=True )
+    email = models.EmailField()
     otp = models.CharField(max_length=6)
-
+    otp_type = models.CharField( max_length=20, choices=OTP_TYPES )
     is_verified = models.BooleanField(default=False)
-
     created_at = models.DateTimeField(auto_now_add=True)
-
     expires_at = models.DateTimeField()
 
     def save(self, *args, **kwargs):
-
         if not self.expires_at:
             self.expires_at = timezone.now() + timedelta(minutes=5)
 
         super().save(*args, **kwargs)
 
-    def __str__(self):
-        return f"{self.user.email} - {self.otp}"
+    class Meta:
+        ordering = ["-created_at"]
