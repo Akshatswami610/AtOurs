@@ -218,6 +218,40 @@ My Profile
         min-width: 140px;
     }
 
+    .support-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-top: 18px;
+        padding: 14px 16px;
+        border-radius: var(--radius-sm);
+        background: var(--accent-dim);
+        border: 1px solid rgba(245, 200, 76, .25);
+    }
+
+    .support-note i {
+        color: var(--accent);
+        font-size: 1rem;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+    .support-note span {
+        color: var(--text-secondary);
+        font-size: .87rem;
+        line-height: 1.5;
+    }
+
+    .support-note a {
+        color: var(--accent);
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .support-note a:hover {
+        text-decoration: underline;
+    }
+
 </style>
 
 {% endblock %}
@@ -376,6 +410,11 @@ My Profile
 
                     </div>
 
+                </div>
+
+                <div class="support-note">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <span>Need to update any of the information above? Please <a href="/support/">contact our support team</a> for assistance.</span>
                 </div>
 
             </div>
