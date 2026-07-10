@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your OTP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body style="margin:0;padding:0;background:#0B0B0C;font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0C;padding:40px 0;">
+    <tr>
+        <td align="center">
+
+            <table width="600" cellpadding="0" cellspacing="0"
+                   style="background:#1A1A1E;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.08);font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+
+                <!-- Header -->
+                <tr>
+                    <td style="background:radial-gradient(120% 140% at 50% 0%, rgba(245,200,76,.08), transparent 60%), #121214;padding:32px;text-align:center;border-bottom:1px solid rgba(255,255,255,.08);">
+                        <span style="font-size:22px;font-weight:800;color:#FFFFFF;letter-spacing:.02em;">
+                            🎉 House Party
+                        </span>
+                    </td>
+                </tr>
+
+                <!-- Body -->
+                <tr>
+                    <td style="padding:40px;color:#A1A1AA;">
+
+                        <h2 style="margin:0 0 16px;color:#FFFFFF;font-size:1.35rem;font-weight:800;">
+                            Verify your account
+                        </h2>
+
+                        <p style="margin:0 0 8px;line-height:1.6;font-weight:400;">
+                            We received a request to verify your account. Use the one-time
+                            password below to continue.
+                        </p>
+
+                        <table width="100%" cellpadding="0" cellspacing="0" style="margin:30px 0;">
+                            <tr>
+                                <td style="
+                                    background:rgba(245,200,76,.12);
+                                    border:1px dashed rgba(245,200,76,.4);
+                                    border-radius:10px;
+                                    padding:24px;
+                                    text-align:center;
+                                ">
+                                    <span style="
+                                        font-size:38px;
+                                        font-weight:800;
+                                        letter-spacing:10px;
+                                        color:#F5C84C;
+                                        font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+                                    ">
+                                        {{ otp }}
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <p style="margin:0 0 8px;line-height:1.6;font-weight:400;">
+                            This code is valid for <strong style="color:#FFFFFF;font-weight:700;">5 minutes</strong>.
+                        </p>
+
+                        <p style="margin:24px 0 0;color:#71717A;font-size:.87rem;line-height:1.6;font-weight:400;">
+                            If you didn't request this code, you can safely ignore this email —
+                            your account is still secure.
+                        </p>
+
+                    </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                    <td style="
+                        background:#121214;
+                        padding:24px;
+                        text-align:center;
+                        color:#71717A;
+                        font-size:12px;
+                        font-weight:500;
+                        border-top:1px solid rgba(255,255,255,.08);
+                    ">
+                        © 2026 House Party · Secure Authentication
+                    </td>
+                </tr>
+
+            </table>
+
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
