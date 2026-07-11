@@ -66,6 +66,6 @@ class EventSerializer(serializers.ModelSerializer):
             })
 
         return attrs
-    
+
     def get_host_events(self, obj):
         return Event.objects.filter(user=obj.user).count()
