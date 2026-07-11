@@ -25,10 +25,16 @@ class RegisterSendOTPSerializer(serializers.Serializer):
         return value
 
     def validate_phone_number(self, value):
+        if not value.isdigit() or len(value) != 10:
+            raise serializers.ValidationError(
+                "Phone number must be exactly 10 digits."
+            )
+
         if User.objects.filter(phone_number=value).exists():
             raise serializers.ValidationError(
                 "Phone number already exists."
             )
+
         return value
 
     def validate_date_of_birth(self, value):
