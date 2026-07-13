@@ -31,7 +31,7 @@ class OTPThrottle(AnonRateThrottle):
 # --------------------------------------------------
 
 def send_otp_email(email, otp, purpose):
-    subject = f"House Party Marketplace - {purpose}"
+    subject = f"AtOurs Marketplace - {purpose}"
 
     # Plain text fallback
     text_content = f"""
@@ -43,7 +43,7 @@ This OTP is valid for 5 minutes.
 
 If you didn't request this, please ignore this email.
 
-House Party Marketplace
+AtOurs Marketplace
 """
 
     # Render HTML template
