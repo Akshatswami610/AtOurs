@@ -171,6 +171,7 @@ Host Event
         display: flex;
         flex-direction: column;
         margin-bottom: 20px;
+        animation: fadeInUp .45s var(--ease) both;
     }
 
     .event-mgmt-media {
@@ -1087,13 +1088,13 @@ function previewPoster(e,targetId="posterPreviewWrap"){
 
 }
 
-function renderEventCard(event){
+function renderEventCard(event,index=0){
 
     return `
 
     <div class="col-md-6 col-lg-4">
 
-        <div class="card event-mgmt-card h-100">
+        <div class="card event-mgmt-card h-100" style="animation-delay:${Math.min(index,6)*45}ms">
 
             <div class="event-mgmt-media">
 
@@ -1219,7 +1220,7 @@ async function loadEvents(){
 
         hostedEventsCache=events;
 
-        eventList.innerHTML=`<div class="row">${events.map(renderEventCard).join("")}</div>`;
+        eventList.innerHTML=`<div class="row">${events.map((event,index)=>renderEventCard(event,index)).join("")}</div>`;
 
     }
 
