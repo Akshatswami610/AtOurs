@@ -783,6 +783,42 @@ document.getElementById("loadMoreBtn").addEventListener("click",function(){
 
 });
 
+function initializeSearchFromUrl(){
+
+    const params=new URLSearchParams(window.location.search);
+
+    const initialQuery=params.get("q") || "";
+
+    const shouldFocus=params.get("focus")==="search";
+
+    const searchInput=document.getElementById("searchInput");
+
+    if(initialQuery){
+
+        searchTerm=initialQuery;
+
+        searchInput.value=initialQuery;
+
+    }
+
+    if(shouldFocus || initialQuery){
+
+        setTimeout(()=>{
+
+            searchInput.focus();
+
+            if(initialQuery){
+                searchInput.select();
+            }
+
+        },0);
+
+    }
+
+}
+
+initializeSearchFromUrl();
+
 loadEvents();
 
 </script>
