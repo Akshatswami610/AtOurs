@@ -9,7 +9,7 @@
 
     <title>
         {% block title %}
-        AtOurs
+        House Party
         {% endblock %} | AtOurs
     </title>
 
@@ -23,20 +23,30 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <style>
 
         :root {
-            --bg: #0B0B0C;
-            --bg-secondary: #121214;
-            --card: #1A1A1E;
-            --border: rgba(255, 255, 255, .08);
+            --bg: #08070b;
+            --bg-secondary: #100e14;
+            --card: #17151c;
+            --card-hover: #1d1a23;
+            --border: rgba(255, 255, 255, .09);
             --text-primary: #FFFFFF;
-            --text-secondary: #A1A1AA;
-            --text-muted: #71717A;
-            --accent: #F5C84C;
-            --accent-dim: rgba(245, 200, 76, .12);
+            --text-secondary: #a9a3b0;
+            --text-muted: #706b78;
+
+            /* Brand palette: pink -> orange -> purple */
+            --pink: #ec4899;
+            --orange: #f97316;
+            --purple: #a855f7;
+
+            --accent: #ec4899;
+            --accent-dim: rgba(236, 72, 153, .14);
+            --gradient-brand: linear-gradient(90deg, var(--pink), var(--orange));
+            --gradient-brand-3: linear-gradient(90deg, var(--pink), var(--orange), var(--purple));
+
             --radius-lg: 18px;
             --radius-md: 14px;
             --radius-sm: 10px;
@@ -64,7 +74,7 @@
         }
 
         h1, h2, h3, h4, h5, h6 {
-            font-weight: 700;
+            font-weight: 800;
             letter-spacing: -0.02em;
         }
 
@@ -74,7 +84,7 @@
 
         ::selection {
             background: var(--accent-dim);
-            color: var(--accent);
+            color: var(--pink);
         }
 
         /* Scrollbar */
@@ -87,18 +97,18 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #26262b;
+            background: #2a2630;
             border-radius: 10px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #333338;
+            background: #3a3542;
         }
 
         /* ===== Navbar ===== */
 
         .navbar {
-            background: rgba(11, 11, 12, .72);
+            background: rgba(8, 7, 11, .78);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--border);
@@ -113,21 +123,34 @@
         .navbar-brand {
             color: var(--text-primary) !important;
             font-weight: 800;
-            font-size: 1.15rem;
+            font-size: 1.2rem;
             letter-spacing: -0.02em;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 9px;
             transition: opacity .25s var(--ease);
         }
 
+        .navbar-brand .brand-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            background: var(--gradient-brand);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1rem;
+            box-shadow: 0 6px 16px -4px rgba(236, 72, 153, .5);
+        }
+
         .navbar-brand:hover {
-            opacity: .82;
+            opacity: .85;
         }
 
         .navbar .nav-link {
             color: var(--text-secondary) !important;
-            font-weight: 500;
+            font-weight: 600;
             font-size: .93rem;
             padding: 8px 16px !important;
             position: relative;
@@ -142,7 +165,7 @@
             bottom: 2px;
             height: 2px;
             border-radius: 2px;
-            background: var(--accent);
+            background: var(--gradient-brand);
             transform: scaleX(0);
             transform-origin: center;
             transition: transform .3s var(--ease);
@@ -157,7 +180,11 @@
         }
 
         .navbar .nav-link.active {
-            color: var(--text-primary) !important;
+            color: var(--pink) !important;
+        }
+
+        .navbar .nav-link.active::after {
+            transform: scaleX(1);
         }
 
         .navbar-toggler {
@@ -174,6 +201,143 @@
             height: 1.1em;
         }
 
+        .navbar-utils {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .navbar-icon-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            background: transparent;
+            border: none;
+            font-size: 1.05rem;
+            position: relative;
+            transition: background .25s var(--ease), color .25s var(--ease);
+        }
+
+        .navbar-icon-btn:hover {
+            background: var(--card);
+            color: var(--text-primary);
+        }
+
+        .navbar-icon-btn .dot {
+            position: absolute;
+            top: 7px;
+            right: 8px;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--pink);
+            border: 2px solid var(--bg);
+        }
+
+        .navbar-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--gradient-brand-3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 700;
+            font-size: .85rem;
+            border: 2px solid rgba(255, 255, 255, .12);
+            overflow: hidden;
+        }
+
+        .profile-menu {
+            position: relative;
+        }
+
+        .profile-menu-toggle {
+            padding: 0;
+            border: none;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .profile-menu-toggle:focus-visible {
+            outline: 2px solid var(--pink);
+            outline-offset: 4px;
+            border-radius: 999px;
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 12px);
+            min-width: 190px;
+            padding: 8px;
+            border-radius: var(--radius-md);
+            background: #17151c;
+            border: 1px solid var(--border);
+            box-shadow: 0 18px 44px -16px rgba(0, 0, 0, .8);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-6px);
+            transition: opacity .2s var(--ease), transform .2s var(--ease), visibility .2s var(--ease);
+            z-index: 1040;
+        }
+
+        .profile-dropdown::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: -12px;
+            height: 12px;
+        }
+
+        .profile-menu:hover .profile-dropdown,
+        .profile-menu:focus-within .profile-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .profile-dropdown a,
+        .profile-dropdown button {
+            width: 100%;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 10px;
+            border: 0;
+            border-radius: 9px;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: .88rem;
+            font-weight: 700;
+            text-align: left;
+            transition: background .2s var(--ease), color .2s var(--ease);
+        }
+
+        .profile-dropdown a:hover,
+        .profile-dropdown button:hover {
+            background: rgba(255, 255, 255, .06);
+            color: var(--text-primary);
+        }
+
+        .profile-dropdown .logout-action {
+            color: #f7a5ab;
+        }
+
+        .profile-dropdown .logout-action:hover {
+            background: #2a1416;
+            color: #ffb3b8;
+        }
+
         /* ===== Layout / Main ===== */
 
         main.page-content {
@@ -183,7 +347,7 @@
         /* ===== Hero (kept for any block reuse) ===== */
 
         .hero {
-            background: radial-gradient(120% 140% at 50% 0%, rgba(245, 200, 76, .08), transparent 60%), var(--bg-secondary);
+            background: radial-gradient(120% 140% at 50% 0%, rgba(236, 72, 153, .10), transparent 60%), var(--bg-secondary);
             color: var(--text-primary);
             padding: 80px 20px;
             border-radius: var(--radius-lg);
@@ -196,7 +360,7 @@
 
         .card {
             background: var(--card);
-            border: 1px solid rgba(255, 255, 255, .12);
+            border: 1px solid rgba(255, 255, 255, .1);
             border-radius: var(--radius-lg);
             transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .35s var(--ease), background .35s var(--ease);
             box-shadow: 0 1px 0 rgba(255, 255, 255, .04) inset, 0 8px 24px -8px rgba(0, 0, 0, .5);
@@ -205,7 +369,7 @@
 
         .card:hover {
             transform: translateY(-6px);
-            background: #1c1c20;
+            background: var(--card-hover);
             box-shadow: 0 1px 0 rgba(255, 255, 255, .05) inset, 0 24px 48px -12px rgba(0, 0, 0, .6);
             border-color: rgba(255, 255, 255, .18);
         }
@@ -214,7 +378,7 @@
 
         .btn {
             border-radius: var(--radius-sm);
-            font-weight: 600;
+            font-weight: 700;
             font-size: .92rem;
             padding: .62rem 1.35rem;
             border: none;
@@ -226,28 +390,28 @@
         }
 
         .btn-primary {
-            background: var(--accent);
-            color: #1a1400;
-            box-shadow: 0 8px 20px -6px rgba(245, 200, 76, .35);
+            background: var(--gradient-brand);
+            color: #fff;
+            box-shadow: 0 10px 24px -8px rgba(236, 72, 153, .5);
         }
 
         .btn-primary:hover {
-            background: #f7d268;
-            color: #1a1400;
+            filter: brightness(1.08);
+            color: #fff;
             transform: translateY(-2px);
-            box-shadow: 0 12px 26px -6px rgba(245, 200, 76, .45);
+            box-shadow: 0 14px 30px -8px rgba(236, 72, 153, .6);
         }
 
         .btn-outline-primary {
             background: transparent;
-            color: var(--accent);
-            border: 1px solid rgba(245, 200, 76, .4);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, .28);
         }
 
         .btn-outline-primary:hover {
-            background: var(--accent-dim);
-            color: var(--accent);
-            border-color: var(--accent);
+            background: rgba(255, 255, 255, .06);
+            color: var(--text-primary);
+            border-color: rgba(255, 255, 255, .5);
             transform: translateY(-2px);
         }
 
@@ -260,7 +424,7 @@
 
         .btn-secondary:hover,
         .btn-light:hover {
-            background: #202024;
+            background: #221f28;
             color: var(--text-primary);
             transform: translateY(-2px);
         }
@@ -321,9 +485,9 @@
 
         .form-control:focus,
         .form-select:focus {
-            background: #16161a;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 4px rgba(245, 200, 76, .12);
+            background: #18151d;
+            border-color: var(--pink);
+            box-shadow: 0 0 0 4px rgba(236, 72, 153, .14);
             color: var(--text-primary);
         }
 
@@ -346,8 +510,8 @@
         }
 
         .form-check-input:checked {
-            background-color: var(--accent);
-            border-color: var(--accent);
+            background-color: var(--pink);
+            border-color: var(--pink);
         }
 
         .input-group-text {
@@ -367,13 +531,13 @@
         }
 
         .text-accent {
-            color: var(--accent) !important;
+            color: var(--pink) !important;
         }
 
         /* ===== Badges ===== */
 
         .badge {
-            font-weight: 600;
+            font-weight: 700;
             font-size: .72rem;
             padding: .42em .8em;
             border-radius: 999px;
@@ -381,8 +545,8 @@
         }
 
         .bg-primary {
-            background: var(--accent) !important;
-            color: #1a1400 !important;
+            background: var(--gradient-brand) !important;
+            color: #fff !important;
         }
 
         .bg-secondary {
@@ -413,9 +577,9 @@
         }
 
         .alert-warning {
-            border-color: rgba(245, 200, 76, .3);
-            background: #201a0d;
-            color: var(--accent);
+            border-color: rgba(236, 72, 153, .3);
+            background: #201420;
+            color: var(--pink);
         }
 
         /* ===== Modals ===== */
@@ -472,6 +636,18 @@
             gap: 8px;
         }
 
+        .footer-brand .brand-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: var(--gradient-brand);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: .85rem;
+        }
+
         .footer-tagline {
             color: var(--text-muted);
             font-size: .86rem;
@@ -505,7 +681,7 @@
         }
 
         .footer-col a:hover {
-            color: var(--accent);
+            color: var(--pink);
         }
 
         .footer-bottom {
@@ -542,7 +718,7 @@
         }
 
         .loading .spinner-border {
-            color: var(--accent);
+            color: var(--pink);
         }
 
         /* ===== Tables ===== */
@@ -584,6 +760,15 @@
             animation: fadeInUp .5s var(--ease) both;
         }
 
+        body {
+            opacity: 1;
+            transition: opacity .18s var(--ease);
+        }
+
+        body.page-leaving {
+            opacity: 0;
+        }
+
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
                 animation-duration: .001ms !important;
@@ -611,9 +796,9 @@
             max-width: calc(100vw - 40px);
             padding: 14px 16px;
             border-radius: var(--radius-sm, 10px);
-            background: #1c1c20;
+            background: #1c1a22;
             border: 1px solid var(--border);
-            border-left: 3px solid var(--accent);
+            border-left: 3px solid var(--pink);
             box-shadow: 0 14px 32px -8px rgba(0, 0, 0, .55);
             animation: toastIn .3s var(--ease, ease) both;
         }
@@ -661,7 +846,7 @@
         }
 
         .site-toast .toast-message a {
-            color: var(--accent);
+            color: var(--pink);
             font-weight: 600;
             text-decoration: underline;
         }
@@ -741,6 +926,7 @@
         <div class="container">
 
             <a class="navbar-brand fw-bold" href="/">
+
                 AtOurs
             </a>
 
@@ -752,10 +938,10 @@
 
             <div class="collapse navbar-collapse" id="menu">
 
-                <ul class="navbar-nav ms-auto align-items-lg-center">
+                <ul class="navbar-nav mx-lg-auto align-items-lg-center" id="mainNavLinks">
 
                     <li class="nav-item">
-                        <a href="/" class="nav-link">
+                        <a href="/" class="nav-link" data-nav-match="exact">
                             Home
                         </a>
                     </li>
@@ -767,22 +953,58 @@
                     </li>
 
                     <li class="nav-item">
-                        <a href="/mytickets/" class="nav-link">
-                            My Tickets
+                        <a href="/events/" class="nav-link">
+                            Events
                         </a>
                     </li>
 
-                    <li class="nav-item" id="profileNavItem" style="display:none;">
-                        <a href="/profile/" class="nav-link">
-                            Profile
+                    <li class="nav-item">
+                        <a href="/support/" class="nav-link">
+                            Contact us
                         </a>
                     </li>
 
+                </ul>
 
-                    <li class="nav-item ms-lg-2" id="loginNavItem">
+                <ul class="navbar-nav align-items-lg-center flex-row gap-2 ms-lg-3">
+
+                    <li class="nav-item d-none d-lg-block">
+                        <button class="navbar-icon-btn" type="button" aria-label="Search events" id="navbarSearchBtn">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </li>
+
+                    <li class="nav-item d-none d-lg-block">
+                        <button class="navbar-icon-btn" type="button" aria-label="Notifications">
+                            <i class="bi bi-bell-fill"></i>
+                            <span class="dot"></span>
+                        </button>
+                    </li>
+
+                    <li class="nav-item ms-lg-1" id="loginNavItem">
                         <a href="/login/" class="nav-link btn btn-primary btn-sm px-3">
                             Login
                         </a>
+                    </li>
+
+                    <li class="nav-item d-none profile-menu" id="profileMenuItem">
+                        <button class="profile-menu-toggle" type="button" aria-label="Open profile menu">
+                            <span class="navbar-avatar" id="profileMenuAvatar">U</span>
+                        </button>
+                        <div class="profile-dropdown" role="menu">
+                            <a href="/profile/" role="menuitem">
+                                <i class="bi bi-person-circle"></i>
+                                Profile Page
+                            </a>
+                            <a href="/mytickets/" role="menuitem">
+                                <i class="bi bi-ticket-perforated-fill"></i>
+                                My Tickets
+                            </a>
+                            <button type="button" class="logout-action" onclick="logout()" role="menuitem">
+                                <i class="bi bi-box-arrow-right"></i>
+                                Logout
+                            </button>
+                        </div>
                     </li>
 
                 </ul>
@@ -816,6 +1038,7 @@
             <div class="footer-col">
 
                 <div class="footer-brand">
+                    <span class="brand-icon"><i class="bi bi-house-fill"></i></span>
                     AtOurs
                 </div>
 
@@ -1081,25 +1304,132 @@
 
             const loginItem = document.getElementById("loginNavItem");
 
-            const logoutItem = document.getElementById("logoutNavItem");
+            const profileMenuItem = document.getElementById("profileMenuItem");
 
-            const profileItem = document.getElementById("profileNavItem");
+            const profileMenuAvatar = document.getElementById("profileMenuAvatar");
 
             if (loginItem) {
                 loginItem.style.display = loggedIn ? "none" : "";
             }
 
-            if (logoutItem) {
-                logoutItem.style.display = loggedIn ? "" : "none";
+            if (profileMenuItem) {
+                profileMenuItem.classList.toggle("d-none", !loggedIn);
             }
 
-            if (profileItem) {
-                profileItem.style.display = loggedIn ? "" : "none";
+            if (profileMenuAvatar && loggedIn) {
+                try {
+                    const user = JSON.parse(localStorage.getItem("user") || "{}");
+                    const name = user.name || user.email || "User";
+                    profileMenuAvatar.textContent = name.trim().charAt(0).toUpperCase() || "U";
+                } catch (error) {
+                    profileMenuAvatar.textContent = "U";
+                }
             }
 
         }
 
+        function setupNavbarSearch() {
+
+            const searchButton = document.getElementById("navbarSearchBtn");
+
+            if (!searchButton) {
+                return;
+            }
+
+            searchButton.addEventListener("click", () => {
+
+                if (window.location.pathname === "/events/") {
+                    const searchInput = document.getElementById("searchInput");
+
+                    if (searchInput) {
+                        searchInput.focus();
+                        searchInput.select();
+                    }
+
+                    return;
+                }
+
+                window.location = "/events/?focus=search";
+
+            });
+
+        }
+
+        function setupPageTransitions() {
+
+            document.addEventListener("click", event => {
+
+                const link = event.target.closest("a[href]");
+
+                if (!link || event.defaultPrevented) {
+                    return;
+                }
+
+                const href = link.getAttribute("href");
+
+                if (
+                    !href ||
+                    href === "#" ||
+                    href.startsWith("#") ||
+                    href.startsWith("javascript:") ||
+                    link.target === "_blank" ||
+                    link.hasAttribute("download") ||
+                    link.dataset.bsToggle
+                ) {
+                    return;
+                }
+
+                const url = new URL(href, window.location.href);
+
+                if (url.origin !== window.location.origin || url.href === window.location.href) {
+                    return;
+                }
+
+                event.preventDefault();
+                document.body.classList.add("page-leaving");
+                window.setTimeout(() => {
+                    window.location.href = url.href;
+                }, 160);
+
+            });
+
+        }
+
+        // Highlights whichever nav link matches the current page, instead of
+        // Home always staying highlighted across every page.
+        function updateActiveNavLink() {
+
+            const currentPath = window.location.pathname;
+
+            const links = document.querySelectorAll("#mainNavLinks .nav-link");
+
+            links.forEach(link => {
+
+                const linkPath = link.getAttribute("href");
+
+                if (!linkPath || linkPath === "#") {
+                    return;
+                }
+
+                const isExact = link.getAttribute("data-nav-match") === "exact";
+
+                const isMatch = isExact
+                    ? currentPath === linkPath
+                    : (currentPath === linkPath || currentPath.startsWith(linkPath));
+
+                link.classList.toggle("active", isMatch);
+
+            });
+
+        }
+
         updateNavForAuth();
+
+        updateActiveNavLink();
+
+        setupNavbarSearch();
+
+        setupPageTransitions();
 
         showQueuedToast();
 
