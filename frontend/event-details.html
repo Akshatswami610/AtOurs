@@ -8,16 +8,50 @@ Event Details
 
 <style>
 
+    .event-detail-page {
+        padding: 28px 0 36px;
+    }
+
+    .event-shell {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 360px;
+        gap: 28px;
+        align-items: start;
+    }
+
+    .event-card,
+    .booking-card,
+    .host-card {
+        background: linear-gradient(180deg, rgba(255, 255, 255, .035), rgba(255, 255, 255, .015)), var(--card);
+        border: 1px solid rgba(255, 255, 255, .1);
+        border-radius: var(--radius-lg);
+        box-shadow: 0 18px 42px -28px rgba(0, 0, 0, .85);
+        color: var(--text-primary);
+    }
+
+    .event-card:hover,
+    .booking-card:hover,
+    .host-card:hover {
+        transform: none;
+        background: linear-gradient(180deg, rgba(255, 255, 255, .035), rgba(255, 255, 255, .015)), var(--card);
+        border-color: rgba(255, 255, 255, .1);
+        box-shadow: 0 18px 42px -28px rgba(0, 0, 0, .85);
+    }
+
     .event-hero {
         position: relative;
-        height: 320px;
-        border-radius: var(--radius-lg);
+        grid-column: 1;
+        min-height: 470px;
         overflow: hidden;
-        border: 1px solid var(--border);
-        background: linear-gradient(135deg, #1c1c20, #131316);
-        margin-bottom: 24px;
+        border-radius: var(--radius-lg);
+        background:
+            radial-gradient(circle at 16% 20%, rgba(236, 72, 153, .22), transparent 34%),
+            radial-gradient(circle at 78% 12%, rgba(249, 115, 22, .16), transparent 32%),
+            #111017;
+        border: 1px solid rgba(255, 255, 255, .1);
         display: flex;
         align-items: flex-end;
+        isolation: isolate;
     }
 
     .event-hero img {
@@ -26,6 +60,7 @@ Event Details
         width: 100%;
         height: 100%;
         object-fit: cover;
+        z-index: -2;
     }
 
     .event-hero .event-hero-fallback {
@@ -34,183 +69,442 @@ Event Details
         display: flex;
         align-items: center;
         justify-content: center;
-        color: var(--text-muted);
-        font-size: 2.6rem;
+        color: rgba(255, 255, 255, .22);
+        font-size: 4rem;
+        z-index: -1;
     }
 
-    .event-hero::after {
+    .event-hero::before {
         content: '';
         position: absolute;
         inset: 0;
-        background: linear-gradient(180deg, transparent 40%, rgba(11, 11, 12, .92) 100%);
+        background:
+            linear-gradient(90deg, rgba(8, 7, 11, .92) 0%, rgba(8, 7, 11, .56) 45%, rgba(8, 7, 11, .18) 100%),
+            linear-gradient(180deg, transparent 34%, rgba(8, 7, 11, .95) 100%);
+        z-index: -1;
     }
 
     .event-hero-content {
-        position: relative;
-        z-index: 2;
-        padding: 26px;
-        width: 100%;
+        width: min(720px, 100%);
+        padding: 34px;
     }
 
-    .event-hero-content .badge-category {
-        display: inline-block;
-        background: rgba(11, 11, 12, .7);
-        backdrop-filter: blur(6px);
-        border: 1px solid var(--border);
+    .detail-kicker {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
+
+    .badge-category {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        min-height: 32px;
+        background: rgba(8, 7, 11, .72);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, .12);
         color: var(--text-primary);
-        font-weight: 600;
+        font-weight: 800;
         font-size: .72rem;
         text-transform: uppercase;
-        letter-spacing: .04em;
-        padding: 5px 12px;
+        letter-spacing: .06em;
+        padding: 7px 12px;
         border-radius: 999px;
-        margin-bottom: 12px;
+    }
+
+    .live-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        min-height: 32px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: rgba(78, 203, 141, .12);
+        border: 1px solid rgba(78, 203, 141, .24);
+        color: #9fe8bb;
+        font-size: .74rem;
+        font-weight: 800;
+    }
+
+    .live-pill i {
+        font-size: .65rem;
     }
 
     #title {
-        font-size: 1.9rem;
-        font-weight: 800;
+        max-width: 680px;
+        font-size: 4rem;
+        line-height: .98;
+        font-weight: 900;
         color: var(--text-primary);
+        letter-spacing: 0;
         margin: 0;
     }
 
-    hr {
-        border-color: var(--border);
-        opacity: 1;
+    .hero-meta {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        max-width: 660px;
+        margin-top: 28px;
+    }
+
+    .hero-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+        padding: 13px 14px;
+        border-radius: var(--radius-md);
+        background: rgba(8, 7, 11, .66);
+        border: 1px solid rgba(255, 255, 255, .1);
+        backdrop-filter: blur(12px);
+    }
+
+    .hero-meta-item i,
+    .info-icon {
+        width: 36px;
+        height: 36px;
+        flex: 0 0 36px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--accent-dim);
+        color: var(--pink);
+        border: 1px solid rgba(236, 72, 153, .22);
+    }
+
+    .meta-label,
+    .detail-label {
+        display: block;
+        color: var(--text-muted);
+        font-size: .7rem;
+        font-weight: 800;
+        letter-spacing: .06em;
+        line-height: 1.2;
+        margin-bottom: 3px;
+        text-transform: uppercase;
+    }
+
+    .meta-value,
+    .detail-value {
+        display: block;
+        color: var(--text-primary);
+        font-size: .93rem;
+        font-weight: 800;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+    }
+
+    .event-card {
+        grid-column: 1;
+        margin-top: 24px;
+        padding: 28px;
+    }
+
+    .section-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 14px;
+    }
+
+    .section-heading h3 {
+        font-size: 1.16rem;
+        margin: 0;
+    }
+
+    .section-heading span {
+        color: var(--text-muted);
+        font-size: .82rem;
+        font-weight: 700;
     }
 
     #description {
         color: var(--text-secondary);
-        font-size: .97rem;
-        line-height: 1.7;
+        font-size: 1rem;
+        line-height: 1.75;
+        margin: 0;
+        white-space: pre-line;
+    }
+
+    .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 24px;
     }
 
     .stat-tile {
+        min-height: 128px;
         border-radius: var(--radius-md);
         padding: 18px;
-        height: 100%;
         border: 1px solid var(--border);
         background: var(--bg-secondary);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
     .stat-tile strong {
         display: flex;
         align-items: center;
         gap: 8px;
-        font-size: .78rem;
+        font-size: .72rem;
         text-transform: uppercase;
-        letter-spacing: .04em;
+        letter-spacing: .06em;
         color: var(--text-muted);
-        font-weight: 600;
-        margin-bottom: 8px;
+        font-weight: 800;
+        margin-bottom: 16px;
     }
 
     .stat-tile strong i {
-        color: var(--accent);
+        color: var(--pink);
     }
 
-    .stat-tile span,
-    .stat-tile .stat-value {
-        font-size: 1.15rem;
-        font-weight: 700;
+    .stat-tile span {
+        font-size: 1.28rem;
+        font-weight: 900;
         color: var(--text-primary);
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+    }
+
+    .detail-list {
+        display: grid;
+        gap: 2px;
+        margin-top: 18px;
     }
 
     .info-row {
         display: flex;
         align-items: flex-start;
-        gap: 12px;
-        padding: 14px 0;
+        gap: 14px;
+        padding: 18px 0;
         border-bottom: 1px solid var(--border);
     }
 
     .info-row:last-of-type {
         border-bottom: none;
-    }
-
-    .info-row i {
-        color: var(--accent);
-        font-size: 1rem;
-        margin-top: 2px;
-        width: 20px;
-    }
-
-    .info-row strong {
-        display: block;
-        font-size: .78rem;
-        text-transform: uppercase;
-        letter-spacing: .04em;
-        color: var(--text-muted);
-        font-weight: 600;
-        margin-bottom: 2px;
+        padding-bottom: 0;
     }
 
     .info-row p {
         margin: 0;
+    }
+
+    #rules {
+        white-space: pre-line;
+    }
+
+    .sidebar-stack {
+        position: sticky;
+        grid-column: 2;
+        grid-row: 1 / span 3;
+        top: 104px;
+        display: grid;
+        gap: 16px;
+    }
+
+    .booking-card {
+        padding: 22px;
+    }
+
+    .booking-price {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+        padding-bottom: 18px;
+        margin-bottom: 18px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .booking-price .price-copy {
+        color: var(--text-muted);
+        font-size: .76rem;
+        font-weight: 800;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+    }
+
+    .booking-price .price-value {
         color: var(--text-primary);
-        font-weight: 500;
-        font-size: .95rem;
+        font-size: 2rem;
+        font-weight: 900;
+        letter-spacing: 0;
+        line-height: 1;
+    }
+
+    .booking-mini-list {
+        display: grid;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .booking-mini-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        color: var(--text-secondary);
+        font-size: .88rem;
+        font-weight: 700;
+    }
+
+    .booking-mini-item span:last-child {
+        color: var(--text-primary);
+        text-align: right;
     }
 
     .book-btn {
         width: 100%;
+        min-height: 52px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
     }
 
     .host-card {
-        text-align: center;
-        padding: 8px;
+        padding: 22px;
+    }
+
+    .host-card-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 18px;
     }
 
     .host-avatar {
-        width: 72px;
-        height: 72px;
+        width: 62px;
+        height: 62px;
+        flex: 0 0 62px;
         border-radius: 50%;
         background: var(--accent-dim);
-        border: 1px solid rgba(245, 200, 76, .3);
-        color: var(--accent);
-        font-size: 1.7rem;
+        border: 1px solid rgba(236, 72, 153, .28);
+        color: var(--pink);
+        font-size: 1.45rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 14px;
+        overflow: hidden;
     }
 
     #host_name {
-        font-size: 1.1rem;
-        font-weight: 700;
+        font-size: 1.04rem;
+        font-weight: 900;
         color: var(--text-primary);
-        margin-bottom: 4px;
+        margin: 0 0 3px;
     }
 
     #host_events {
         color: var(--text-muted);
-        font-size: .88rem;
-        margin-bottom: 14px;
+        font-size: .84rem;
+        font-weight: 700;
+        margin: 0;
     }
 
     .host-email {
-        display: inline-flex;
+        display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 9px;
+        min-width: 0;
         color: var(--text-secondary);
         font-size: .85rem;
-        font-weight: 500;
+        font-weight: 800;
         background: var(--bg-secondary);
         border: 1px solid var(--border);
-        padding: 7px 14px;
-        border-radius: 999px;
-        margin-top: 4px;
-        transition: color .25s var(--ease), border-color .25s var(--ease);
+        padding: 10px 12px;
+        border-radius: var(--radius-sm);
+        transition: color .25s var(--ease), border-color .25s var(--ease), background .25s var(--ease);
     }
 
     .host-email:hover {
-        color: var(--accent);
-        border-color: rgba(245, 200, 76, .35);
+        color: var(--text-primary);
+        background: rgba(255, 255, 255, .055);
+        border-color: rgba(236, 72, 153, .36);
     }
 
     .host-email i {
-        color: var(--accent);
-        font-size: .85rem;
+        color: var(--pink);
+        font-size: .9rem;
+        flex: 0 0 auto;
+    }
+
+    .host-email span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    @media (max-width: 991px) {
+        .event-shell {
+            grid-template-columns: 1fr;
+        }
+
+        .sidebar-stack {
+            position: static;
+            grid-column: auto;
+            grid-row: auto;
+        }
+
+        .event-hero {
+            min-height: 430px;
+        }
+
+        #title {
+            font-size: 3rem;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .event-detail-page {
+            padding-top: 12px;
+        }
+
+        .event-hero {
+            min-height: 520px;
+        }
+
+        .event-hero::before {
+            background:
+                linear-gradient(180deg, rgba(8, 7, 11, .2) 0%, rgba(8, 7, 11, .96) 64%, rgba(8, 7, 11, .98) 100%);
+        }
+
+        .event-hero-content {
+            padding: 24px;
+        }
+
+        #title {
+            font-size: 2.25rem;
+        }
+
+        .hero-meta,
+        .stat-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .stat-tile span {
+            font-size: 1.15rem;
+        }
+
+        .event-card,
+        .booking-card,
+        .host-card {
+            padding: 20px;
+            border-radius: var(--radius-md);
+        }
+
+        .section-heading {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 4px;
+        }
     }
 
     /* Toast notifications */
@@ -316,9 +610,9 @@ Event Details
 <!-- Toast notifications -->
 <div id="toastContainer" class="position-fixed top-0 end-0 p-3"></div>
 
-<div class="row fade-in">
+<div class="event-detail-page fade-in">
 
-    <div class="col-lg-8">
+    <div class="event-shell">
 
         <div class="event-hero">
 
@@ -330,137 +624,181 @@ Event Details
 
             <div class="event-hero-content">
 
-                <span class="badge-category" id="category_badge">
-                    &nbsp;
-                </span>
+                <div class="detail-kicker">
+
+                    <span class="badge-category" id="category_badge">
+                        &nbsp;
+                    </span>
+
+                    <span class="live-pill">
+                        <i class="bi bi-circle-fill"></i>
+                        Booking open
+                    </span>
+
+                </div>
 
                 <h2 id="title">
                     Loading...
                 </h2>
 
-            </div>
+                <div class="hero-meta">
 
-        </div>
-
-        <div class="card">
-
-            <div class="card-body">
-
-                <p id="description"></p>
-
-                <div class="row mt-3 g-3">
-
-                    <div class="col-md-4">
-
-                        <div class="stat-tile">
-
-                            <strong><i class="bi bi-tag-fill"></i> Category</strong>
-
-                            <span id="category"></span>
-
+                    <div class="hero-meta-item">
+                        <i class="bi bi-calendar-event"></i>
+                        <div>
+                            <span class="meta-label">Date &amp; Time</span>
+                            <span class="meta-value" id="date"></span>
                         </div>
-
                     </div>
 
-                    <div class="col-md-4">
-
-                        <div class="stat-tile">
-
-                            <strong><i class="bi bi-cash-coin"></i> Ticket Price</strong>
-
-                            <span>₹<span id="price"></span></span>
-
+                    <div class="hero-meta-item">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        <div>
+                            <span class="meta-label">Location</span>
+                            <span class="meta-value" id="location"></span>
                         </div>
-
-                    </div>
-
-                    <div class="col-md-4">
-
-                        <div class="stat-tile">
-
-                            <strong><i class="bi bi-people-fill"></i> Guests</strong>
-
-                            <span id="guests"></span>
-
-                        </div>
-
                     </div>
 
                 </div>
 
-                <div class="mt-4">
+            </div>
 
-                    <div class="info-row">
+        </div>
 
-                        <i class="bi bi-calendar-event"></i>
+        <div class="event-card">
 
-                        <div>
-                            <strong>Date &amp; Time</strong>
-                            <p id="date"></p>
-                        </div>
+            <div class="section-heading">
+                <h3>About this event</h3>
+                <span>Hosted experience</span>
+            </div>
 
+            <p id="description"></p>
+
+            <div class="stat-grid">
+
+                <div class="stat-tile">
+
+                    <strong><i class="bi bi-tag-fill"></i> Category</strong>
+
+                    <span id="category"></span>
+
+                </div>
+
+                <div class="stat-tile">
+
+                    <strong><i class="bi bi-cash-coin"></i> Ticket Price</strong>
+
+                    <span>₹<span id="price"></span></span>
+
+                </div>
+
+                <div class="stat-tile">
+
+                    <strong><i class="bi bi-people-fill"></i> Capacity</strong>
+
+                    <span><span id="guests"></span> guests</span>
+
+                </div>
+
+                <div class="stat-tile">
+
+                    <strong><i class="bi bi-person-check-fill"></i> Age Limit</strong>
+
+                    <span id="age_limit"></span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="event-card">
+
+            <div class="section-heading">
+                <h3>Rules and regulations</h3>
+                <span>House guidelines</span>
+            </div>
+
+            <div class="detail-list">
+
+                <div class="info-row">
+
+                    <span class="info-icon"><i class="bi bi-card-checklist"></i></span>
+
+                    <div>
+                        <strong class="detail-label">Rules</strong>
+                        <p class="detail-value" id="rules"></p>
                     </div>
 
-                    <div class="info-row">
+                </div>
 
-                        <i class="bi bi-geo-alt-fill"></i>
+            </div>
 
-                        <div>
-                            <strong>Location</strong>
-                            <p id="location"></p>
-                        </div>
+        </div>
 
+        <aside class="sidebar-stack">
+
+            <div class="booking-card">
+
+                <div class="booking-price">
+                    <div>
+                        <span class="price-copy">Ticket from</span>
+                        <div class="price-value">₹<span id="price_sidebar"></span></div>
+                    </div>
+                    <i class="bi bi-ticket-perforated-fill text-accent fs-3"></i>
+                </div>
+
+                <div class="booking-mini-list">
+
+                    <div class="booking-mini-item">
+                        <span>Category</span>
+                        <span id="category_sidebar"></span>
                     </div>
 
-                    <div class="info-row">
-
-                        <i class="bi bi-shield-check"></i>
-
-                        <div>
-                            <strong>Guest Policy</strong>
-                            <p id="policy"></p>
-                        </div>
-
+                    <div class="booking-mini-item">
+                        <span>Capacity</span>
+                        <span><span id="guests_sidebar"></span> guests</span>
                     </div>
 
                 </div>
 
                 <button
-                    class="btn btn-primary btn-lg mt-4 book-btn"
+                    class="btn btn-primary btn-lg book-btn"
                     onclick="bookNow()">
 
+                    <i class="bi bi-bag-check-fill"></i>
                     Book Ticket
 
                 </button>
 
             </div>
 
-        </div>
+            <div class="host-card">
 
-    </div>
+                <div class="host-card-header">
 
-    <div class="col-lg-4">
+                    <div class="host-avatar" id="host_avatar">
+                        <i class="bi bi-person-fill" id="host_avatar_icon"></i>
+                        <img id="host_avatar_img" src="" alt="" style="display:none; width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                    </div>
 
-        <div class="card">
+                    <div>
 
-            <div class="card-body host-card">
+                        <p id="host_name">
 
-                <div class="host-avatar" id="host_avatar">
-                    <i class="bi bi-person-fill" id="host_avatar_icon"></i>
-                    <img id="host_avatar_img" src="" alt="" style="display:none; width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                            -
+
+                        </p>
+
+                        <p id="host_events">
+
+                            -
+
+                        </p>
+
+                    </div>
+
                 </div>
-
-                <p id="host_name">
-
-                    -
-
-                </p>
-
-                <p id="host_events">
-
-                    -
-
-                </p>
 
                 <a href="#" id="host_email" class="host-email">
 
@@ -472,7 +810,7 @@ Event Details
 
             </div>
 
-        </div>
+        </aside>
 
     </div>
 
@@ -498,25 +836,37 @@ async function loadEvent(){
 
         document.getElementById("description").textContent=event.description || "";
 
-        document.getElementById("category").textContent=event.event_category || "Not Available";
+        document.getElementById("rules").textContent=event.rules || "No rules specified.";
+
+        const category=event.event_category || "Not Available";
+        const fee=event.fee ?? "0";
+        const guests=event.max_members ?? "0";
+
+        document.getElementById("category").textContent=category;
 
         document.getElementById("category_badge").textContent=event.event_category || "Event";
 
-        document.getElementById("price").textContent=event.fee ?? "0";
+        document.getElementById("price").textContent=fee;
 
-        document.getElementById("guests").textContent=event.max_members ?? "0";
+        document.getElementById("guests").textContent=guests;
+
+        document.getElementById("age_limit").textContent=event.age_limit ? `${event.age_limit}+` : "No age limit";
+
+        document.getElementById("category_sidebar").textContent=category;
+
+        document.getElementById("price_sidebar").textContent=fee;
+
+        document.getElementById("guests_sidebar").textContent=guests;
 
         const eventDate=event.event_date || "Not Available";
         const eventTime=event.event_time || "";
+        const dateText=eventTime ? `${eventDate} at ${eventTime}` : eventDate;
 
-        document.getElementById("date").textContent=eventTime ? `${eventDate} at ${eventTime}` : eventDate;
+        document.getElementById("date").textContent=dateText;
 
-        document.getElementById("location").textContent=event.location || "Not Available";
+        const location=event.location || "Not Available";
 
-        const genderLabel=event.gender && event.gender !== "ANY" ? event.gender : "Open to everyone";
-        const ageLabel=event.age_limit ? `${event.age_limit}+` : "No age limit";
-
-        document.getElementById("policy").textContent=`${genderLabel} • ${ageLabel}`;
+        document.getElementById("location").textContent=location;
 
         renderHost(event);
 
@@ -525,6 +875,7 @@ async function loadEvent(){
             const img=document.getElementById("poster_img");
 
             img.src=event.poster;
+            img.alt=event.event_name || "Event poster";
 
             img.style.display="block";
 
