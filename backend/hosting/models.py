@@ -41,6 +41,7 @@ class Event(models.Model):
     event_name = models.CharField(max_length=100)
     event_category = models.CharField( max_length=100, choices=EventCategory.choices, db_index=True )
     description = models.TextField()
+    rules = models.TextField()
     poster = models.ImageField(upload_to="event_posters/")
     max_members = models.PositiveIntegerField()
     fee = models.PositiveIntegerField(default=0)
