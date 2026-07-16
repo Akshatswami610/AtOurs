@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from .models import Event
 from accounts.models import User
-from datetime import date
 from django.utils import timezone
 
 class EventHostSerializer(serializers.ModelSerializer):
@@ -27,6 +26,7 @@ class EventSerializer(serializers.ModelSerializer):
             "event_name",
             "event_category",
             "description",
+            "rules",
             "poster",
             "max_members",
             "fee",
