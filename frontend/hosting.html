@@ -133,13 +133,141 @@ Host Event
         color: var(--text-muted);
     }
 
-    #createStatus .alert {
-        font-size: .85rem;
-    }
-
     .btn-loading {
         pointer-events: none;
         opacity: .75;
+    }
+
+    /* Guidelines reminder (inside Create Event modal) */
+
+    .guidelines-reminder {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background: var(--accent-dim);
+        border: 1px solid rgba(236, 72, 153, .3);
+        border-radius: var(--radius-sm);
+        padding: 12px 14px;
+        margin-bottom: 18px;
+        font-size: .83rem;
+        color: var(--text-secondary);
+        line-height: 1.5;
+    }
+
+    .guidelines-reminder i {
+        color: var(--pink);
+        font-size: 1rem;
+        margin-top: 1px;
+        flex-shrink: 0;
+    }
+
+    .guidelines-reminder a {
+        color: var(--pink);
+        font-weight: 700;
+    }
+
+    .guidelines-reminder a:hover {
+        opacity: .8;
+    }
+
+    /* Hosting Guidelines modal */
+
+    .guidelines-intro {
+        color: var(--text-secondary);
+        font-size: .92rem;
+        line-height: 1.6;
+        margin-bottom: 22px;
+    }
+
+    .guideline-group {
+        margin-bottom: 22px;
+    }
+
+    .guideline-group:last-of-type {
+        margin-bottom: 6px;
+    }
+
+    .guideline-group-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+        font-size: .95rem;
+        color: var(--text-primary);
+        margin-bottom: 10px;
+    }
+
+    .guideline-group-title i {
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--accent-dim);
+        color: var(--pink);
+        font-size: .9rem;
+        flex-shrink: 0;
+    }
+
+    .guideline-group:nth-of-type(2) .guideline-group-title i {
+        background: rgba(249, 115, 22, .14);
+        color: var(--orange);
+    }
+
+    .guideline-group:nth-of-type(3) .guideline-group-title i {
+        background: rgba(168, 85, 247, .14);
+        color: var(--purple);
+    }
+
+    .guideline-group:nth-of-type(4) .guideline-group-title i {
+        background: rgba(239, 91, 106, .14);
+        color: #ef5b6a;
+    }
+
+    .guideline-group ul {
+        margin: 0;
+        padding-left: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+    }
+
+    .guideline-group li {
+        position: relative;
+        padding-left: 22px;
+        color: var(--text-secondary);
+        font-size: .87rem;
+        line-height: 1.55;
+    }
+
+    .guideline-group li::before {
+        content: '\f26b';
+        font-family: 'bootstrap-icons';
+        position: absolute;
+        left: 0;
+        top: 1px;
+        font-size: .8rem;
+        color: var(--text-muted);
+    }
+
+    .guidelines-footer-note {
+        color: var(--text-muted);
+        font-size: .82rem;
+        line-height: 1.6;
+        padding-top: 16px;
+        margin: 0;
+        border-top: 1px solid var(--border);
+    }
+
+    .guidelines-footer-note a {
+        color: var(--pink);
+        font-weight: 700;
+    }
+
+    .guidelines-footer-note a:hover {
+        opacity: .8;
     }
 
     /* Events grid */
@@ -596,6 +724,10 @@ Host Event
     </div>
 
     <div class="hosting-header-actions">
+        <button class="btn btn-secondary" type="button" data-bs-toggle="modal" data-bs-target="#guidelinesModal">
+            <i class="bi bi-shield-check me-1"></i>
+            Hosting Guidelines
+        </button>
         <button class="btn btn-primary" type="button" onclick="handleCreateEventClick()">
             Create Event
         </button>
@@ -624,6 +756,15 @@ Host Event
             </div>
 
             <div class="modal-body">
+
+                <div class="guidelines-reminder">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <span>
+                        Keep your listing accurate and safe.
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#guidelinesModal">Read the hosting guidelines</a>
+                        before you publish.
+                    </span>
+                </div>
 
                 <label class="form-label mb-1 d-block" for="title">Event Title <span class="text-danger">*</span></label>
                 <input
@@ -763,7 +904,6 @@ Host Event
 
                 </div>
 
-                <div id="createStatus"></div>
 
             </div>
 
@@ -945,7 +1085,6 @@ Host Event
 
                 </div>
 
-                <div id="editStatus"></div>
 
             </div>
 
@@ -1049,6 +1188,113 @@ Host Event
             <div class="modal-footer">
 
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Hosting Guidelines Modal -->
+<div class="modal fade" id="guidelinesModal" tabindex="-1" aria-labelledby="guidelinesModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title fw-bold" id="guidelinesModalLabel">
+                    <i class="bi bi-shield-check text-accent me-2"></i>
+                    Hosting Guidelines
+                </h5>
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+
+            <div class="modal-body guidelines-body">
+
+                <p class="guidelines-intro">
+                    A few ground rules to keep AtOurs safe, trustworthy, and fun for every guest.
+                    Please review these before creating or publishing an event.
+                </p>
+
+                <div class="guideline-group">
+
+                    <div class="guideline-group-title">
+                        <i class="bi bi-file-text-fill"></i>
+                        Accurate Listings
+                    </div>
+
+                    <ul>
+                        <li>Use a real photo of the venue or a relevant poster — no stock images that misrepresent the event.</li>
+                        <li>Describe the event honestly: vibe, activities, and what's included in the ticket price.</li>
+                        <li>Keep the date, time, and location up to date. Notify guests immediately if anything changes.</li>
+                        <li>Set an accurate max guest count and age limit so bookings match what your venue can actually handle.</li>
+                    </ul>
+
+                </div>
+
+                <div class="guideline-group">
+
+                    <div class="guideline-group-title">
+                        <i class="bi bi-shield-lock-fill"></i>
+                        Safety &amp; Conduct
+                    </div>
+
+                    <ul>
+                        <li>Provide a safe, accessible venue and be reachable to guests on the day of the event.</li>
+                        <li>Clearly list entry rules (ID checks, dress code, house rules) in the Rules field.</li>
+                        <li>No hosting of illegal activity, hate speech, harassment, or discriminatory entry conditions.</li>
+                        <li>Alcohol or age-restricted content must be flagged with an appropriate age limit.</li>
+                    </ul>
+
+                </div>
+
+                <div class="guideline-group">
+
+                    <div class="guideline-group-title">
+                        <i class="bi bi-cash-coin"></i>
+                        Pricing &amp; Cancellations
+                    </div>
+
+                    <ul>
+                        <li>Set ticket prices fairly and disclose any extra costs guests should expect at the door.</li>
+                        <li>If you cancel or reschedule, update the event and inform booked guests as early as possible.</li>
+                        <li>Refund guests promptly for events you cancel, per your stated cancellation policy.</li>
+                    </ul>
+
+                </div>
+
+                <div class="guideline-group">
+
+                    <div class="guideline-group-title">
+                        <i class="bi bi-exclamation-octagon-fill"></i>
+                        Not Allowed
+                    </div>
+
+                    <ul>
+                        <li>Fake or duplicate listings, bait-and-switch pricing, or events that never take place.</li>
+                        <li>Any content that is sexually explicit, violent, or promotes harm to guests.</li>
+                        <li>Collecting guest payments or personal data outside the platform.</li>
+                    </ul>
+
+                </div>
+
+                <p class="guidelines-footer-note">
+                    Listings that break these guidelines may be removed, and repeat violations can lead to your hosting
+                    privileges being suspended. Questions? Reach out via the
+                    <a href="/support/">Support</a> page.
+                </p>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Got It</button>
 
             </div>
 
@@ -1403,11 +1649,7 @@ async function loadEvents(){
 
 async function createHostEvent(){
 
-    const status=document.getElementById("createStatus");
-
     const btn=document.getElementById("createEventBtn");
-
-    status.innerHTML="";
 
     try{
 
@@ -1437,7 +1679,7 @@ async function createHostEvent(){
 
         if(!titleEl || !descriptionEl || !rulesEl || !categoryEl || !posterEl || !ticketPriceEl || !maxGuestsEl || !ageLimitEl || !genderEl || !locationEl || !eventDateEl){
 
-            status.innerHTML="<div class='alert alert-danger'>Something went wrong loading the form. Please refresh the page and try again.</div>";
+            showToast("Something went wrong loading the form. Please refresh the page and try again.","danger");
 
             return;
 
@@ -1489,7 +1731,7 @@ async function createHostEvent(){
 
         ){
 
-            status.innerHTML="<div class='alert alert-danger'>Please fill all required fields, including rules and a poster image.</div>";
+            showToast("Please fill all required fields, including rules and a poster image.","danger");
 
             return;
 
@@ -1503,7 +1745,7 @@ async function createHostEvent(){
 
         if(Number.isNaN(ticketPriceNum) || ticketPriceNum<0){
 
-            status.innerHTML="<div class='alert alert-danger'>Ticket price must be a number of 0 or more.</div>";
+            showToast("Ticket price must be a number of 0 or more.","danger");
 
             return;
 
@@ -1511,7 +1753,7 @@ async function createHostEvent(){
 
         if(!Number.isInteger(maxGuestsNum) || maxGuestsNum<1){
 
-            status.innerHTML="<div class='alert alert-danger'>Max guests must be a whole number of at least 1.</div>";
+            showToast("Max guests must be a whole number of at least 1.","danger");
 
             return;
 
@@ -1519,7 +1761,7 @@ async function createHostEvent(){
 
         if(!Number.isInteger(ageLimitNum) || ageLimitNum<0){
 
-            status.innerHTML="<div class='alert alert-danger'>Age limit must be a whole number of 0 or more.</div>";
+            showToast("Age limit must be a whole number of 0 or more.","danger");
 
             return;
 
@@ -1625,7 +1867,7 @@ async function createHostEvent(){
 
         }
 
-        status.innerHTML=`<div class="alert alert-danger">${errors || "Unable to create event."}</div>`;
+        showToast(errors || "Unable to create event.","danger");
 
         btn.classList.remove("btn-loading");
 
@@ -1635,7 +1877,7 @@ async function createHostEvent(){
 
     catch(error){
 
-        status.innerHTML="<div class='alert alert-danger'>Something went wrong. Please try again.</div>";
+        showToast("Something went wrong. Please try again.","danger");
 
         btn.classList.remove("btn-loading");
 
@@ -1888,7 +2130,6 @@ function editEvent(id){
 
     }
 
-    document.getElementById("editStatus").innerHTML="";
 
     document.getElementById("edit_event_id").value=event.event_id;
 
@@ -1928,11 +2169,7 @@ function editEvent(id){
 
 async function updateHostEvent(){
 
-    const status=document.getElementById("editStatus");
-
     const btn=document.getElementById("updateEventBtn");
-
-    status.innerHTML="";
 
     try{
 
@@ -2006,7 +2243,7 @@ async function updateHostEvent(){
 
         ){
 
-            status.innerHTML="<div class='alert alert-danger'>Please fill all required fields, including rules.</div>";
+            showToast("Please fill all required fields, including rules.","danger");
 
             return;
 
@@ -2020,7 +2257,7 @@ async function updateHostEvent(){
 
         if(Number.isNaN(ticketPriceNum) || ticketPriceNum<0){
 
-            status.innerHTML="<div class='alert alert-danger'>Ticket price must be a number of 0 or more.</div>";
+            showToast("Ticket price must be a number of 0 or more.","danger");
 
             return;
 
@@ -2028,7 +2265,7 @@ async function updateHostEvent(){
 
         if(!Number.isInteger(maxGuestsNum) || maxGuestsNum<1){
 
-            status.innerHTML="<div class='alert alert-danger'>Max guests must be a whole number of at least 1.</div>";
+            showToast("Max guests must be a whole number of at least 1.","danger");
 
             return;
 
@@ -2036,7 +2273,7 @@ async function updateHostEvent(){
 
         if(!Number.isInteger(ageLimitNum) || ageLimitNum<0){
 
-            status.innerHTML="<div class='alert alert-danger'>Age limit must be a whole number of 0 or more.</div>";
+            showToast("Age limit must be a whole number of 0 or more.","danger");
 
             return;
 
@@ -2146,7 +2383,7 @@ async function updateHostEvent(){
 
         }
 
-        status.innerHTML=`<div class="alert alert-danger">${errors || "Unable to update event."}</div>`;
+        showToast(errors || "Unable to update event.","danger");
 
         btn.classList.remove("btn-loading");
 
@@ -2156,7 +2393,7 @@ async function updateHostEvent(){
 
     catch(error){
 
-        status.innerHTML="<div class='alert alert-danger'>Something went wrong. Please try again.</div>";
+        showToast("Something went wrong. Please try again.","danger");
 
         btn.classList.remove("btn-loading");
 
