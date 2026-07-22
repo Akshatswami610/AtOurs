@@ -23,7 +23,7 @@ My Tickets
         letter-spacing: .04em;
         text-transform: uppercase;
         background: var(--accent-dim);
-        border: 1px solid rgba(245, 200, 76, .25);
+        border: 1px solid rgba(236, 72, 153, .25);
         padding: 6px 14px;
         border-radius: 999px;
         margin-bottom: 20px;
@@ -50,7 +50,9 @@ My Tickets
         grid-template-columns: repeat(3, 1fr);
         gap: 12px;
         position: sticky;
-        top: 12px;
+        /* Clears the sticky navbar (~67px tall) plus a bit of breathing
+           room, so this doesn't stick underneath/behind it on scroll. */
+        top: 82px;
         z-index: 20;
         backdrop-filter: blur(10px);
         background: rgba(26, 26, 30, .92);
@@ -87,7 +89,7 @@ My Tickets
         align-items: center;
         gap: 6px;
         background: var(--accent-dim);
-        border: 1px solid rgba(245, 200, 76, .25);
+        border: 1px solid rgba(236, 72, 153, .25);
         color: var(--accent);
         font-size: .78rem;
         font-weight: 600;
@@ -454,8 +456,8 @@ My Tickets
     }
 
     .status-pending {
-        background: rgba(245, 200, 76, .15);
-        color: var(--accent);
+        background: rgba(249, 115, 22, .15);
+        color: var(--orange);
     }
 
     .status-failed {
