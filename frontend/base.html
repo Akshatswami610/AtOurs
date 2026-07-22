@@ -1009,7 +1009,10 @@
 
                     <li class="nav-item d-none profile-menu" id="profileMenuItem">
                         <button class="profile-menu-toggle" type="button" aria-label="Open profile menu">
-                            <span class="navbar-avatar" id="profileMenuAvatar">U</span>
+                            <span class="navbar-avatar" id="profileMenuAvatar">
+                                <span id="profileMenuAvatarInitial">U</span>
+                                <img id="profileMenuAvatarImg" src="" alt="" style="display:none; width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                            </span>
                         </button>
                         <div class="profile-dropdown" role="menu">
                             <a href="/profile/" role="menuitem">
@@ -1343,7 +1346,9 @@
 
             const profileMenuItem = document.getElementById("profileMenuItem");
 
-            const profileMenuAvatar = document.getElementById("profileMenuAvatar");
+            const profileMenuAvatarInitial = document.getElementById("profileMenuAvatarInitial");
+
+            const profileMenuAvatarImg = document.getElementById("profileMenuAvatarImg");
 
             if (loginItem) {
                 loginItem.style.display = loggedIn ? "none" : "";
@@ -1353,15 +1358,82 @@
                 profileMenuItem.classList.toggle("d-none", !loggedIn);
             }
 
-            if (profileMenuAvatar && loggedIn) {
-                try {
-                    const user = JSON.parse(localStorage.getItem("user") || "{}");
-                    const name = user.name || user.email || "User";
-                    profileMenuAvatar.textContent = name.trim().charAt(0).toUpperCase() || "U";
-                } catch (error) {
-                    profileMenuAvatar.textContent = "U";
-                }
+            if (!loggedIn) {
+                return;
             }
+
+            // Paint the initial immediately from whatever is cached, so the
+            // navbar isn't blank while the live profile call is in flight.
+            let cachedName = "User";
+
+            try {
+                const cachedUser = JSON.parse(localStorage.getItem("user") || "{}");
+                cachedName = cachedUser.name || cachedUser.email || "User";
+            } catch (error) {
+                cachedName = "User";
+            }
+
+            if (profileMenuAvatarInitial) {
+                profileMenuAvatarInitial.textContent = cachedName.trim().charAt(0).toUpperCase() || "U";
+            }
+
+            // The cached "user" object in localStorage is only set at login
+            // and may not include profile_image, so fetch the live profile
+            // to get the current avatar (same source profile.html uses).
+            api("/accounts/me/").then(function (user) {
+
+                if (!user || user.detail) {
+                    return;
+                }
+
+                const name = user.name || user.email || "User";
+
+                if (profileMenuAvatarInitial) {
+                    profileMenuAvatarInitial.textContent = name.trim().charAt(0).toUpperCase() || "U";
+                }
+
+                const profileImage = user.profile_image || user.avatar || "";
+
+                if (profileMenuAvatarImg) {
+
+                    if (profileImage) {
+
+                        const imageUrl = /^https?:\/\//i.test(profileImage)
+                            ? profileImage
+                            : `${API_BASE}${profileImage}`;
+
+                        profileMenuAvatarImg.src = imageUrl;
+                        profileMenuAvatarImg.style.display = "block";
+
+                        if (profileMenuAvatarInitial) {
+                            profileMenuAvatarInitial.style.display = "none";
+                        }
+
+                        profileMenuAvatarImg.onerror = function () {
+                            this.onerror = null;
+                            this.removeAttribute("src");
+                            this.style.display = "none";
+                            if (profileMenuAvatarInitial) {
+                                profileMenuAvatarInitial.style.display = "";
+                            }
+                        };
+
+                    } else {
+
+                        profileMenuAvatarImg.removeAttribute("src");
+                        profileMenuAvatarImg.style.display = "none";
+
+                        if (profileMenuAvatarInitial) {
+                            profileMenuAvatarInitial.style.display = "";
+                        }
+
+                    }
+
+                }
+
+            }).catch(function () {
+                // Keep the initial-only fallback already painted above.
+            });
 
         }
 
