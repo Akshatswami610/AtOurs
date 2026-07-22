@@ -937,14 +937,46 @@ function renderHost(event){
 
     }
 
-    // Profile image (falls back to the default avatar icon)
-    const profileImage=(host && (host.profile_image || host.avatar)) || event.host_profile_image || "";
+    // Profile image (falls back to the default avatar icon).
+    // Backend field naming isn't confirmed yet, so check the common
+    // variants in both the nested host/user object and top-level event.
+    const profileImage=
+        (host && (
+            host.profile_image ||
+            host.profile_photo ||
+            host.avatar ||
+            host.avatar_url ||
+            host.image ||
+            host.image_url ||
+            host.photo ||
+            host.photo_url ||
+            host.picture
+        )) ||
+        event.host_profile_image ||
+        event.host_avatar ||
+        event.host_image ||
+        "";
 
     if(profileImage){
 
-        avatarImg.src=profileImage;
+        // profile_image may come back as a relative path (e.g. "/media/...")
+        // or a full URL, depending on the serializer. Normalize it.
+        const imageUrl=/^https?:\/\//i.test(profileImage)
+            ? profileImage
+            : `${API_BASE}${profileImage}`;
+
+        avatarImg.src=imageUrl;
         avatarImg.style.display="block";
         avatarIcon.style.display="none";
+
+        // If the image fails to load (broken link, deleted file, etc.),
+        // gracefully fall back to the default avatar icon.
+        avatarImg.onerror=function(){
+            this.onerror=null;
+            this.removeAttribute("src");
+            this.style.display="none";
+            avatarIcon.style.display="";
+        };
 
     } else {
 
