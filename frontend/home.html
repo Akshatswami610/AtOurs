@@ -830,7 +830,7 @@ async function loadEvents(){
 
         const events=await api("/hosting/events/");
 
-        allEvents=Array.isArray(events) ? events : [];
+        allEvents=Array.isArray(events) ? await filterEventsByAgeLimit(events) : [];
 
         renderEvents();
 
