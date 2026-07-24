@@ -14,29 +14,46 @@ My Profile
         background: transparent;
     }
 
-    .profile-topbar {
-        display: none;
+    /* ===== Hero (pattern shared with careers.html) ===== */
+
+    .page-hero {
+        text-align: center;
+        padding: 20px 20px 40px;
     }
 
-    .profile-eyebrow {
+    .page-hero .hero-eyebrow {
         display: inline-flex;
         align-items: center;
         gap: 8px;
         color: var(--pink);
-        font-weight: 800;
-        font-size: .78rem;
-        letter-spacing: .03em;
-        text-transform: uppercase;
-        margin-bottom: 8px;
+        font-weight: 700;
+        font-size: .82rem;
+        letter-spacing: .01em;
+        background: var(--accent-dim);
+        border: 1px solid rgba(236, 72, 153, .3);
+        padding: 7px 16px;
+        border-radius: 999px;
+        margin-bottom: 22px;
+        animation: fadeInUp .5s var(--ease) both;
     }
 
-    .profile-topbar h1 {
-        font-size: clamp(1.6rem, 3vw, 2.1rem);
-        margin-bottom: 6px;
+    .page-hero h1 {
+        font-size: clamp(1.9rem, 4vw, 2.6rem);
+        max-width: 680px;
+        margin: 0 auto;
     }
 
-    .profile-topbar p {
+    .page-hero .lead {
         color: var(--text-secondary);
+        max-width: 560px;
+        margin: 16px auto 0;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .section-label {
+        font-size: 1.05rem;
+        font-weight: 800;
         margin: 0;
     }
 
@@ -56,6 +73,7 @@ My Profile
     }
 
     .profile-avatar-wrap {
+        position: relative;
         width: 132px;
         height: 132px;
         margin: 0 auto 20px;
@@ -70,6 +88,88 @@ My Profile
         height: 100%;
         object-fit: cover;
         border: 3px solid var(--bg);
+        transition: opacity .25s var(--ease);
+    }
+
+    /* Hover overlay hinting the photo can be changed */
+    .avatar-hover-overlay {
+        position: absolute;
+        inset: 4px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        flex-direction: column;
+        background: rgba(8, 7, 11, .55);
+        color: #fff;
+        font-size: .72rem;
+        font-weight: 700;
+        opacity: 0;
+        cursor: pointer;
+        transition: opacity .25s var(--ease);
+    }
+
+    .avatar-hover-overlay i {
+        font-size: 1.15rem;
+    }
+
+    .profile-avatar-wrap:hover .avatar-hover-overlay {
+        opacity: 1;
+    }
+
+    /* Small camera badge, always visible */
+    .avatar-edit-btn {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--gradient-brand);
+        border: 3px solid var(--card);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .92rem;
+        cursor: pointer;
+        box-shadow: 0 6px 16px -4px rgba(236, 72, 153, .5);
+        transition: transform .25s var(--ease);
+        z-index: 2;
+    }
+
+    .avatar-edit-btn:hover {
+        transform: scale(1.08);
+    }
+
+    .avatar-spinner-overlay {
+        position: absolute;
+        inset: 4px;
+        border-radius: 50%;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(8, 7, 11, .55);
+        z-index: 3;
+    }
+
+    .profile-avatar-wrap.uploading .avatar-spinner-overlay {
+        display: flex;
+    }
+
+    .profile-avatar-wrap.uploading #avatar {
+        opacity: .5;
+    }
+
+    #avatarInput {
+        display: none;
+    }
+
+    .avatar-hint {
+        color: var(--text-muted);
+        font-size: .76rem;
+        margin: -8px 0 4px;
     }
 
     #name {
@@ -318,10 +418,17 @@ My Profile
 
     <div class="container">
 
-        <div class="profile-topbar fade-in">
-            <span class="profile-eyebrow"><i class="bi bi-person-badge-fill"></i> Profile Center</span>
+        <div class="page-hero fade-in">
+
+            <span class="hero-eyebrow">
+                <i class="bi bi-person-badge-fill"></i>
+                Profile Center
+            </span>
+
             <h1 class="fw-bold">My Profile</h1>
-            <p>Manage your account details, security settings, and support actions.</p>
+
+            <p class="lead">Manage your account details, profile photo, and security settings.</p>
+
         </div>
 
         <div class="row fade-in" id="authRequired" style="display:none;">
@@ -356,13 +463,34 @@ My Profile
 
                 <div class="profile-card">
 
-                    <div class="profile-avatar-wrap">
+                    <div class="profile-avatar-wrap" id="avatarWrap">
 
                         <img src="https://ui-avatars.com/api/?name=User&background=0D0D0D&color=F5C84C&size=150"
                             id="avatar"
                             class="rounded-circle">
 
+                        <div class="avatar-hover-overlay" onclick="document.getElementById('avatarInput').click()">
+                            <i class="bi bi-camera-fill"></i>
+                            Change Photo
+                        </div>
+
+                        <div class="avatar-spinner-overlay">
+                            <span class="spinner-border spinner-border-sm text-light" role="status"></span>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="avatar-edit-btn"
+                            aria-label="Change profile photo"
+                            onclick="document.getElementById('avatarInput').click()">
+                            <i class="bi bi-camera-fill"></i>
+                        </button>
+
+                        <input type="file" id="avatarInput" accept="image/png, image/jpeg, image/webp" onchange="handleAvatarSelect(event)">
+
                     </div>
+
+                    <p class="avatar-hint">JPG, PNG or WEBP · up to 5MB</p>
 
                     <h3 id="name">Loading...</h3>
 
@@ -417,7 +545,7 @@ My Profile
                 <div class="profile-info-card">
 
                     <div class="info-header">
-                        <h3>My Information</h3>
+                        <h3 class="section-label">My Information</h3>
                         <span class="info-subtle">Read Only</span>
                     </div>
 
@@ -726,6 +854,178 @@ async function loadProfile(){
     catch(error){
 
         document.getElementById("name").textContent="Unable to load profile";
+
+    }
+
+}
+
+function handleAvatarSelect(event){
+
+    const file=event.target.files && event.target.files[0];
+
+    // Reset the input so selecting the same file again still fires "change".
+    event.target.value="";
+
+    if(!file){
+
+        return;
+
+    }
+
+    if(!file.type.startsWith("image/")){
+
+        showToast("Please choose an image file (JPG, PNG, or WEBP).","danger");
+
+        return;
+
+    }
+
+    if(file.size>5*1024*1024){
+
+        showToast("Image must be under 5MB.","danger");
+
+        return;
+
+    }
+
+    // Show an instant local preview while the upload is in flight.
+    const reader=new FileReader();
+
+    reader.onload=function(){
+
+        document.getElementById("avatar").src=reader.result;
+
+    };
+
+    reader.readAsDataURL(file);
+
+    uploadAvatar(file);
+
+}
+
+async function uploadAvatar(file){
+
+    const wrap=document.getElementById("avatarWrap");
+
+    wrap.classList.add("uploading");
+
+    try{
+
+        const token=getToken();
+
+        const headers={};
+
+        if(token){
+
+            headers["Authorization"]=`Token ${token}`;
+
+        }
+
+        // Note: no Content-Type header here — the browser sets the correct
+        // multipart/form-data boundary automatically for FormData bodies.
+        const formData=new FormData();
+
+        formData.append("profile_image",file);
+
+        const response=await fetch(API_BASE+"/accounts/me/",{
+
+            method:"PATCH",
+
+            headers:headers,
+
+            body:formData
+
+        });
+
+        let data={};
+
+        try{
+
+            data=await response.json();
+
+        }
+
+        catch(parseError){
+
+            data={};
+
+        }
+
+        if(response.ok){
+
+            const profileImage=data.profile_image || "";
+
+            if(profileImage){
+
+                const imageUrl=/^https?:\/\//i.test(profileImage)
+                    ? profileImage
+                    : `${API_BASE}${profileImage}`;
+
+                document.getElementById("avatar").src=imageUrl;
+
+            }
+
+            try{
+
+                const cachedUser=JSON.parse(localStorage.getItem("user") || "{}");
+
+                cachedUser.profile_image=profileImage || cachedUser.profile_image;
+
+                localStorage.setItem("user",JSON.stringify(cachedUser));
+
+            }
+
+            catch(storageError){
+
+                // Ignore malformed cached user data.
+
+            }
+
+            if(typeof updateNavForAuth==="function"){
+
+                updateNavForAuth();
+
+            }
+
+            showToast("Profile photo updated.","success");
+
+        }
+
+        else{
+
+            let errors="";
+
+            if(typeof data==="object" && data!==null){
+
+                Object.values(data).forEach(error=>{
+
+                    const text=Array.isArray(error) ? error.join(" ") : error;
+
+                    errors+=text+" ";
+
+                });
+
+            }
+
+            showToast(errors.trim() || "Unable to update photo. Please try again.","danger");
+
+            loadProfile();
+
+        }
+
+    }
+
+    catch(error){
+
+        showToast("Something went wrong uploading your photo.","danger");
+
+        loadProfile();
+
+    }
+
+    finally{
+
+        wrap.classList.remove("uploading");
 
     }
 
