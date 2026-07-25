@@ -12,6 +12,9 @@ def resetpassword(request):
 def home(request):
     return render(request, "home.html")
 
+def me(request):
+    return render(request, "me.html")
+
 def events(request):
     return render(request, "events.html")
 
