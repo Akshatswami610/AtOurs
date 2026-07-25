@@ -12,56 +12,128 @@ Register
         min-height: calc(100vh - 260px);
         display: flex;
         align-items: center;
-        padding: 40px 0;
+        padding: 40px 0 64px;
+    }
+
+    .auth-shell {
+        width: 100%;
+        display: flex;
+        justify-content: center;
     }
 
     .auth-card {
-        padding: 44px 40px;
+        width: min(100%, 580px);
+        padding: 34px 30px;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, .03);
+        border: 1px solid rgba(255, 255, 255, .08);
+        box-shadow: 0 18px 45px -24px rgba(0, 0, 0, .8);
+        backdrop-filter: blur(14px);
         animation: fadeInUp .5s var(--ease) both;
     }
 
+    .auth-topline {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+    }
+
+    .auth-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(236, 72, 153, .12);
+        color: var(--pink);
+        font-size: .74rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+    }
+
+    .auth-meta {
+        color: var(--text-muted);
+        font-size: .78rem;
+    }
+
     .auth-logo {
-        width: 56px;
-        height: 56px;
+        width: 54px;
+        height: 54px;
         border-radius: 16px;
         background: var(--gradient-brand-3);
         color: #fff;
-        font-size: 1.5rem;
+        font-size: 1.4rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 22px;
-        box-shadow: 0 12px 26px -12px rgba(236, 72, 153, .55);
+        margin: 0 auto 18px;
+        box-shadow: 0 10px 24px -12px rgba(236, 72, 153, .55);
     }
 
     .auth-title {
         text-align: center;
         font-size: 1.55rem;
-        margin-bottom: 6px;
+        margin-bottom: 8px;
     }
 
     .auth-subtitle {
         text-align: center;
         color: var(--text-muted);
-        font-size: .9rem;
-        margin-bottom: 30px;
+        font-size: .92rem;
+        margin-bottom: 24px;
+        line-height: 1.6;
+    }
+
+    .auth-card .form-label {
+        color: var(--text-primary);
+        font-weight: 700;
+        font-size: .84rem;
+        margin-bottom: 8px;
     }
 
     .auth-card .form-control {
         padding: .78rem 1rem;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, .1);
+        background: rgba(255, 255, 255, .03);
+        color: var(--text-primary);
+        transition: border-color .2s var(--ease), box-shadow .2s var(--ease), background .2s var(--ease);
+    }
+
+    .auth-card .form-control::placeholder {
+        color: var(--text-muted);
+    }
+
+    .auth-card .form-control:focus {
+        background: rgba(255, 255, 255, .05);
+        border-color: rgba(236, 72, 153, .52);
+        box-shadow: 0 0 0 4px rgba(236, 72, 153, .16);
+        color: var(--text-primary);
     }
 
     .auth-card .btn-primary {
-        padding: .78rem 1rem;
-        font-size: .95rem;
+        padding: .8rem 1rem;
+        font-size: .94rem;
         margin-top: 6px;
+        border-radius: 12px;
+        border: none;
+        background: var(--gradient-brand);
+        box-shadow: 0 10px 20px -12px rgba(236, 72, 153, .7);
+        transition: transform .2s var(--ease), box-shadow .2s var(--ease);
+    }
+
+    .auth-card .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 14px 24px -14px rgba(236, 72, 153, .8);
     }
 
     .auth-divider {
         display: flex;
         align-items: center;
         gap: 12px;
-        margin: 26px 0;
+        margin: 24px 0;
         color: var(--text-muted);
         font-size: .78rem;
     }
@@ -71,7 +143,7 @@ Register
         content: '';
         flex: 1;
         height: 1px;
-        background: var(--border);
+        background: linear-gradient(90deg, transparent, var(--border), transparent);
     }
 
     .auth-card p.text-center a {
@@ -128,8 +200,8 @@ Register
 
     .avatar-upload {
         position: relative;
-        width: 96px;
-        height: 96px;
+        width: 100px;
+        height: 100px;
         border-radius: 50%;
         cursor: pointer;
         flex-shrink: 0;
@@ -139,19 +211,20 @@ Register
         width: 100%;
         height: 100%;
         border-radius: 50%;
-        background: var(--bg-secondary);
-        border: 2px dashed var(--border);
+        background: rgba(255, 255, 255, .04);
+        border: 1px dashed rgba(255, 255, 255, .18);
         display: flex;
         align-items: center;
         justify-content: center;
         color: var(--text-muted);
         font-size: 2rem;
-        transition: border-color .25s var(--ease), color .25s var(--ease);
+        transition: border-color .25s var(--ease), color .25s var(--ease), transform .2s var(--ease);
     }
 
     .avatar-upload:hover .avatar-upload-placeholder {
         border-color: var(--pink);
         color: var(--pink);
+        transform: translateY(-1px);
     }
 
     .avatar-preview {
@@ -159,24 +232,24 @@ Register
         height: 100%;
         border-radius: 50%;
         object-fit: cover;
-        border: 2px solid var(--border);
+        border: 2px solid rgba(255, 255, 255, .14);
     }
 
     .avatar-upload-badge {
         position: absolute;
         bottom: -2px;
         right: -2px;
-        width: 32px;
-        height: 32px;
+        width: 34px;
+        height: 34px;
         border-radius: 50%;
         background: var(--gradient-brand);
         color: #fff;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: .82rem;
+        font-size: .84rem;
         border: 3px solid var(--card);
-        box-shadow: 0 6px 14px -4px rgba(236, 72, 153, .5);
+        box-shadow: 0 8px 16px -6px rgba(236, 72, 153, .55);
         pointer-events: none;
     }
 
@@ -193,6 +266,27 @@ Register
 
     .avatar-remove-btn:hover {
         color: #ef5b6a;
+    }
+
+    .password-field {
+        position: relative;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        font-size: 1rem;
+        padding: 0 4px;
+        cursor: pointer;
+    }
+
+    .password-field .form-control {
+        padding-right: 42px;
     }
 
     .terms-check {
@@ -241,14 +335,15 @@ Register
         height: 54px;
         text-align: center;
         font-size: 1.25rem;
-        font-weight: 600;
+        font-weight: 700;
         padding: 0;
+        border-radius: 12px;
     }
 
     .otp-sent-to {
         text-align: center;
         color: var(--text-muted);
-        font-size: .85rem;
+        font-size: .9rem;
         margin-top: -4px;
     }
 
@@ -376,6 +471,12 @@ Register
         color: var(--text-secondary, #e6e6e6);
     }
 
+    @media (max-width: 576px) {
+        .auth-card {
+            padding: 24px 20px;
+        }
+    }
+
     @keyframes toastIn {
         from { transform: translateX(24px); opacity: 0; }
         to { transform: translateX(0); opacity: 1; }
@@ -399,21 +500,31 @@ Register
 
     <div class="row justify-content-center w-100">
 
-        <div class="col-md-7 col-lg-6">
+        <div class="col-12 col-xl-10">
 
-            <div class="card auth-card">
+            <div class="auth-shell">
 
-                <div class="auth-logo">
-                    <i class="bi bi-stars"></i>
-                </div>
+                <div class="card auth-card">
 
-                <h2 class="auth-title fw-bold">
-                    Create Your Account
-                </h2>
+                    <div class="auth-topline">
+                        <span class="auth-pill">
+                            <i class="bi bi-person-plus"></i>
+                            Create account
+                        </span>
+                        <span class="auth-meta">Step 1 of 2</span>
+                    </div>
 
-                <p class="auth-subtitle">
-                    Join AtOurs to discover and host unforgettable events.
-                </p>
+                    <div class="auth-logo">
+                        <i class="bi bi-stars"></i>
+                    </div>
+
+                    <h2 class="auth-title fw-bold">
+                        Create Your Account
+                    </h2>
+
+                    <p class="auth-subtitle">
+                        Join AtOurs to discover and host unforgettable events.
+                    </p>
 
                 <!-- STEP 1: REGISTRATION FORM -->
                 <div id="formStep" class="auth-step active">
