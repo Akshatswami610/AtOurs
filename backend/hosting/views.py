@@ -20,6 +20,16 @@ class EventListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         queryset = Event.objects.all()
 
+        # Optional host filter used by profile pages to show only events
+        # created by a specific host.
+        host_id = self.request.query_params.get("host_id")
+
+        if host_id is not None:
+            try:
+                queryset = queryset.filter(user_id=int(host_id))
+            except (TypeError, ValueError):
+                queryset = queryset.none()
+
         # Opt-in filter used by the hosting/management page. Without a
         # "mine" param this stays the public, unauthenticated-friendly
         # listing that home.html relies on for browsing all events.
