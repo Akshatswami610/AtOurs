@@ -447,6 +447,25 @@ Event Details
         margin-bottom: 18px;
     }
 
+    .host-profile-trigger {
+        cursor: pointer;
+        border-radius: var(--radius-sm);
+        transition: background .25s var(--ease), transform .25s var(--ease);
+    }
+
+    .host-profile-trigger:hover {
+        background: rgba(255, 255, 255, .04);
+    }
+
+    .host-profile-trigger:active {
+        transform: scale(.99);
+    }
+
+    .host-profile-trigger:focus-visible {
+        outline: 2px solid rgba(236, 72, 153, .6);
+        outline-offset: 3px;
+    }
+
     .host-avatar {
         width: 62px;
         height: 62px;
@@ -842,7 +861,13 @@ Event Details
 
             <div class="host-card">
 
-                <div class="host-card-header">
+                <div
+                    class="host-card-header host-profile-trigger"
+                    onclick="goToHostProfile()"
+                    onkeydown="onHostProfileKeydown(event)"
+                    role="link"
+                    tabindex="0"
+                    aria-label="View host profile">
 
                     <div class="host-avatar" id="host_avatar">
                         <i class="bi bi-person-fill" id="host_avatar_icon"></i>
@@ -905,6 +930,7 @@ Event Details
 <script>
 
 const eventId=window.location.pathname.split("/").filter(Boolean).pop();
+let hostProfileId=null;
 
 loadEvent();
 
@@ -1004,6 +1030,7 @@ function renderHost(event){
 
     // API may return the host under `user` or `host` — never assume either exists.
     const host=event.user || event.host || null;
+    hostProfileId=(host && Number.isFinite(Number(host.id))) ? Number(host.id) : null;
 
     const nameEl=document.getElementById("host_name");
     const eventsEl=document.getElementById("host_events");
@@ -1090,6 +1117,32 @@ function renderHost(event){
         avatarImg.removeAttribute("src");
         avatarImg.style.display="none";
         avatarIcon.style.display="";
+
+    }
+
+}
+
+function goToHostProfile(){
+
+    if(hostProfileId){
+
+        window.location=`/profile/${hostProfileId}/`;
+
+        return;
+
+    }
+
+    window.location="/me/";
+
+}
+
+function onHostProfileKeydown(event){
+
+    if(event.key==="Enter" || event.key===" "){
+
+        event.preventDefault();
+
+        goToHostProfile();
 
     }
 
