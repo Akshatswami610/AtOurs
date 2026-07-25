@@ -1,10 +1,802 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Profile</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block title %}
+Profile
+{% endblock %}
+
+{% block css %}
+
+<style>
+
+    .profile-page {
+        padding: 28px 0 44px;
+    }
+
+    .profile-shell {
+        display: block;
+    }
+
+    .profile-main,
+    .auth-required-card,
+    .hosted-events-card {
+        background: linear-gradient(180deg, rgba(255, 255, 255, .03), rgba(255, 255, 255, .015)), var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        box-shadow: 0 1px 0 rgba(255, 255, 255, .04) inset, 0 16px 30px -18px rgba(0, 0, 0, .65);
+    }
+
+    .profile-main {
+        padding: 26px;
+    }
+
+    .profile-head {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 18px;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .profile-avatar {
+        width: 98px;
+        height: 98px;
+        border-radius: 50%;
+        border: 3px solid rgba(236, 72, 153, .35);
+        object-fit: cover;
+        background: #120f17;
+    }
+
+    .identity-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-size: .72rem;
+        font-weight: 800;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        color: #ffe1f1;
+        background: rgba(236, 72, 153, .14);
+        border: 1px solid rgba(236, 72, 153, .32);
+        margin-bottom: 8px;
+    }
+
+    #profileName {
+        margin: 0;
+        font-size: 2rem;
+        line-height: 1;
+        font-weight: 900;
+        letter-spacing: -.02em;
+    }
+
+    .profile-contact {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
+
+    .contact-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        max-width: 100%;
+        border-radius: 999px;
+        padding: 7px 12px;
+        font-size: .8rem;
+        font-weight: 700;
+        color: var(--text-secondary);
+        background: var(--bg-secondary);
+        border: 1px solid var(--border);
+    }
+
+    .contact-pill span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .profile-bio-card {
+        border-radius: var(--radius-md);
+        padding: 18px;
+        background: radial-gradient(circle at 12% 0%, rgba(236, 72, 153, .12), transparent 38%), var(--bg-secondary);
+        border: 1px solid var(--border);
+        margin-bottom: 18px;
+    }
+
+    .label-inline {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: var(--text-muted);
+        font-size: .72rem;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+
+    #profileBio {
+        margin: 0;
+        color: var(--text-secondary);
+        line-height: 1.75;
+        font-size: .95rem;
+        white-space: pre-line;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 10px;
+    }
+
+    .stat-tile {
+        min-height: 110px;
+        border-radius: var(--radius-md);
+        background: var(--bg-secondary);
+        border: 1px solid var(--border);
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .stat-tile strong {
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        font-size: .67rem;
+        font-weight: 800;
+    }
+
+    .stat-tile span {
+        color: var(--text-primary);
+        font-size: 1.5rem;
+        line-height: 1;
+        font-weight: 900;
+    }
+
+    .hosted-events-card {
+        margin-top: 18px;
+        padding: 20px;
+    }
+
+    .section-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 14px;
+        margin-bottom: 16px;
+    }
+
+    .section-head h3 {
+        margin: 0;
+        font-size: 1.2rem;
+    }
+
+    .section-head span {
+        color: var(--text-muted);
+        font-size: .82rem;
+        font-weight: 700;
+    }
+
+    .hosted-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .hosted-item {
+        display: block;
+        border-radius: var(--radius-md);
+        background: var(--bg-secondary);
+        border: 1px solid var(--border);
+        overflow: hidden;
+        transition: transform .22s var(--ease), border-color .22s var(--ease), box-shadow .22s var(--ease);
+    }
+
+    .hosted-item:hover {
+        transform: translateY(-3px);
+        border-color: rgba(236, 72, 153, .3);
+        box-shadow: 0 18px 32px -24px rgba(236, 72, 153, .7);
+    }
+
+    .hosted-poster {
+        height: 132px;
+        background: linear-gradient(135deg, #1a1720, #100f15);
+        position: relative;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .hosted-poster img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .hosted-fallback {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255, 255, 255, .22);
+        font-size: 2rem;
+    }
+
+    .hosted-copy {
+        padding: 14px;
+    }
+
+    .hosted-title {
+        margin: 0 0 8px;
+        color: var(--text-primary);
+        font-size: .97rem;
+        line-height: 1.35;
+        font-weight: 800;
+    }
+
+    .hosted-meta {
+        display: grid;
+        gap: 6px;
+    }
+
+    .hosted-meta span {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: var(--text-secondary);
+        font-size: .8rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .hosted-meta i {
+        color: var(--pink);
+    }
+
+    .empty-state {
+        border-radius: var(--radius-md);
+        border: 1px dashed var(--border);
+        background: var(--bg-secondary);
+        text-align: center;
+        padding: 30px 18px;
+    }
+
+    .empty-state i {
+        font-size: 1.9rem;
+        color: var(--pink);
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    .empty-state h4 {
+        margin: 0 0 6px;
+        font-size: 1.05rem;
+    }
+
+    .empty-state p {
+        margin: 0 0 16px;
+        color: var(--text-secondary);
+        font-size: .88rem;
+    }
+
+    .auth-required-card {
+        max-width: 480px;
+        margin: 58px auto;
+        text-align: center;
+        padding: 54px 22px;
+    }
+
+    .auth-required-card i {
+        color: var(--pink);
+        font-size: 2.3rem;
+        display: block;
+        margin-bottom: 14px;
+    }
+
+    .auth-required-card h3 {
+        margin-bottom: 8px;
+    }
+
+    .auth-required-card p {
+        color: var(--text-secondary);
+        margin-bottom: 20px;
+    }
+
+    .loading-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-secondary);
+    }
+
+    .loading-state .spinner-border {
+        color: var(--pink);
+        margin-bottom: 12px;
+    }
+
+    @media (max-width: 767px) {
+        .profile-main,
+        .hosted-events-card {
+            padding: 16px;
+        }
+
+        .profile-head {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+
+        .profile-avatar {
+            margin: 0 auto;
+        }
+
+        .profile-contact {
+            justify-content: center;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hosted-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="profile-page">
+
+    <div class="container">
+
+        <div class="loading-state fade-in" id="loadingState">
+            <div class="spinner-border" role="status"></div>
+            <p class="mb-0">Loading profile...</p>
+        </div>
+
+        <div id="authRequired" style="display:none;">
+            <div class="auth-required-card fade-in">
+                <i class="bi bi-person-lock"></i>
+                <h3 id="authTitle">Login required</h3>
+                <p id="authMessage">Please login to view your profile and hosted events.</p>
+                <div class="d-flex justify-content-center gap-2 flex-wrap" id="authActions">
+                    <a href="/login/" class="btn btn-primary">Login</a>
+                    <a href="/register/" class="btn btn-secondary">Create Account</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="profileContent" style="display:none;">
+
+            <div class="profile-shell fade-in">
+
+                <section>
+
+                    <div class="profile-main">
+
+                        <div class="profile-head">
+
+                            <img id="profileAvatar" class="profile-avatar" alt="Profile avatar">
+
+                            <div>
+                                <span class="identity-kicker"><i class="bi bi-stars"></i> Host Profile</span>
+                                <h1 id="profileName">-</h1>
+
+                                <div class="profile-contact">
+                                    <div class="contact-pill"><i class="bi bi-envelope-fill"></i><span id="profileEmail">-</span></div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="profile-bio-card">
+                            <span class="label-inline"><i class="bi bi-chat-square-quote-fill"></i> Bio</span>
+                            <p id="profileBio">-</p>
+                        </div>
+
+                        <div class="stats-grid">
+                            <div class="stat-tile">
+                                <strong>Hosted Events</strong>
+                                <span id="statHosted">0</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="hosted-events-card">
+
+                        <div class="section-head">
+                            <h3>Hosted Events</h3>
+                            <span id="hostedSubheading">0 events</span>
+                        </div>
+
+                        <div class="hosted-grid" id="hostedGrid"></div>
+
+                        <div class="empty-state" id="emptyHosted" style="display:none;">
+                            <i class="bi bi-calendar2-heart"></i>
+                            <h4>No events hosted yet</h4>
+                            <p>Start hosting and your events will appear here.</p>
+                            <a href="/hosting/" class="btn btn-primary">Host an Event</a>
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block js %}
+
+<script>
+
+const els={
+    loading:document.getElementById("loadingState"),
+    authRequired:document.getElementById("authRequired"),
+    authTitle:document.getElementById("authTitle"),
+    authMessage:document.getElementById("authMessage"),
+    authActions:document.getElementById("authActions"),
+    profileContent:document.getElementById("profileContent"),
+    avatar:document.getElementById("profileAvatar"),
+    name:document.getElementById("profileName"),
+    email:document.getElementById("profileEmail"),
+    bio:document.getElementById("profileBio"),
+    statHosted:document.getElementById("statHosted"),
+    hostedGrid:document.getElementById("hostedGrid"),
+    emptyHosted:document.getElementById("emptyHosted"),
+    hostedSubheading:document.getElementById("hostedSubheading")
+};
+
+function normalizeMediaUrl(path){
+
+    if(!path){
+        return "";
+    }
+
+    return /^https?:\/\//i.test(path) ? path : `${API_BASE}${path}`;
+
+}
+
+function prettifyCategory(category){
+
+    if(!category){
+        return "Not available";
+    }
+
+    return String(category)
+        .replace(/_/g," ")
+        .toLowerCase()
+        .replace(/\b\w/g,char=>char.toUpperCase());
+
+}
+
+function getTopOccurrence(items,key){
+
+    if(!Array.isArray(items) || items.length===0){
+        return null;
+    }
+
+    const counts={};
+
+    for(const item of items){
+
+        const value=(item && item[key]) ? String(item[key]).trim() : "";
+
+        if(!value){
+            continue;
+        }
+
+        counts[value]=(counts[value] || 0)+1;
+
+    }
+
+    let winner=null;
+    let winnerCount=0;
+
+    Object.entries(counts).forEach(([value,count])=>{
+
+        if(count>winnerCount){
+            winner=value;
+            winnerCount=count;
+        }
+
+    });
+
+    return winner;
+
+}
+
+function generateBio(user,events){
+
+    const suppliedBio=user.bio || user.about || user.description || "";
+
+    if(suppliedBio){
+        return suppliedBio;
+    }
+
+    const hostName=user.name || "This host";
+    const hostedCount=events.length;
+    const topCategory=prettifyCategory(getTopOccurrence(events,"event_category") || "community events").toLowerCase();
+
+    if(hostedCount>0){
+        return `${hostName} has hosted ${hostedCount} event${hostedCount===1 ? "" : "s"} on AtOurs, mostly focused on ${topCategory}. Loves bringing people together for meaningful, local experiences.`;
+    }
+
+    return `${hostName} is a new host on AtOurs and is getting ready to share memorable experiences with the community.`;
+
+}
+
+function setText(element,value,fallback="-"){
+
+    if(!element){
+        return;
+    }
+
+    const finalValue=(value===null || value===undefined || value==="") ? fallback : String(value);
+    element.textContent=finalValue;
+
+}
+
+function makeHostedCard(event){
+
+    const card=document.createElement("a");
+    card.className="hosted-item";
+    card.href=`/event-details/${event.event_id}/`;
+
+    const posterWrap=document.createElement("div");
+    posterWrap.className="hosted-poster";
+
+    const posterUrl=normalizeMediaUrl(event.poster || "");
+
+    if(posterUrl){
+
+        const img=document.createElement("img");
+        img.src=posterUrl;
+        img.alt=event.event_name || "Hosted event";
+
+        img.onerror=function(){
+            this.onerror=null;
+            this.remove();
+            const fallback=document.createElement("div");
+            fallback.className="hosted-fallback";
+            fallback.innerHTML='<i class="bi bi-image"></i>';
+            posterWrap.appendChild(fallback);
+        };
+
+        posterWrap.appendChild(img);
+
+    } else {
+
+        const fallback=document.createElement("div");
+        fallback.className="hosted-fallback";
+        fallback.innerHTML='<i class="bi bi-image"></i>';
+        posterWrap.appendChild(fallback);
+
+    }
+
+    const copy=document.createElement("div");
+    copy.className="hosted-copy";
+
+    const title=document.createElement("h4");
+    title.className="hosted-title";
+    title.textContent=event.event_name || "Untitled event";
+
+    const meta=document.createElement("div");
+    meta.className="hosted-meta";
+
+    const dateRow=document.createElement("span");
+    dateRow.innerHTML='<i class="bi bi-calendar-event"></i>';
+    dateRow.append(document.createTextNode(event.event_date || "Date not available"));
+
+    const locationRow=document.createElement("span");
+    locationRow.innerHTML='<i class="bi bi-geo-alt-fill"></i>';
+    locationRow.append(document.createTextNode(event.location || "Location not available"));
+
+    meta.appendChild(dateRow);
+    meta.appendChild(locationRow);
+
+    copy.appendChild(title);
+    copy.appendChild(meta);
+
+    card.appendChild(posterWrap);
+    card.appendChild(copy);
+
+    return card;
+
+}
+
+function renderHostedEvents(events){
+
+    els.hostedGrid.innerHTML="";
+    setText(els.hostedSubheading,`${events.length} event${events.length===1 ? "" : "s"}`);
+
+    if(events.length===0){
+        els.emptyHosted.style.display="";
+        return;
+    }
+
+    els.emptyHosted.style.display="none";
+
+    const fragment=document.createDocumentFragment();
+
+    events.forEach(event=>{
+        fragment.appendChild(makeHostedCard(event));
+    });
+
+    els.hostedGrid.appendChild(fragment);
+
+}
+
+function renderProfile(user,events){
+
+    const name=user.name || "User";
+    const avatarFallback=`https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=100f15&color=f6bfd8&size=180`;
+    const avatarUrl=normalizeMediaUrl(user.profile_image || "") || avatarFallback;
+
+    els.avatar.src=avatarUrl;
+    els.avatar.onerror=function(){
+        this.onerror=null;
+        this.src=avatarFallback;
+    };
+
+    setText(els.name,name,"User");
+    setText(els.email,user.email,"Not available");
+    const hostedCount=events.length;
+
+    setText(els.bio,generateBio(user,events));
+    setText(els.statHosted,hostedCount,"0");
+
+    renderHostedEvents(events);
+
+}
+
+function setViewState(state){
+
+    els.loading.style.display=(state==="loading") ? "" : "none";
+    els.authRequired.style.display=(state==="auth") ? "" : "none";
+    els.profileContent.style.display=(state==="ready") ? "" : "none";
+
+}
+
+function setAuthCardMode(mode){
+
+    if(mode==="profile-unavailable"){
+
+        setText(els.authTitle,"Profile unavailable");
+        setText(els.authMessage,"We could not load this host profile.");
+
+        if(els.authActions){
+            els.authActions.style.display="none";
+        }
+
+        return;
+
+    }
+
+    setText(els.authTitle,"Login required");
+    setText(els.authMessage,"Please login to view your profile and hosted events.");
+
+    if(els.authActions){
+        els.authActions.style.display="";
+    }
+
+}
+
+async function loadProfilePage(){
+
+    const pathParts=window.location.pathname.split("/").filter(Boolean);
+
+    let hostId=null;
+
+    if(pathParts.length>=2 && pathParts[0]==="profile"){
+
+        const pathId=Number(pathParts[1]);
+
+        if(Number.isFinite(pathId)){
+            hostId=pathId;
+        }
+
+    }
+
+    // Backward compatibility for any old links that still use query params.
+    if(hostId===null){
+
+        const params=new URLSearchParams(window.location.search);
+        const hostIdRaw=params.get("host_id");
+
+        if(hostIdRaw!==null){
+
+            const parsedHostId=Number(hostIdRaw);
+
+            if(Number.isFinite(parsedHostId)){
+                hostId=parsedHostId;
+            }
+
+        }
+
+    }
+
+    if(hostId){
+
+        try{
+
+            const [user,events]=await Promise.all([
+                api(`/accounts/users/${hostId}/`),
+                api(`/hosting/events/?host_id=${hostId}`)
+            ]);
+
+            if(!user || user.detail){
+                throw new Error("Host profile fetch failed");
+            }
+
+            renderProfile(user,Array.isArray(events) ? events : []);
+            setViewState("ready");
+
+            return;
+
+        }
+
+        catch(error){
+
+            setAuthCardMode("profile-unavailable");
+            setViewState("auth");
+            showToast("Unable to load host profile right now.","danger");
+
+            return;
+
+        }
+
+    }
+
+    if(!getToken()){
+        setAuthCardMode("login-required");
+        setViewState("auth");
+        return;
+    }
+
+    try{
+
+        const [user,events]=await Promise.all([
+            api("/accounts/me/"),
+            api("/hosting/events/?mine=true")
+        ]);
+
+        if(!user || user.detail){
+            throw new Error("User profile fetch failed");
+        }
+
+        renderProfile(user,Array.isArray(events) ? events : []);
+        setViewState("ready");
+
+    }
+
+    catch(error){
+
+        setAuthCardMode("login-required");
+        setViewState("auth");
+        showToast("Unable to load profile details right now.","danger");
+
+    }
+
+}
+
+setViewState("loading");
+loadProfilePage();
+
+</script>
+
+{% endblock %}
