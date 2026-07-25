@@ -113,6 +113,28 @@ class MeView(APIView):
         )
 
 
+class PublicUserProfileView(APIView):
+
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, user_id):
+
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response(
+                {"detail": "User not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        return Response({
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "profile_image": request.build_absolute_uri(user.profile_image.url) if user.profile_image else None,
+        })
+
+
 # --------------------------------------------------
 # REGISTER - SEND OTP
 # --------------------------------------------------
