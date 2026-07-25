@@ -718,6 +718,62 @@
             color: var(--pink);
         }
 
+        .newsletter-title {
+            color: var(--text-primary);
+            font-size: .8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin: 18px 0 10px;
+        }
+
+        .newsletter-copy {
+            color: var(--text-secondary);
+            font-size: .82rem;
+            line-height: 1.5;
+            margin: 0 0 10px;
+        }
+
+        .newsletter-form {
+            display: flex;
+            flex-direction: row;
+            align-items: stretch;
+            gap: 8px;
+        }
+
+        .newsletter-form .form-control {
+            flex: 1 1 auto;
+            min-height: 38px;
+            font-size: .84rem;
+            padding: .5rem .78rem;
+        }
+
+        .newsletter-form .btn {
+            flex: 0 0 auto;
+            min-height: 38px;
+            min-width: 96px;
+            font-size: .78rem;
+            padding: .42rem .7rem;
+            white-space: nowrap;
+        }
+
+        .newsletter-note {
+            color: var(--text-muted);
+            font-size: .75rem;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        @media (max-width: 480px) {
+            .newsletter-form {
+                flex-direction: column;
+            }
+
+            .newsletter-form .btn {
+                width: 100%;
+            }
+        }
+
         .footer-bottom {
             max-width: 1140px;
             margin: 40px auto 0;
@@ -1134,6 +1190,24 @@
 
                 </div>
 
+                <h6 class="newsletter-title">Newsletter</h6>
+
+                <p class="newsletter-copy">Get event drops and hosting tips once a week.</p>
+
+                <form id="newsletterForm" class="newsletter-form" novalidate>
+                    <label class="visually-hidden" for="newsletterEmail">Email address</label>
+                    <input
+                        id="newsletterEmail"
+                        type="email"
+                        class="form-control"
+                        placeholder="Enter your email"
+                        autocomplete="email"
+                        required>
+                    <button type="submit" class="btn btn-primary">Subscribe</button>
+                </form>
+
+                <p class="newsletter-note">No spam. Unsubscribe anytime.</p>
+
             </div>
 
         </div>
@@ -1518,6 +1592,57 @@
 
         }
 
+        function setupNewsletterForm() {
+
+            const form = document.getElementById("newsletterForm");
+            const input = document.getElementById("newsletterEmail");
+
+            if (!form || !input) {
+                return;
+            }
+
+            form.addEventListener("submit", function (event) {
+
+                event.preventDefault();
+
+                const email = input.value.trim().toLowerCase();
+
+                if (!email) {
+                    showToast("Please enter your email address.", "danger");
+                    input.focus();
+                    return;
+                }
+
+                if (!input.checkValidity()) {
+                    showToast("Please enter a valid email address.", "danger");
+                    input.focus();
+                    return;
+                }
+
+                const storageKey = "newsletterSubscribers";
+                let subscribers = [];
+
+                try {
+                    subscribers = JSON.parse(localStorage.getItem(storageKey) || "[]");
+                } catch (error) {
+                    subscribers = [];
+                }
+
+                if (subscribers.includes(email)) {
+                    showToast("You are already subscribed.", "success");
+                    return;
+                }
+
+                subscribers.push(email);
+                localStorage.setItem(storageKey, JSON.stringify(subscribers));
+
+                input.value = "";
+                showToast("Thanks for subscribing to the newsletter!", "success");
+
+            });
+
+        }
+
         function setupPageTransitions() {
 
             document.addEventListener("click", event => {
@@ -1591,6 +1716,8 @@
         updateActiveNavLink();
 
         setupPageTransitions();
+
+        setupNewsletterForm();
 
         showQueuedToast();
 
