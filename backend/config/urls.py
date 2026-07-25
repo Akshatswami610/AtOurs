@@ -21,6 +21,7 @@ urlpatterns = [
     path('home/', home, name='home'),
     path('events/', events, name='events'),
     path('hosting/', hosting, name='hosting'),
+    path('me/', me, name='me'),
     path('mytickets/', mytickets, name='mytickets'),
     path('event-details/<int:id>/', eventdetails, name='eventdetails'),
     path('booking-checkout/', bookingcheckout, name='bookingcheckout'),
