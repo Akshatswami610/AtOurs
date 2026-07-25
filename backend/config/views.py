@@ -30,7 +30,7 @@ def bookingcheckout(request):
 def hosting(request):
     return render(request, "hosting.html")
 
-def profile(request):
+def profile(request, id=None):
     return render(request, "profile.html")
 
 def about(request):
