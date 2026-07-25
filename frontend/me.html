@@ -1,0 +1,1464 @@
+{% extends "base.html" %}
+
+{% block title %}
+My Profile
+{% endblock %}
+
+{% block css %}
+
+<style>
+
+    .profile-shell {
+        padding: 0;
+        min-height: auto;
+        background: transparent;
+    }
+
+    /* ===== Hero (pattern shared with careers.html) ===== */
+
+    .page-hero {
+        text-align: center;
+        padding: 20px 20px 40px;
+    }
+
+    .page-hero .hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--pink);
+        font-weight: 700;
+        font-size: .82rem;
+        letter-spacing: .01em;
+        background: var(--accent-dim);
+        border: 1px solid rgba(236, 72, 153, .3);
+        padding: 7px 16px;
+        border-radius: 999px;
+        margin-bottom: 22px;
+        animation: fadeInUp .5s var(--ease) both;
+    }
+
+    .page-hero h1 {
+        font-size: clamp(1.9rem, 4vw, 2.6rem);
+        max-width: 680px;
+        margin: 0 auto;
+    }
+
+    .page-hero .lead {
+        color: var(--text-secondary);
+        max-width: 560px;
+        margin: 16px auto 0;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .section-label {
+        font-size: 1.05rem;
+        font-weight: 800;
+        margin: 0;
+    }
+
+    .profile-card,
+    .profile-info-card,
+    .auth-required-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        box-shadow: 0 1px 0 rgba(255, 255, 255, .04) inset, 0 8px 24px -8px rgba(0, 0, 0, .5);
+        height: 100%;
+    }
+
+    .profile-card {
+        text-align: center;
+        padding: 34px 24px;
+    }
+
+    .profile-avatar-wrap {
+        position: relative;
+        width: 132px;
+        height: 132px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        padding: 4px;
+        background: var(--gradient-brand-3);
+        box-shadow: 0 14px 28px -16px rgba(236, 72, 153, .6);
+    }
+
+    #avatar {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border: 3px solid var(--bg);
+        transition: opacity .25s var(--ease);
+    }
+
+    /* Hover overlay hinting the photo can be changed */
+    .avatar-hover-overlay {
+        position: absolute;
+        inset: 4px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        flex-direction: column;
+        background: rgba(8, 7, 11, .55);
+        color: #fff;
+        font-size: .72rem;
+        font-weight: 700;
+        opacity: 0;
+        cursor: pointer;
+        transition: opacity .25s var(--ease);
+    }
+
+    .avatar-hover-overlay i {
+        font-size: 1.15rem;
+    }
+
+    .profile-avatar-wrap:hover .avatar-hover-overlay {
+        opacity: 1;
+    }
+
+    /* Small camera badge, always visible */
+    .avatar-edit-btn {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--gradient-brand);
+        border: 3px solid var(--card);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .92rem;
+        cursor: pointer;
+        box-shadow: 0 6px 16px -4px rgba(236, 72, 153, .5);
+        transition: transform .25s var(--ease);
+        z-index: 2;
+    }
+
+    .avatar-edit-btn:hover {
+        transform: scale(1.08);
+    }
+
+    .avatar-spinner-overlay {
+        position: absolute;
+        inset: 4px;
+        border-radius: 50%;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(8, 7, 11, .55);
+        z-index: 3;
+    }
+
+    .profile-avatar-wrap.uploading .avatar-spinner-overlay {
+        display: flex;
+    }
+
+    .profile-avatar-wrap.uploading #avatar {
+        opacity: .5;
+    }
+
+    #avatarInput {
+        display: none;
+    }
+
+    .avatar-hint {
+        color: var(--text-muted);
+        font-size: .76rem;
+        margin: -8px 0 4px;
+    }
+
+    #name {
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 6px;
+    }
+
+    #email {
+        color: var(--text-secondary);
+        font-size: .92rem;
+        margin-bottom: 2px;
+    }
+
+    #phone {
+        color: var(--text-muted);
+        font-size: .87rem;
+        margin-bottom: 0;
+    }
+
+    .profile-actions {
+        margin-top: 20px;
+        display: grid;
+        gap: 10px;
+    }
+
+    .danger-zone {
+        margin-top: 18px;
+        padding-top: 16px;
+        border-top: 1px dashed var(--border);
+    }
+
+    .danger-zone-label {
+        color: var(--text-muted);
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin-bottom: 10px;
+    }
+
+    .btn-outline-danger {
+        width: 100%;
+        background: transparent;
+        color: #f7a5ab;
+        border: 1px solid rgba(255, 90, 100, .3);
+    }
+
+    .btn-outline-danger:hover {
+        background: #2a1416;
+        color: #ffb3b8;
+        border-color: rgba(255, 90, 100, .5);
+        transform: translateY(-2px);
+    }
+
+    .profile-info-card {
+        padding: 26px 22px;
+    }
+
+    .info-header {
+        margin-bottom: 0;
+    }
+
+    .info-header h3 {
+        font-size: 1.2rem;
+        margin: 0;
+    }
+
+    .info-subtle {
+        display: none;
+    }
+
+    .info-list {
+        margin-top: 18px;
+    }
+
+    .info-list .info-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px 4px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .info-list .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-list .info-icon {
+        width: 38px;
+        height: 38px;
+        flex-shrink: 0;
+        border-radius: 10px;
+        background: var(--accent-dim);
+        border: 1px solid rgba(236, 72, 153, .25);
+        color: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+
+    .info-list .info-label {
+        display: block;
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--text-muted);
+        margin-bottom: 3px;
+    }
+
+    .info-list .info-value {
+        font-size: .95rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .auth-required-card {
+        text-align: center;
+        padding: 56px 24px;
+    }
+
+    .auth-required-card i {
+        font-size: 2.4rem;
+        color: var(--pink);
+        margin-bottom: 18px;
+        display: block;
+    }
+
+    .auth-required-card h3 {
+        font-size: 1.25rem;
+        margin-bottom: 8px;
+    }
+
+    .auth-required-card p {
+        color: var(--text-secondary);
+        font-size: .92rem;
+        margin-bottom: 24px;
+    }
+
+    .auth-required-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .auth-required-actions .btn {
+        min-width: 140px;
+    }
+
+    .support-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-top: 18px;
+        padding: 14px 16px;
+        border-radius: var(--radius-sm);
+        background: var(--accent-dim);
+        border: 1px solid rgba(236, 72, 153, .25);
+    }
+
+    .support-note i {
+        color: var(--pink);
+        font-size: 1rem;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+    .support-note span {
+        color: var(--text-secondary);
+        font-size: .87rem;
+        line-height: 1.5;
+    }
+
+    .support-note a {
+        color: var(--pink);
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .support-note a:hover {
+        text-decoration: underline;
+    }
+
+    #deleteAccountModal .modal-dialog,
+    #changePasswordModal .modal-dialog {
+        max-width: 440px;
+    }
+
+    #deleteAccountModal .warning-box {
+        display: flex;
+        gap: 12px;
+        padding: 14px;
+        border-radius: var(--radius-sm);
+        background: #241014;
+        border: 1px solid rgba(255, 90, 100, .25);
+        margin-bottom: 18px;
+    }
+
+    #deleteAccountModal .warning-box i {
+        color: #f7a5ab;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    #deleteAccountModal .warning-box p {
+        color: #f7c8cc;
+        font-size: .85rem;
+        line-height: 1.55;
+        margin: 0;
+    }
+
+    #deleteConfirmInput {
+        margin-top: 8px;
+    }
+
+    #deleteStatus .alert,
+    #changePasswordStatus .alert {
+        font-size: .85rem;
+        margin-top: 12px;
+        margin-bottom: 0;
+    }
+
+    #changePasswordModal label {
+        font-size: .85rem;
+    }
+
+    @media (max-width: 767.98px) {
+        .profile-info-card,
+        .profile-card {
+            padding: 24px 16px;
+        }
+    }
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="profile-shell">
+
+    <div class="container">
+
+        <div class="page-hero fade-in">
+
+            <span class="hero-eyebrow">
+                <i class="bi bi-person-badge-fill"></i>
+                Profile Center
+            </span>
+
+            <h1 class="fw-bold">My Profile</h1>
+
+            <p class="lead">Manage your account details, profile photo, and security settings.</p>
+
+        </div>
+
+        <div class="row fade-in" id="authRequired" style="display:none;">
+
+            <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+
+                <div class="auth-required-card">
+
+                    <i class="bi bi-person-lock"></i>
+
+                    <h3>You're not logged in</h3>
+
+                    <p>Log in or create an account to view your profile.</p>
+
+                    <div class="auth-required-actions">
+
+                        <a href="/login/" class="btn btn-primary">Login</a>
+
+                        <a href="/register/" class="btn btn-secondary">Create Account</a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="row g-3 fade-in" id="profileContent" style="display:none;">
+
+            <div class="col-lg-4">
+
+                <div class="profile-card">
+
+                    <div class="profile-avatar-wrap" id="avatarWrap">
+
+                        <img src="https://ui-avatars.com/api/?name=User&background=0D0D0D&color=F5C84C&size=150"
+                            id="avatar"
+                            class="rounded-circle">
+
+                        <div class="avatar-hover-overlay" onclick="document.getElementById('avatarInput').click()">
+                            <i class="bi bi-camera-fill"></i>
+                            Change Photo
+                        </div>
+
+                        <div class="avatar-spinner-overlay">
+                            <span class="spinner-border spinner-border-sm text-light" role="status"></span>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="avatar-edit-btn"
+                            aria-label="Change profile photo"
+                            onclick="document.getElementById('avatarInput').click()">
+                            <i class="bi bi-camera-fill"></i>
+                        </button>
+
+                        <input type="file" id="avatarInput" accept="image/png, image/jpeg, image/webp" onchange="handleAvatarSelect(event)">
+
+                    </div>
+
+                    <p class="avatar-hint">JPG, PNG or WEBP · up to 5MB</p>
+
+                    <h3 id="name">Loading...</h3>
+
+                    <p id="email"></p>
+
+                    <p id="phone"></p>
+
+                    <div class="profile-actions">
+                        <button class="btn btn-danger" onclick="logout()">
+
+                            <i class="bi bi-box-arrow-right me-1"></i>
+
+                            Logout
+
+                        </button>
+
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#changePasswordModal">
+
+                            <i class="bi bi-key-fill me-1"></i>
+                            Change Password
+
+                        </button>
+                    </div>
+
+                    <div class="danger-zone">
+
+                        <div class="danger-zone-label">Danger Zone</div>
+
+                        <button
+                            type="button"
+                            class="btn btn-outline-danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#deleteAccountModal">
+
+                            <i class="bi bi-trash3 me-1"></i>
+                            Delete Account
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-8">
+
+                <div class="profile-info-card">
+
+                    <div class="info-header">
+                        <h3 class="section-label">My Information</h3>
+                        <span class="info-subtle">Read Only</span>
+                    </div>
+
+                    <div class="info-list">
+
+                        <div class="info-row">
+
+                            <div class="info-icon"><i class="bi bi-person-fill"></i></div>
+
+                            <div>
+                                <span class="info-label">Full Name</span>
+                                <span class="info-value" id="fullname">-</span>
+                            </div>
+
+                        </div>
+
+                        <div class="info-row">
+
+                            <div class="info-icon"><i class="bi bi-envelope-fill"></i></div>
+
+                            <div>
+                                <span class="info-label">Email</span>
+                                <span class="info-value" id="email2">-</span>
+                            </div>
+
+                        </div>
+
+                        <div class="info-row">
+
+                            <div class="info-icon"><i class="bi bi-telephone-fill"></i></div>
+
+                            <div>
+                                <span class="info-label">Phone</span>
+                                <span class="info-value" id="phone2">-</span>
+                            </div>
+
+                        </div>
+
+                        <div class="info-row">
+
+                            <div class="info-icon"><i class="bi bi-cake2-fill"></i></div>
+
+                            <div>
+                                <span class="info-label">Date of Birth</span>
+                                <span class="info-value" id="dob">-</span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="support-note">
+                        <i class="bi bi-info-circle-fill"></i>
+                        <span>Need to update any of the information above? Please <a href="/support/">contact our support team</a> for assistance.</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title fw-bold" id="deleteAccountModalLabel">Delete Account</h5>
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <div class="warning-box">
+
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+
+                    <p>This permanently deletes your account, your hosted events, and your bookings. This action cannot be undone.</p>
+
+                </div>
+
+                <label class="form-label mb-1 d-block" for="deletePasswordInput">Enter your password</label>
+
+                <input
+                    type="password"
+                    class="form-control mb-3"
+                    id="deletePasswordInput"
+                    autocomplete="current-password"
+                    placeholder="Password">
+
+                <label class="form-label mb-1 d-block" for="deleteConfirmInput">Type <strong>DELETE</strong> to confirm</label>
+
+                <input
+                    class="form-control"
+                    id="deleteConfirmInput"
+                    autocomplete="off"
+                    placeholder="DELETE">
+
+                <div id="deleteStatus"></div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+
+                <button
+                    id="deleteAccountBtn"
+                    class="btn btn-danger"
+                    disabled
+                    onclick="deleteAccount()">
+
+                    <i class="bi bi-trash3 me-1"></i>
+                    Delete My Account
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title fw-bold" id="changePasswordModalLabel">Change Password</h5>
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <label class="form-label mb-1 d-block" for="currentPasswordInput">Current Password</label>
+
+                <div class="password-field mb-3">
+
+                    <input
+                        type="password"
+                        class="form-control"
+                        id="currentPasswordInput"
+                        autocomplete="current-password"
+                        placeholder="Enter current password">
+
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        aria-label="Show password"
+                        onclick="togglePasswordVisibility('currentPasswordInput', this)">
+
+                        <i class="bi bi-eye"></i>
+
+                    </button>
+
+                </div>
+
+                <label class="form-label mb-1 d-block" for="newPasswordInput">New Password</label>
+
+                <div class="password-field mb-3">
+
+                    <input
+                        type="password"
+                        class="form-control"
+                        id="newPasswordInput"
+                        autocomplete="new-password"
+                        placeholder="At least 8 characters">
+
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        aria-label="Show password"
+                        onclick="togglePasswordVisibility('newPasswordInput', this)">
+
+                        <i class="bi bi-eye"></i>
+
+                    </button>
+
+                </div>
+
+                <label class="form-label mb-1 d-block" for="confirmNewPasswordInput">Confirm New Password</label>
+
+                <div class="password-field">
+
+                    <input
+                        type="password"
+                        class="form-control"
+                        id="confirmNewPasswordInput"
+                        autocomplete="new-password"
+                        placeholder="Re-enter new password">
+
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        aria-label="Show password"
+                        onclick="togglePasswordVisibility('confirmNewPasswordInput', this)">
+
+                        <i class="bi bi-eye"></i>
+
+                    </button>
+
+                </div>
+
+                <div id="changePasswordStatus"></div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+
+                <button
+                    id="changePasswordBtn"
+                    class="btn btn-primary"
+                    onclick="changePassword()">
+
+                    <i class="bi bi-key-fill me-1"></i>
+                    Update Password
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block js %}
+
+<script>
+
+async function loadProfile(){
+
+    try{
+
+        const user=await api("/accounts/me/");
+
+        const fullName=user.name || "User";
+
+        document.getElementById("name").textContent=fullName;
+
+        document.getElementById("fullname").textContent=fullName;
+
+        document.getElementById("email").textContent=user.email || "Not available";
+
+        document.getElementById("email2").textContent=user.email || "Not available";
+
+        document.getElementById("phone").textContent=user.phone_number || "Not available";
+
+        document.getElementById("phone2").textContent=user.phone_number || "Not available";
+
+        document.getElementById("dob").textContent=user.date_of_birth || "Not available";
+
+        const fallbackAvatar=`https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=0D0D0D&color=F5C84C&size=150`;
+
+        if(user.profile_image){
+
+            // profile_image may come back as a relative path (e.g. "/media/...")
+            // or a full URL, depending on the serializer. Normalize it.
+            const imageUrl=/^https?:\/\//i.test(user.profile_image)
+                ? user.profile_image
+                : `${API_BASE}${user.profile_image}`;
+
+            document.getElementById("avatar").src=imageUrl;
+
+            // If the image fails to load (broken link, deleted file, etc.),
+            // gracefully fall back to the generated avatar instead of
+            // showing a broken image icon.
+            document.getElementById("avatar").onerror=function(){
+                this.onerror=null;
+                this.src=fallbackAvatar;
+            };
+
+        }
+
+        else{
+
+            document.getElementById("avatar").src=fallbackAvatar;
+
+        }
+
+    }
+
+    catch(error){
+
+        document.getElementById("name").textContent="Unable to load profile";
+
+    }
+
+}
+
+function handleAvatarSelect(event){
+
+    const file=event.target.files && event.target.files[0];
+
+    // Reset the input so selecting the same file again still fires "change".
+    event.target.value="";
+
+    if(!file){
+
+        return;
+
+    }
+
+    if(!file.type.startsWith("image/")){
+
+        showToast("Please choose an image file (JPG, PNG, or WEBP).","danger");
+
+        return;
+
+    }
+
+    if(file.size>5*1024*1024){
+
+        showToast("Image must be under 5MB.","danger");
+
+        return;
+
+    }
+
+    // Show an instant local preview while the upload is in flight.
+    const reader=new FileReader();
+
+    reader.onload=function(){
+
+        document.getElementById("avatar").src=reader.result;
+
+    };
+
+    reader.readAsDataURL(file);
+
+    uploadAvatar(file);
+
+}
+
+async function uploadAvatar(file){
+
+    const wrap=document.getElementById("avatarWrap");
+
+    wrap.classList.add("uploading");
+
+    try{
+
+        const token=getToken();
+
+        const headers={};
+
+        if(token){
+
+            headers["Authorization"]=`Token ${token}`;
+
+        }
+
+        // Note: no Content-Type header here — the browser sets the correct
+        // multipart/form-data boundary automatically for FormData bodies.
+        const formData=new FormData();
+
+        formData.append("profile_image",file);
+
+        const response=await fetch(API_BASE+"/accounts/me/",{
+
+            method:"PATCH",
+
+            headers:headers,
+
+            body:formData
+
+        });
+
+        let data={};
+
+        try{
+
+            data=await response.json();
+
+        }
+
+        catch(parseError){
+
+            data={};
+
+        }
+
+        if(response.ok){
+
+            const profileImage=data.profile_image || "";
+
+            if(profileImage){
+
+                const imageUrl=/^https?:\/\//i.test(profileImage)
+                    ? profileImage
+                    : `${API_BASE}${profileImage}`;
+
+                document.getElementById("avatar").src=imageUrl;
+
+            }
+
+            try{
+
+                const cachedUser=JSON.parse(localStorage.getItem("user") || "{}");
+
+                cachedUser.profile_image=profileImage || cachedUser.profile_image;
+
+                localStorage.setItem("user",JSON.stringify(cachedUser));
+
+            }
+
+            catch(storageError){
+
+                // Ignore malformed cached user data.
+
+            }
+
+            if(typeof updateNavForAuth==="function"){
+
+                updateNavForAuth();
+
+            }
+
+            showToast("Profile photo updated.","success");
+
+        }
+
+        else{
+
+            let errors="";
+
+            if(typeof data==="object" && data!==null){
+
+                Object.values(data).forEach(error=>{
+
+                    const text=Array.isArray(error) ? error.join(" ") : error;
+
+                    errors+=text+" ";
+
+                });
+
+            }
+
+            showToast(errors.trim() || "Unable to update photo. Please try again.","danger");
+
+            loadProfile();
+
+        }
+
+    }
+
+    catch(error){
+
+        showToast("Something went wrong uploading your photo.","danger");
+
+        loadProfile();
+
+    }
+
+    finally{
+
+        wrap.classList.remove("uploading");
+
+    }
+
+}
+
+if(getToken()){
+
+    document.getElementById("profileContent").style.display="";
+
+    loadProfile();
+
+}
+
+else{
+
+    document.getElementById("authRequired").style.display="";
+
+}
+
+const deleteConfirmInput=document.getElementById("deleteConfirmInput");
+
+const deletePasswordInput=document.getElementById("deletePasswordInput");
+
+const deleteAccountBtn=document.getElementById("deleteAccountBtn");
+
+const deleteAccountModalEl=document.getElementById("deleteAccountModal");
+
+function updateDeleteBtnState(){
+
+    const confirmed=deleteConfirmInput && deleteConfirmInput.value.trim()==="DELETE";
+
+    const hasPassword=deletePasswordInput && deletePasswordInput.value.trim()!=="";
+
+    deleteAccountBtn.disabled=!(confirmed && hasPassword);
+
+}
+
+if(deleteConfirmInput && deleteAccountBtn){
+
+    deleteConfirmInput.addEventListener("input",updateDeleteBtnState);
+
+}
+
+if(deletePasswordInput && deleteAccountBtn){
+
+    deletePasswordInput.addEventListener("input",updateDeleteBtnState);
+
+}
+
+if(deleteAccountModalEl){
+
+    deleteAccountModalEl.addEventListener("hidden.bs.modal",function(){
+
+        if(deleteConfirmInput){
+
+            deleteConfirmInput.value="";
+
+        }
+
+        if(deletePasswordInput){
+
+            deletePasswordInput.value="";
+
+        }
+
+        if(deleteAccountBtn){
+
+            deleteAccountBtn.disabled=true;
+
+            deleteAccountBtn.innerHTML=`<i class="bi bi-trash3 me-1"></i> Delete My Account`;
+
+        }
+
+        const deleteStatusEl=document.getElementById("deleteStatus");
+
+        if(deleteStatusEl){
+
+            deleteStatusEl.innerHTML="";
+
+        }
+
+    });
+
+}
+
+const changePasswordModalEl=document.getElementById("changePasswordModal");
+
+if(changePasswordModalEl){
+
+    changePasswordModalEl.addEventListener("hidden.bs.modal",function(){
+
+        ["currentPasswordInput","newPasswordInput","confirmNewPasswordInput"].forEach(id=>{
+
+            const field=document.getElementById(id);
+
+            if(field){
+
+                field.value="";
+
+                field.type="password";
+
+            }
+
+        });
+
+        document.querySelectorAll("#changePasswordModal .password-toggle i").forEach(icon=>{
+
+            icon.classList.remove("bi-eye-slash");
+
+            icon.classList.add("bi-eye");
+
+        });
+
+        const changePasswordStatusEl=document.getElementById("changePasswordStatus");
+
+        if(changePasswordStatusEl){
+
+            changePasswordStatusEl.innerHTML="";
+
+        }
+
+        const changePasswordBtnEl=document.getElementById("changePasswordBtn");
+
+        if(changePasswordBtnEl){
+
+            changePasswordBtnEl.disabled=false;
+
+            changePasswordBtnEl.innerHTML=`<i class="bi bi-key-fill me-1"></i> Update Password`;
+
+        }
+
+    });
+
+}
+
+async function changePassword(){
+
+    const status=document.getElementById("changePasswordStatus");
+
+    const btn=document.getElementById("changePasswordBtn");
+
+    const currentPasswordInput=document.getElementById("currentPasswordInput");
+
+    const newPasswordInput=document.getElementById("newPasswordInput");
+
+    const confirmNewPasswordInput=document.getElementById("confirmNewPasswordInput");
+
+    if(!status || !btn || !currentPasswordInput || !newPasswordInput || !confirmNewPasswordInput){
+
+        alert("Something went wrong loading the change password form. Please refresh the page and try again.");
+
+        return;
+
+    }
+
+    status.innerHTML="";
+
+    const currentPassword=currentPasswordInput.value;
+
+    const newPassword=newPasswordInput.value;
+
+    const confirmNewPassword=confirmNewPasswordInput.value;
+
+    if(currentPassword==="" || newPassword==="" || confirmNewPassword===""){
+
+        status.innerHTML="<div class='alert alert-danger'>Please fill all fields.</div>";
+
+        return;
+
+    }
+
+    if(newPassword.length<8){
+
+        status.innerHTML="<div class='alert alert-danger'>New password must be at least 8 characters.</div>";
+
+        return;
+
+    }
+
+    if(newPassword!==confirmNewPassword){
+
+        status.innerHTML="<div class='alert alert-danger'>New passwords do not match.</div>";
+
+        return;
+
+    }
+
+    if(newPassword===currentPassword){
+
+        status.innerHTML="<div class='alert alert-danger'>New password must be different from your current password.</div>";
+
+        return;
+
+    }
+
+    btn.disabled=true;
+
+    btn.innerHTML=`<span class="spinner-border spinner-border-sm me-2" role="status"></span> Updating...`;
+
+    try{
+
+        const token=getToken();
+
+        const headers={
+
+            "Content-Type":"application/json"
+
+        };
+
+        if(token){
+
+            headers["Authorization"]=`Token ${token}`;
+
+        }
+
+        // NOTE: assumes a POST /accounts/change-password/ endpoint that
+        // takes {current_password, new_password, confirm_password} for the
+        // logged-in user. Wire this up on the backend if it doesn't
+        // already exist.
+        const response=await fetch(API_BASE+"/accounts/change-password/",{
+
+            method:"POST",
+
+            headers:headers,
+
+            body:JSON.stringify({
+
+                current_password:currentPassword,
+
+                new_password:newPassword,
+
+                confirm_password:confirmNewPassword
+
+            })
+
+        });
+
+        let data={};
+
+        try{
+
+            data=await response.json();
+
+        }
+
+        catch(parseError){
+
+            data={};
+
+        }
+
+        if(response.ok){
+
+            showToast("Password changed successfully.","success");
+
+            const modal=bootstrap.Modal.getOrCreateInstance(changePasswordModalEl);
+
+            modal.hide();
+
+            return;
+
+        }
+
+        let errors="";
+
+        if(typeof data==="object" && data!==null){
+
+            Object.values(data).forEach(error=>{
+
+                const text=Array.isArray(error) ? error.join(" ") : error;
+
+                errors+=text+"<br>";
+
+            });
+
+        }
+
+        status.innerHTML=`<div class="alert alert-danger">${errors || "Unable to change password. Please try again."}</div>`;
+
+        btn.disabled=false;
+
+        btn.innerHTML=`<i class="bi bi-key-fill me-1"></i> Update Password`;
+
+    }
+
+    catch(error){
+
+        status.innerHTML="<div class='alert alert-danger'>Something went wrong. Please try again.</div>";
+
+        btn.disabled=false;
+
+        btn.innerHTML=`<i class="bi bi-key-fill me-1"></i> Update Password`;
+
+    }
+
+}
+
+async function deleteAccount(){
+
+    const status=document.getElementById("deleteStatus");
+
+    const btn=document.getElementById("deleteAccountBtn");
+
+    const input=document.getElementById("deleteConfirmInput");
+
+    const passwordInput=document.getElementById("deletePasswordInput");
+
+    if(!status || !btn || !input || !passwordInput){
+
+        alert("Something went wrong loading the delete confirmation. Please refresh the page and try again.");
+
+        return;
+
+    }
+
+    status.innerHTML="";
+
+    if(input.value.trim()!=="DELETE"){
+
+        status.innerHTML="<div class='alert alert-danger'>Please type DELETE to confirm.</div>";
+
+        return;
+
+    }
+
+    if(passwordInput.value.trim()===""){
+
+        status.innerHTML="<div class='alert alert-danger'>Please enter your password.</div>";
+
+        return;
+
+    }
+
+    btn.disabled=true;
+
+    btn.innerHTML=`<span class="spinner-border spinner-border-sm me-2" role="status"></span> Deleting...`;
+
+    try{
+
+        const token=getToken();
+
+        const headers={
+
+            "Content-Type":"application/json"
+
+        };
+
+        if(token){
+
+            headers["Authorization"]=`Token ${token}`;
+
+        }
+
+        const response=await fetch(API_BASE+"/accounts/me/",{
+
+            method:"DELETE",
+
+            headers:headers,
+
+            body:JSON.stringify({
+
+                password:passwordInput.value
+
+            })
+
+        });
+
+        if(response.ok){
+
+            localStorage.removeItem("access");
+
+            localStorage.removeItem("refresh");
+
+            localStorage.removeItem("user");
+
+            window.location="/";
+
+            return;
+
+        }
+
+        let data={};
+
+        try{
+
+            data=await response.json();
+
+        }
+
+        catch(parseError){
+
+            data={};
+
+        }
+
+        let errors="";
+
+        if(typeof data==="object" && data!==null){
+
+            Object.values(data).forEach(error=>{
+
+                const text=Array.isArray(error) ? error.join(" ") : error;
+
+                errors+=text+"<br>";
+
+            });
+
+        }
+
+        status.innerHTML=`<div class="alert alert-danger">${errors || "Unable to delete account. Please try again."}</div>`;
+
+        passwordInput.value="";
+
+        btn.disabled=true;
+
+        btn.innerHTML=`<i class="bi bi-trash3 me-1"></i> Delete My Account`;
+
+    }
+
+    catch(error){
+
+        status.innerHTML="<div class='alert alert-danger'>Something went wrong. Please try again.</div>";
+
+        passwordInput.value="";
+
+        btn.disabled=true;
+
+        btn.innerHTML=`<i class="bi bi-trash3 me-1"></i> Delete My Account`;
+
+    }
+
+}
+
+</script>
+
+{% endblock %}
