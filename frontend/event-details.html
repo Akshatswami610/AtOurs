@@ -1071,11 +1071,12 @@ function renderHost(event){
 
     }
 
-    // Profile image (falls back to the default avatar icon).
+     // Profile image (falls back to the default avatar icon).
     // Backend field naming isn't confirmed yet, so check the common
     // variants in both the nested host/user object and top-level event.
     const profileImage=
         (host && (
+            (host.profile && host.profile.profile_image) ||
             host.profile_image ||
             host.profile_photo ||
             host.avatar ||
