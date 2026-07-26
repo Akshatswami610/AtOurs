@@ -522,7 +522,7 @@ function getTopOccurrence(items,key){
 
 function generateBio(user,events){
 
-    const suppliedBio=user.bio || user.about || user.description || "";
+    const suppliedBio=(user.profile && user.profile.bio) || user.bio || user.about || user.description || "";
 
     if(suppliedBio){
         return suppliedBio;
@@ -645,7 +645,7 @@ function renderProfile(user,events){
 
     const name=user.name || "User";
     const avatarFallback=`https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=100f15&color=f6bfd8&size=180`;
-    const avatarUrl=normalizeMediaUrl(user.profile_image || "") || avatarFallback;
+    const avatarUrl=normalizeMediaUrl((user.profile && user.profile.profile_image) || user.profile_image || "") || avatarFallback;
 
     els.avatar.src=avatarUrl;
     els.avatar.onerror=function(){
