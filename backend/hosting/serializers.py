@@ -4,6 +4,8 @@ from accounts.models import User
 from django.utils import timezone
 
 class EventHostSerializer(serializers.ModelSerializer):
+    profile_image = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = [
@@ -12,6 +14,14 @@ class EventHostSerializer(serializers.ModelSerializer):
             "email",
             "profile_image",
         ]
+
+    def get_profile_image(self, obj):
+        if hasattr(obj, 'profile') and obj.profile and obj.profile.profile_image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.profile.profile_image.url)
+            return obj.profile.profile_image.url
+        return None
 
 
 class EventSerializer(serializers.ModelSerializer):
