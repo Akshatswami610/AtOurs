@@ -15,8 +15,8 @@ def home(request):
 def me(request):
     return render(request, "me.html")
 
-def events(request):
-    return render(request, "events.html")
+def explore(request):
+    return render(request, "explore.html")
 
 def earning(request):
     return render(request, "earning.html")
@@ -29,6 +29,9 @@ def bookingcheckout(request):
 
 def hosting(request):
     return render(request, "hosting.html")
+
+def likedevents(request):
+    return render(request, "liked-events.html")
 
 def profile(request, id=None):
     return render(request, "profile.html")
