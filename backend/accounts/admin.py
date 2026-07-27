@@ -24,9 +24,9 @@ class UserProfileInline(admin.StackedInline):
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
 
-    list_display = ( "email", "name", "phone_number", "is_active", "is_staff", "date_joined", )
+    list_display = ( "email", "name", "phone_number", "is_verified", "is_active", "is_staff", "date_joined", )
 
-    list_filter = ( "is_active", "is_staff", "is_superuser", "date_joined", )
+    list_filter = ( "is_verified", "is_active", "is_staff", "is_superuser", "date_joined", )
 
     search_fields = ( "email", "name", "phone_number", )
 
@@ -45,6 +45,7 @@ class UserAdmin(BaseUserAdmin):
                 "fields": (
                     "email",
                     "password",
+                    "is_verified",
                 )
             },
         ),
@@ -94,6 +95,7 @@ class UserAdmin(BaseUserAdmin):
                     "date_of_birth",
                     "password1",
                     "password2",
+                    "is_verified",
                     "is_active",
                     "is_staff",
                 ),
