@@ -230,6 +230,7 @@ class PublicUserProfileView(APIView):
         return Response({
             "id": user.id,
             "name": user.name,
+            "email": user.email,
             "profile_image": profile_image,
             "bio": profile.bio,
             "interests": interests,
