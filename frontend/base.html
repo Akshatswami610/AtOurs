@@ -210,22 +210,23 @@
         }
 
         .navbar-icon-btn {
-            width: 38px;
-            height: 38px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--text-secondary);
-            background: transparent;
-            border: none;
-            font-size: 1.05rem;
+            background: rgba(255, 255, 255, .02);
+            border: 1px solid rgba(255, 255, 255, .08);
+            font-size: 1.1rem;
             position: relative;
-            transition: background .25s var(--ease), color .25s var(--ease);
+            transition: background .25s var(--ease), color .25s var(--ease), border-color .25s var(--ease);
         }
 
         .navbar-icon-btn:hover {
-            background: var(--card);
+            background: rgba(255, 255, 255, .08);
+            border-color: rgba(255, 255, 255, .2);
             color: var(--text-primary);
         }
 
@@ -241,8 +242,8 @@
         }
 
         .navbar-avatar {
-            width: 36px;
-            height: 36px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             background: var(--gradient-brand-3);
             display: flex;
@@ -251,7 +252,7 @@
             color: #fff;
             font-weight: 700;
             font-size: .85rem;
-            border: 2px solid rgba(255, 255, 255, .12);
+            border: 2px solid rgba(236, 72, 153, .7);
             overflow: hidden;
         }
 
@@ -607,10 +608,10 @@
 
         footer.site-footer {
             margin-top: auto;
-            background: var(--bg-secondary);
+            background: #09070f;
             border-top: 1px solid var(--border);
             color: var(--text-muted);
-            padding: 56px 20px 28px;
+            padding: 34px 20px 16px;
         }
 
         .footer-grid {
@@ -630,71 +631,50 @@
         .footer-social {
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
         .footer-social a {
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--card);
+            background: transparent;
             border: 1px solid var(--border);
-            color: var(--text-secondary);
+            color: #ded8e7;
             font-size: 1rem;
             transition: color .25s var(--ease), background .25s var(--ease), border-color .25s var(--ease);
         }
 
         .footer-social a:hover {
             color: #fff;
-            background: var(--gradient-brand);
-            border-color: transparent;
-        }
-
-        .footer-social-username {
-            color: var(--text-secondary);
-            font-size: .87rem;
-            font-weight: 500;
-            margin-top: 12px;
+            background: rgba(255, 255, 255, .07);
+            border-color: rgba(255, 255, 255, .25);
         }
 
         .footer-brand {
             font-weight: 800;
-            font-size: 1.1rem;
+            font-size: 2rem;
             color: var(--text-primary);
             letter-spacing: -0.02em;
             margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .footer-brand .brand-icon {
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
-            background: var(--gradient-brand);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-size: .85rem;
         }
 
         .footer-tagline {
-            color: var(--text-muted);
-            font-size: .86rem;
+            color: var(--text-secondary);
+            font-size: .94rem;
             line-height: 1.6;
             max-width: 260px;
+            margin-bottom: 18px;
         }
 
         .footer-col h6 {
             color: var(--text-primary);
-            font-size: .8rem;
+            font-size: 1rem;
             font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: .06em;
+            letter-spacing: -0.02em;
             margin-bottom: 16px;
         }
 
@@ -709,8 +689,8 @@
 
         .footer-col a {
             color: var(--text-secondary);
-            font-size: .87rem;
-            font-weight: 500;
+            font-size: .9rem;
+            font-weight: 600;
             transition: color .25s var(--ease);
         }
 
@@ -718,66 +698,10 @@
             color: var(--pink);
         }
 
-        .newsletter-title {
-            color: var(--text-primary);
-            font-size: .8rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: .06em;
-            margin: 18px 0 10px;
-        }
-
-        .newsletter-copy {
-            color: var(--text-secondary);
-            font-size: .82rem;
-            line-height: 1.5;
-            margin: 0 0 10px;
-        }
-
-        .newsletter-form {
-            display: flex;
-            flex-direction: row;
-            align-items: stretch;
-            gap: 8px;
-        }
-
-        .newsletter-form .form-control {
-            flex: 1 1 auto;
-            min-height: 38px;
-            font-size: .84rem;
-            padding: .5rem .78rem;
-        }
-
-        .newsletter-form .btn {
-            flex: 0 0 auto;
-            min-height: 38px;
-            min-width: 96px;
-            font-size: .78rem;
-            padding: .42rem .7rem;
-            white-space: nowrap;
-        }
-
-        .newsletter-note {
-            color: var(--text-muted);
-            font-size: .75rem;
-            line-height: 1.4;
-            margin: 0;
-        }
-
-        @media (max-width: 480px) {
-            .newsletter-form {
-                flex-direction: column;
-            }
-
-            .newsletter-form .btn {
-                width: 100%;
-            }
-        }
-
         .footer-bottom {
             max-width: 1140px;
-            margin: 40px auto 0;
-            padding-top: 24px;
+            margin: 24px auto 0;
+            padding-top: 14px;
             border-top: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
@@ -788,15 +712,35 @@
 
         .footer-bottom p {
             color: var(--text-muted);
-            font-size: .82rem;
+            font-size: .95rem;
             margin: 0;
             letter-spacing: .01em;
         }
 
         .footer-bottom small {
             color: var(--text-muted);
-            font-size: .82rem;
+            font-size: .95rem;
             letter-spacing: .01em;
+        }
+
+        .footer-bottom-heart {
+            color: var(--pink);
+            font-size: 1.05rem;
+        }
+
+        @media (max-width: 991px) {
+            .footer-brand {
+                font-size: 1.8rem;
+            }
+
+            .footer-col h6 {
+                font-size: .95rem;
+            }
+
+            .footer-col a,
+            .footer-tagline {
+                font-size: .88rem;
+            }
         }
 
         /* ===== Loading ===== */
@@ -1036,14 +980,8 @@
                     </li>
 
                     <li class="nav-item">
-                        <a href="/events/" class="nav-link">
-                            Events
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a href="/hosting/" class="nav-link">
-                            Host Event
+                        <a href="/explore/" class="nav-link">
+                            Explore
                         </a>
                     </li>
 
@@ -1058,9 +996,16 @@
                 <ul class="navbar-nav align-items-lg-center flex-row gap-2 ms-lg-3">
 
                     <li class="nav-item ms-lg-1" id="loginNavItem">
-                        <a href="/login/" class="nav-link btn btn-primary btn-sm px-3">
+                        <a href="/login/" class="btn btn-outline-primary btn-sm px-3">
                             Login
                         </a>
+                    </li>
+
+                    <li class="nav-item d-none" id="notificationsNavItem">
+                        <button class="navbar-icon-btn" type="button" aria-label="Notifications">
+                            <i class="bi bi-bell"></i>
+                            <span class="dot"></span>
+                        </button>
                     </li>
 
                     <li class="nav-item d-none profile-menu" id="profileMenuItem">
@@ -1078,6 +1023,10 @@
                             <a href="/mytickets/" role="menuitem">
                                 <i class="bi bi-ticket-perforated-fill"></i>
                                 My Tickets
+                            </a>
+                            <a href="/liked-events/" role="menuitem">
+                                <i class="bi bi-heart-fill"></i>
+                                Liked Events
                             </a>
                             <button type="button" class="logout-action" onclick="logout()" role="menuitem">
                                 <i class="bi bi-box-arrow-right"></i>
@@ -1122,7 +1071,7 @@
 
                 <p class="footer-tagline">
 
-                    Discover unique house parties, meet new people, and host unforgettable events of your own.
+                    Your social platform to discover, host and connect through unforgettable experiences.
 
                 </p>
 
@@ -1136,9 +1085,9 @@
 
                     <li><a href="/">Home</a></li>
 
-                    <li><a href="/hosting/">Host Event</a></li>
+                    <li><a href="/explore/">Explore</a></li>
 
-                    <li><a href="/support/">Support</a></li>
+                    <li><a href="/support/">Contact us</a></li>
 
                 </ul>
 
@@ -1190,24 +1139,6 @@
 
                 </div>
 
-                <h6 class="newsletter-title">Newsletter</h6>
-
-                <p class="newsletter-copy">Get event drops and hosting tips once a week.</p>
-
-                <form id="newsletterForm" class="newsletter-form" novalidate>
-                    <label class="visually-hidden" for="newsletterEmail">Email address</label>
-                    <input
-                        id="newsletterEmail"
-                        type="email"
-                        class="form-control"
-                        placeholder="Enter your email"
-                        autocomplete="email"
-                        required>
-                    <button type="submit" class="btn btn-primary">Subscribe</button>
-                </form>
-
-                <p class="newsletter-note">No spam. Unsubscribe anytime.</p>
-
             </div>
 
         </div>
@@ -1215,12 +1146,12 @@
         <div class="footer-bottom">
 
             <p class="mb-0">
-                © 2026 AtOurs
+                © 2025 AtOurs. All rights reserved.
             </p>
 
             <small>
 
-                Meet New People • Host Amazing Events
+                Made with ❤️ for real connections.
 
             </small>
 
@@ -1499,6 +1430,8 @@
 
             const loginItem = document.getElementById("loginNavItem");
 
+            const notificationsNavItem = document.getElementById("notificationsNavItem");
+
             const profileMenuItem = document.getElementById("profileMenuItem");
 
             const profileMenuAvatarInitial = document.getElementById("profileMenuAvatarInitial");
@@ -1511,6 +1444,10 @@
 
             if (profileMenuItem) {
                 profileMenuItem.classList.toggle("d-none", !loggedIn);
+            }
+
+            if (notificationsNavItem) {
+                notificationsNavItem.classList.toggle("d-none", !loggedIn);
             }
 
             if (!loggedIn) {
@@ -1716,8 +1653,6 @@
         updateActiveNavLink();
 
         setupPageTransitions();
-
-        setupNewsletterForm();
 
         showQueuedToast();
 
