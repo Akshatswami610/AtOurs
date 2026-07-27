@@ -231,6 +231,8 @@ class PublicUserProfileView(APIView):
             "id": user.id,
             "name": user.name,
             "email": user.email,
+            "is_verified": user.is_verified,
+            "date_joined": user.date_joined,
             "profile_image": profile_image,
             "bio": profile.bio,
             "interests": interests,
