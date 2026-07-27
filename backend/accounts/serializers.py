@@ -315,6 +315,7 @@ class UserSerializer(serializers.ModelSerializer):
             "email",
             "phone_number",
             "date_of_birth",
+            "is_verified",
             "profile",
             "date_joined",
             "updated_at",
