@@ -12,6 +12,24 @@ Event Details
         padding: 28px 0 36px;
     }
 
+    .back-to-explore {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        color: #d5cfde;
+        font-weight: 700;
+        font-size: 1rem;
+        margin-bottom: 14px;
+    }
+
+    .back-to-explore i {
+        color: var(--pink);
+    }
+
+    .back-to-explore:hover {
+        color: #fff;
+    }
+
     .not-eligible-card {
         max-width: 460px;
         margin: 64px auto;
@@ -209,12 +227,43 @@ Event Details
         margin: 0;
     }
 
+    #title .title-year {
+        display: block;
+        color: var(--pink);
+    }
+
     .hero-meta {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 12px;
         max-width: 660px;
-        margin-top: 28px;
+        margin-top: 24px;
+    }
+
+    .hero-bottom-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: flex-end;
+    }
+
+    .hero-actions {
+        display: flex;
+        gap: 10px;
+        padding-bottom: 6px;
+    }
+
+    .hero-action-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, .22);
+        background: rgba(11, 9, 16, .62);
+        color: #f0ebf7;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.18rem;
     }
 
     .hero-meta-item {
@@ -279,15 +328,33 @@ Event Details
         margin-bottom: 14px;
     }
 
+    .section-title-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .section-title-accent {
+        width: 4px;
+        height: 24px;
+        border-radius: 999px;
+        background: var(--pink);
+        box-shadow: 0 0 14px rgba(236, 72, 153, .45);
+    }
+
     .section-heading h3 {
         font-size: 1.16rem;
         margin: 0;
     }
 
-    .section-heading span {
-        color: var(--text-muted);
-        font-size: .82rem;
+    .section-heading > span {
+        color: var(--pink);
+        font-size: .78rem;
         font-weight: 700;
+        padding: 7px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(236, 72, 153, .26);
+        background: rgba(236, 72, 153, .08);
     }
 
     #description {
@@ -399,11 +466,16 @@ Event Details
     }
 
     .booking-price .price-value {
-        color: var(--text-primary);
+        color: var(--pink);
         font-size: 2rem;
         font-weight: 900;
         letter-spacing: 0;
         line-height: 1;
+    }
+
+    .booking-title {
+        margin: 0 0 16px;
+        font-size: 1.55rem;
     }
 
     .booking-mini-list {
@@ -438,6 +510,11 @@ Event Details
 
     .host-card {
         padding: 22px;
+    }
+
+    .host-title {
+        margin: 0 0 14px;
+        font-size: 1.8rem;
     }
 
     .host-card-header {
@@ -553,6 +630,10 @@ Event Details
             padding-top: 12px;
         }
 
+        .back-to-explore {
+            font-size: .92rem;
+        }
+
         .event-hero {
             min-height: 520px;
         }
@@ -573,6 +654,16 @@ Event Details
         .hero-meta,
         .stat-grid {
             grid-template-columns: 1fr;
+        }
+
+        .hero-bottom-row {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .hero-actions {
+            justify-content: flex-end;
+            padding-bottom: 0;
         }
 
         .stat-tile span {
@@ -698,6 +789,11 @@ Event Details
 
 <div class="event-detail-page fade-in" id="eventContent">
 
+    <a href="/explore/" class="back-to-explore">
+        <i class="bi bi-arrow-left"></i>
+        Back to Explore
+    </a>
+
     <div class="event-shell">
 
         <div class="event-hero">
@@ -727,24 +823,35 @@ Event Details
                     Loading...
                 </h2>
 
-                <div class="hero-meta">
+                <div class="hero-bottom-row">
+                    <div class="hero-meta">
 
-                    <div class="hero-meta-item">
-                        <i class="bi bi-calendar-event"></i>
-                        <div>
-                            <span class="meta-label">Date &amp; Time</span>
-                            <span class="meta-value" id="date"></span>
+                        <div class="hero-meta-item">
+                            <i class="bi bi-calendar-event"></i>
+                            <div>
+                                <span class="meta-label">Date &amp; Time</span>
+                                <span class="meta-value" id="date"></span>
+                            </div>
                         </div>
+
+                        <div class="hero-meta-item">
+                            <i class="bi bi-geo-alt-fill"></i>
+                            <div>
+                                <span class="meta-label">Location</span>
+                                <span class="meta-value" id="location"></span>
+                            </div>
+                        </div>
+
                     </div>
 
-                    <div class="hero-meta-item">
-                        <i class="bi bi-geo-alt-fill"></i>
-                        <div>
-                            <span class="meta-label">Location</span>
-                            <span class="meta-value" id="location"></span>
-                        </div>
+                    <div class="hero-actions">
+                        <button type="button" class="hero-action-btn" aria-label="Share event">
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </button>
+                        <button type="button" class="hero-action-btn" aria-label="Save event">
+                            <i class="bi bi-heart"></i>
+                        </button>
                     </div>
-
                 </div>
 
             </div>
@@ -754,7 +861,10 @@ Event Details
         <div class="event-card">
 
             <div class="section-heading">
-                <h3>About this event</h3>
+                <div class="section-title-wrap">
+                    <span class="section-title-accent"></span>
+                    <h3>About this event</h3>
+                </div>
                 <span>Hosted experience</span>
             </div>
 
@@ -801,7 +911,10 @@ Event Details
         <div class="event-card">
 
             <div class="section-heading">
-                <h3>Rules and regulations</h3>
+                <div class="section-title-wrap">
+                    <span class="section-title-accent"></span>
+                    <h3>Rules and regulations</h3>
+                </div>
                 <span>House guidelines</span>
             </div>
 
@@ -825,6 +938,8 @@ Event Details
         <aside class="sidebar-stack">
 
             <div class="booking-card">
+
+                <h4 class="booking-title">Ticket Details</h4>
 
                 <div class="booking-price">
                     <div>
@@ -860,6 +975,8 @@ Event Details
             </div>
 
             <div class="host-card">
+
+                <h4 class="host-title">Hosted by</h4>
 
                 <div
                     class="host-card-header host-profile-trigger"
@@ -917,8 +1034,8 @@ Event Details
 
     <p id="notEligibleMessage">This event has an age restriction that your account doesn't currently meet.</p>
 
-    <a href="/events/" class="back-events-btn">
-        <i class="bi bi-arrow-left"></i> Back to Events
+    <a href="/explore/" class="back-events-btn">
+        <i class="bi bi-arrow-left"></i> Back to Explore
     </a>
 
 </div>
@@ -933,6 +1050,82 @@ const eventId=window.location.pathname.split("/").filter(Boolean).pop();
 let hostProfileId=null;
 
 loadEvent();
+
+function escapeHtml(value){
+
+    return String(value)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#39;");
+
+}
+
+function categoryLabel(key){
+
+    if(!key){
+        return "Event";
+    }
+
+    return String(key)
+        .replaceAll("_"," ")
+        .toLowerCase()
+        .replace(/\b\w/g,char=>char.toUpperCase());
+
+}
+
+function formatEventDateTime(dateStr,timeStr){
+
+    if(!dateStr){
+        return "Date TBA";
+    }
+
+    const dateObj=new Date(dateStr);
+    const dateText=Number.isNaN(dateObj.getTime())
+        ? dateStr
+        : dateObj.toLocaleDateString(undefined,{
+            day:"numeric",
+            month:"short",
+            year:"numeric"
+        });
+
+    const rawTime=(timeStr || "").toString().trim();
+
+    if(!rawTime){
+        return dateText;
+    }
+
+    const timeOnlyMatch=rawTime.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+
+    if(timeOnlyMatch){
+        const hours=Number(timeOnlyMatch[1]);
+        const minutes=Number(timeOnlyMatch[2]);
+
+        if(Number.isFinite(hours) && Number.isFinite(minutes)){
+            const d=new Date();
+            d.setHours(hours,minutes,0,0);
+            const timeText=d.toLocaleTimeString([],{
+                hour:"numeric",
+                minute:"2-digit"
+            });
+            return `${dateText}, ${timeText} onwards`;
+        }
+    }
+
+    const parsed=new Date(rawTime);
+
+    if(!Number.isNaN(parsed.getTime())){
+        const timeText=parsed.toLocaleTimeString([],{
+            hour:"numeric",
+            minute:"2-digit"
+        });
+        return `${dateText}, ${timeText} onwards`;
+    }
+
+    return `${dateText}, ${rawTime}`;
+
+}
 
 async function loadEvent(){
 
@@ -965,19 +1158,23 @@ async function loadEvent(){
 
         }
 
-        document.getElementById("title").textContent=event.event_name || "Untitled Event";
+        const safeTitle=escapeHtml(event.event_name || "Untitled Event");
+        const titleMatch=safeTitle.match(/^(.*?)(\b20\d{2}\b)\s*$/);
+        document.getElementById("title").innerHTML=titleMatch
+            ? `${titleMatch[1].trim()} <span class="title-year">${titleMatch[2]}</span>`
+            : safeTitle;
 
         document.getElementById("description").textContent=event.description || "";
 
         document.getElementById("rules").textContent=event.rules || "No rules specified.";
 
-        const category=event.event_category || "Not Available";
+        const category=categoryLabel(event.event_category) || "Not Available";
         const fee=event.fee ?? "0";
         const guests=event.max_members ?? "0";
 
         document.getElementById("category").textContent=category;
 
-        document.getElementById("category_badge").textContent=event.event_category || "Event";
+        document.getElementById("category_badge").textContent=category;
 
         document.getElementById("price").textContent=fee;
 
@@ -991,11 +1188,7 @@ async function loadEvent(){
 
         document.getElementById("guests_sidebar").textContent=guests;
 
-        const eventDate=event.event_date || "Not Available";
-        const eventTime=event.event_time || "";
-        const dateText=eventTime ? `${eventDate} at ${eventTime}` : eventDate;
-
-        document.getElementById("date").textContent=dateText;
+        document.getElementById("date").textContent=formatEventDateTime(event.event_date,event.event_time);
 
         const location=event.location || "Not Available";
 
