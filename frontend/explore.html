@@ -1,0 +1,1770 @@
+{% extends "base.html" %}
+
+{% block title %}
+Events
+{% endblock %}
+
+{% block css %}
+
+<style>
+    .explore-shell {
+        padding-top: 14px;
+        padding-bottom: 8px;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 24px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+        transition: padding-bottom .25s var(--ease);
+    }
+
+    .page-header:has(.filter-menu.open),
+    .page-header:has(.filter-menu:hover) {
+        padding-bottom: var(--filter-dropdown-space, 8px);
+    }
+
+    .page-header h1 {
+        margin: 0 0 10px;
+        font-size: clamp(2rem, 3.2vw, 3.15rem);
+        letter-spacing: -.02em;
+    }
+
+    .page-header h1 .accent {
+        color: var(--pink);
+    }
+
+    .page-header p {
+        margin: 0;
+        max-width: 420px;
+        color: var(--text-secondary);
+        font-size: 1.02rem;
+        line-height: 1.45;
+    }
+
+    .search-filter-bar {
+        display: flex;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .search-wrap {
+        position: relative;
+        min-width: 390px;
+    }
+
+    .search-wrap i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1rem;
+        color: var(--text-muted);
+    }
+
+    .search-wrap input {
+        min-height: 50px;
+        padding-left: 42px;
+        border-radius: 12px;
+        font-size: .95rem;
+        background: rgba(255, 255, 255, .01);
+        border: 1px solid rgba(255, 255, 255, .16);
+    }
+
+    .filter-menu,
+    .sort-wrap {
+        position: relative;
+        flex: 0 0 auto;
+    }
+
+    .filter-btn,
+    .sort-wrap .sort-select {
+        min-height: 50px;
+        min-width: 118px;
+        padding: .5rem .95rem;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, .16);
+        background: rgba(255, 255, 255, .01);
+        color: var(--text-primary);
+        font-weight: 600;
+    }
+
+    .filter-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .sort-wrap .sort-select {
+        min-width: 150px;
+        cursor: pointer;
+        appearance: none;
+        padding-right: 34px;
+    }
+
+    .sort-wrap::after {
+        content: "\F282";
+        font-family: bootstrap-icons;
+        position: absolute;
+        right: 13px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        pointer-events: none;
+        font-size: .8rem;
+    }
+
+    .filter-btn .filter-btn-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 16px;
+        height: 16px;
+        padding: 0 4px;
+        border-radius: 999px;
+        background: var(--gradient-brand);
+        color: #fff;
+        font-size: .68rem;
+        font-weight: 800;
+        line-height: 1;
+    }
+
+    .filter-dropdown {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 10px);
+        width: 260px;
+        padding: 16px;
+        border-radius: 12px;
+        background: #17151c;
+        border: 1px solid var(--border);
+        box-shadow: 0 18px 44px -16px rgba(0, 0, 0, .8);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-6px);
+        transition: opacity .2s var(--ease), transform .2s var(--ease), visibility .2s var(--ease);
+        z-index: 1040;
+    }
+
+    .filter-dropdown::before {
+        content: '';
+        position: absolute;
+        top: -18px;
+        left: 0;
+        right: 0;
+        height: 18px;
+    }
+
+    .filter-menu:hover .filter-dropdown,
+    .filter-menu.open .filter-dropdown {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .filter-dropdown .filter-group {
+        margin-bottom: 14px;
+    }
+
+    .filter-dropdown .filter-group:last-of-type {
+        margin-bottom: 16px;
+    }
+
+    .filter-dropdown label.filter-label {
+        display: block;
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+    }
+
+    .filter-dropdown select.form-select {
+        font-size: .88rem;
+        padding: .5rem .65rem;
+    }
+
+    .filter-dropdown .filter-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        padding-top: 12px;
+        border-top: 1px solid var(--border);
+    }
+
+    .filter-dropdown .filter-clear-btn {
+        background: transparent;
+        border: none;
+        color: var(--text-secondary);
+        font-size: .84rem;
+        font-weight: 600;
+    }
+
+    .filter-dropdown .filter-apply-btn {
+        border: none;
+        border-radius: 10px;
+        padding: .45rem 1rem;
+        font-size: .82rem;
+        font-weight: 700;
+        color: #fff;
+        background: var(--gradient-brand);
+    }
+
+    .category-strip {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        margin-bottom: 18px;
+        scrollbar-width: none;
+    }
+
+    .category-strip::-webkit-scrollbar {
+        display: none;
+    }
+
+    .quick-chip {
+        border: 1px solid rgba(255, 255, 255, .16);
+        border-radius: 12px;
+        min-height: 44px;
+        padding: 0 16px;
+        color: #ddd7e8;
+        background: rgba(255, 255, 255, .01);
+        font-weight: 600;
+        font-size: .95rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+    }
+
+    .quick-chip.active {
+        border-color: transparent;
+        color: #fff;
+        background: var(--gradient-brand);
+    }
+
+    .quick-chip i {
+        font-size: 1rem;
+        color: var(--pink);
+    }
+
+    .quick-chip.active i {
+        color: #fff;
+    }
+
+    .more-chip {
+        position: relative;
+        padding-right: 30px;
+    }
+
+    .more-chip i:last-child {
+        color: var(--text-muted);
+    }
+
+    .more-chip select {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .event-card {
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, .14);
+        overflow: hidden;
+        background: linear-gradient(180deg, rgba(17, 14, 24, .9), rgba(11, 9, 17, .95));
+        display: flex;
+        flex-direction: column;
+    }
+
+    .event-media {
+        position: relative;
+        height: 190px;
+        border-bottom: 1px solid rgba(255, 255, 255, .08);
+        overflow: hidden;
+        background: linear-gradient(135deg, #221a26, #14101a);
+    }
+
+    .event-media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform .35s var(--ease);
+    }
+
+    .event-card:hover .event-media img {
+        transform: scale(1.04);
+    }
+
+    .event-card .event-tag {
+        position: absolute;
+        left: 14px;
+        top: 14px;
+        border-radius: 999px;
+        font-size: .7rem;
+        font-weight: 700;
+        color: #fff;
+        padding: 6px 11px;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+        border: 1px solid rgba(255, 255, 255, .2);
+    }
+
+    .event-tag.pink {
+        background: rgba(236, 72, 153, .92);
+    }
+
+    .event-tag.purple {
+        background: rgba(124, 58, 237, .92);
+    }
+
+    .event-tag.orange {
+        background: rgba(249, 115, 22, .9);
+    }
+
+    .event-date-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 54px;
+        height: 72px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, .22);
+        background: rgba(19, 16, 26, .95);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+    }
+
+    .event-date-badge .day {
+        font-size: 1.3rem;
+        font-weight: 800;
+    }
+
+    .event-date-badge .month {
+        margin-top: 4px;
+        font-size: .74rem;
+        letter-spacing: .04em;
+        color: #cbc5d8;
+        font-weight: 700;
+    }
+
+    .event-like-btn {
+        position: absolute;
+        right: 14px;
+        bottom: 12px;
+        border: none;
+        background: transparent;
+        color: #fff;
+        font-size: 1.6rem;
+        padding: 0;
+        line-height: 1;
+        text-shadow: 0 4px 12px rgba(0, 0, 0, .6);
+    }
+
+    .event-body {
+        padding: 14px 16px 14px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .event-body h4 {
+        margin: 0 0 4px;
+        font-size: 1.45rem;
+        letter-spacing: -.015em;
+    }
+
+    .event-desc {
+        margin: 0 0 10px;
+        color: var(--text-secondary);
+        font-size: 1.02rem;
+        line-height: 1.45;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .event-meta {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-bottom: 12px;
+        color: #d1cbdd;
+        font-size: 1rem;
+    }
+
+    .event-meta span {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .event-meta i {
+        color: var(--pink);
+        font-size: .95rem;
+    }
+
+    .event-footer {
+        margin-top: auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .event-footer .btn {
+        min-width: 164px;
+    }
+
+    .event-share-btn {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, .2);
+        color: #d9d3e3;
+        background: transparent;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+
+    .pagination-wrap {
+        display: flex;
+        justify-content: center;
+        margin-top: 6px;
+    }
+
+    .explore-pagination {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .explore-pagination button,
+    .explore-pagination .ellipsis {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, .18);
+        background: transparent;
+        color: #dad4e4;
+        font-weight: 700;
+        font-size: .95rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .explore-pagination button.active {
+        border-color: transparent;
+        color: #fff;
+        background: var(--gradient-brand);
+    }
+
+    .explore-pagination button:disabled {
+        opacity: .4;
+        cursor: not-allowed;
+    }
+
+    .explore-pagination .ellipsis {
+        border: none;
+        width: auto;
+        color: var(--text-secondary);
+    }
+
+    .loading .spinner-border {
+        width: 2rem;
+        height: 2rem;
+        margin-bottom: 12px;
+    }
+
+    .empty-state,
+    .error-state {
+        text-align: center;
+        padding: 70px 20px;
+        color: var(--text-muted);
+    }
+
+    .empty-state i,
+    .error-state i {
+        font-size: 2.4rem;
+        color: var(--text-muted);
+        margin-bottom: 16px;
+        display: block;
+    }
+
+    .error-state i {
+        color: #ef5b6a;
+    }
+
+    .empty-state p,
+    .error-state p {
+        margin-bottom: 18px;
+    }
+
+    .clear-search-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: .66rem 1.24rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, .14);
+        color: #fff;
+        font-weight: 700;
+        font-size: .9rem;
+        letter-spacing: .01em;
+        background: var(--gradient-brand);
+        box-shadow: 0 12px 26px -10px rgba(236, 72, 153, .6);
+        transition: transform .2s var(--ease), box-shadow .2s var(--ease), filter .2s var(--ease);
+    }
+
+    .clear-search-btn i {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, .18);
+        font-size: .74rem;
+    }
+
+    .clear-search-btn:hover {
+        color: #fff;
+        transform: translateY(-2px);
+        filter: brightness(1.04);
+        box-shadow: 0 16px 30px -10px rgba(236, 72, 153, .72);
+    }
+
+    .clear-search-btn:active {
+        transform: translateY(0);
+    }
+
+    @media (max-width: 1199px) {
+        .event-body h4 {
+            font-size: 1.4rem;
+        }
+
+        .event-desc {
+            font-size: .9rem;
+        }
+    }
+
+    @media (max-width: 991px) {
+        .search-filter-bar {
+            width: 100%;
+            flex-wrap: wrap;
+        }
+
+        .search-wrap {
+            min-width: 100%;
+        }
+
+        .event-date-badge .day {
+            font-size: 1.15rem;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .page-header h1 {
+            font-size: 2rem;
+        }
+
+        .category-strip {
+            gap: 8px;
+        }
+
+        .quick-chip {
+            min-height: 40px;
+            font-size: .86rem;
+            padding: 0 12px;
+        }
+
+        .event-body h4 {
+            font-size: 1.22rem;
+        }
+
+        .event-meta {
+            font-size: .84rem;
+            gap: 10px;
+        }
+
+        .event-footer .btn {
+            min-width: 130px;
+        }
+    }
+
+    /* Toast notifications */
+
+    #toastContainer {
+        z-index: 1080;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+        pointer-events: none;
+    }
+
+    .site-toast {
+        pointer-events: auto;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        width: 320px;
+        max-width: calc(100vw - 40px);
+        padding: 14px 16px;
+        border-radius: var(--radius-sm, 10px);
+        background: #1c1c20;
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--accent);
+        box-shadow: 0 14px 32px -8px rgba(0, 0, 0, .55);
+        animation: toastIn .3s var(--ease, ease) both;
+    }
+
+    .site-toast.hiding {
+        animation: toastOut .22s var(--ease, ease) both;
+    }
+
+    .site-toast.success {
+        border-left-color: #4ecb8d;
+    }
+
+    .site-toast.danger {
+        border-left-color: #ef5b6a;
+    }
+
+    .site-toast .toast-icon {
+        flex-shrink: 0;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .95rem;
+        margin-top: 1px;
+    }
+
+    .site-toast.success .toast-icon {
+        background: rgba(78, 203, 141, .15);
+        color: #4ecb8d;
+    }
+
+    .site-toast.danger .toast-icon {
+        background: rgba(239, 91, 106, .15);
+        color: #ef5b6a;
+    }
+
+    .site-toast .toast-message {
+        flex: 1;
+        font-size: .87rem;
+        line-height: 1.4;
+        color: var(--text-secondary, #e6e6e6);
+        padding-top: 3px;
+    }
+
+    .site-toast .toast-close {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        font-size: 1rem;
+        line-height: 1;
+        padding: 2px;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .site-toast .toast-close:hover {
+        color: var(--text-secondary, #e6e6e6);
+    }
+
+    @keyframes toastIn {
+        from { transform: translateX(24px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes toastOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(24px); opacity: 0; }
+    }
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<!-- Toast notifications -->
+<div id="toastContainer" class="position-fixed top-0 end-0 p-3"></div>
+
+<div class="explore-shell fade-in">
+    <div class="page-header">
+        <div>
+            <h1 class="fw-bold">Explore <span class="accent">Events</span></h1>
+            <p>Discover amazing gatherings happening near you or around the world.</p>
+        </div>
+
+        <div class="search-filter-bar">
+            <div class="search-wrap">
+                <i class="bi bi-search"></i>
+                <input type="text" class="form-control" id="searchInput" placeholder="Search events, parties, music...">
+            </div>
+
+            <div class="filter-menu" id="filterMenu">
+                <button type="button" class="filter-btn" id="filterBtn" aria-haspopup="true" aria-expanded="false">
+                    <i class="bi bi-sliders"></i>
+                    <span>Filter</span>
+                    <span class="filter-btn-count d-none" id="filterCount">0</span>
+                </button>
+
+                <div class="filter-dropdown" id="filterDropdown">
+                    <div class="filter-group">
+                        <label class="filter-label" for="categoryFilter">Category</label>
+                        <select class="form-select" id="categoryFilter">
+                            <option value="">All categories</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label" for="priceFilter">Price</label>
+                        <select class="form-select" id="priceFilter">
+                            <option value="">Any price</option>
+                            <option value="free">Free</option>
+                            <option value="paid">Paid</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-actions">
+                        <button type="button" class="filter-clear-btn" id="filterClearBtn">
+                            <i class="bi bi-x-circle me-1"></i>Clear
+                        </button>
+                        <button type="button" class="filter-apply-btn" id="filterApplyBtn">Apply</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sort-wrap">
+                <select class="sort-select form-select" id="sortFilter" aria-label="Sort events">
+                    <option value="newest">Sort by</option>
+                    <option value="upcoming">Upcoming</option>
+                    <option value="price_low">Price: Low to High</option>
+                    <option value="price_high">Price: High to Low</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="category-strip" id="quickCategoryButtons">
+        <button type="button" class="quick-chip active" data-category="">All</button>
+        <button type="button" class="quick-chip" data-category="HOUSE_PARTY"><i class="bi bi-cup-straw"></i>Parties</button>
+        <button type="button" class="quick-chip" data-category="LIVE_MUSIC"><i class="bi bi-headphones"></i>Music</button>
+        <button type="button" class="quick-chip" data-category="NETWORKING"><i class="bi bi-people"></i>Meetups</button>
+        <button type="button" class="quick-chip" data-category="DINNER_PARTY"><i class="bi bi-fork-knife"></i>Dinner</button>
+        <button type="button" class="quick-chip" data-category="GAME_NIGHT"><i class="bi bi-controller"></i>Game Night</button>
+        <button type="button" class="quick-chip" data-category="OTHER"><i class="bi bi-sunrise"></i>Rooftop</button>
+        <label class="quick-chip more-chip">
+            <i class="bi bi-grid-3x3-gap"></i>
+            <span>More</span>
+            <i class="bi bi-chevron-down"></i>
+            <select id="moreCategorySelect" aria-label="More categories">
+                <option value="">More</option>
+            </select>
+        </label>
+    </div>
+
+
+    <div class="row mt-2" id="eventContainer">
+
+        <div class="loading">
+            <div class="spinner-border" role="status"></div>
+            <div>Loading events...</div>
+        </div>
+
+    </div>
+
+    <div class="pagination-wrap" id="paginationContainer"></div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+
+<script>
+
+// Maps the Event model's stored category keys to human-readable labels,
+// since the API returns raw enum values like "HOUSE_PARTY".
+const CATEGORY_LABELS={
+
+    HOUSE_PARTY:"House Party",
+
+    DINNER_PARTY:"Dinner Party",
+
+    GAME_NIGHT:"Game Night",
+
+    LIVE_MUSIC:"Live Music",
+
+    KARAOKE:"Karaoke",
+
+    NETWORKING:"Networking",
+
+    BOOK_CLUB:"Book Club",
+
+    MOVIE_NIGHT:"Movie Night",
+
+    COOKING_CLASS:"Cooking Class",
+
+    WELLNESS:"Wellness",
+
+    ART_CRAFT:"Art & Craft",
+
+    COFFEE_MEETUP:"Coffee Meetup",
+
+    CELEBRATION:"Celebration",
+
+    DANCE_PARTY:"Dance Party",
+
+    WATCH_PARTY:"Watch Party",
+
+    CULTURAL_MEETUP:"Cultural Meetup",
+
+    WORKSHOP:"Workshop",
+
+    OPEN_MIC:"Open Mic",
+
+    OTHER:"Other"
+
+};
+
+function categoryLabel(key){
+
+    return CATEGORY_LABELS[key] || key || "Uncategorized";
+
+}
+
+// Fills the category controls from CATEGORY_LABELS.
+function populateCategoryOptions(){
+
+    const select=document.getElementById("categoryFilter");
+    const moreSelect=document.getElementById("moreCategorySelect");
+
+    const quickCategories=new Set([
+        "HOUSE_PARTY",
+        "LIVE_MUSIC",
+        "NETWORKING",
+        "DINNER_PARTY",
+        "GAME_NIGHT",
+        "OTHER"
+    ]);
+
+    Object.keys(CATEGORY_LABELS).forEach(key=>{
+
+        const option=document.createElement("option");
+        option.value=key;
+        option.textContent=CATEGORY_LABELS[key];
+        select.appendChild(option);
+
+        if(moreSelect && !quickCategories.has(key)){
+            const moreOption=document.createElement("option");
+            moreOption.value=key;
+            moreOption.textContent=CATEGORY_LABELS[key];
+            moreSelect.appendChild(moreOption);
+        }
+
+    });
+
+}
+
+function formatEventTime(event){
+
+    const rawTime=(event.event_time || event.start_time || event.time || "").toString().trim();
+
+    if(rawTime){
+
+        const timeOnlyMatch=rawTime.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+
+        if(timeOnlyMatch){
+            const hours=Number(timeOnlyMatch[1]);
+            const minutes=Number(timeOnlyMatch[2]);
+
+            if(Number.isFinite(hours) && Number.isFinite(minutes) && hours>=0 && hours<=23 && minutes>=0 && minutes<=59){
+                const date=new Date();
+                date.setHours(hours,minutes,0,0);
+                return date.toLocaleTimeString([],{
+                    hour:"numeric",
+                    minute:"2-digit"
+                });
+            }
+        }
+
+        const parsedRaw=new Date(rawTime);
+
+        if(!Number.isNaN(parsedRaw.getTime())){
+            return parsedRaw.toLocaleTimeString([],{
+                hour:"numeric",
+                minute:"2-digit"
+            });
+        }
+
+    }
+
+    const dateTimeSource=(event.event_date || "").toString().trim();
+
+    if(!dateTimeSource){
+        return "Time TBA";
+    }
+
+    const parsed=new Date(dateTimeSource);
+
+    if(Number.isNaN(parsed.getTime())){
+        return "Time TBA";
+    }
+
+    const hasTimeValue=dateTimeSource.includes("T") || dateTimeSource.includes(":");
+
+    if(!hasTimeValue){
+        return "Time TBA";
+    }
+
+    return parsed.toLocaleTimeString([],{
+        hour:"numeric",
+        minute:"2-digit"
+    });
+
+}
+
+function formatDateBadge(dateStr){
+
+    if(!dateStr){
+        return null;
+    }
+
+    const parsed=new Date(dateStr);
+
+    if(Number.isNaN(parsed.getTime())){
+        return null;
+    }
+
+    return {
+        day:String(parsed.getDate()).padStart(2,"0"),
+        month:parsed.toLocaleString(undefined,{month:"short"}).toUpperCase()
+    };
+
+}
+
+function categoryTagVariant(category){
+
+    if(category==="LIVE_MUSIC" || category==="MEETUP" || category==="NETWORKING"){
+        return "purple";
+    }
+
+    if(category==="DINNER_PARTY" || category==="MOVIE_NIGHT" || category==="GAME_NIGHT"){
+        return "orange";
+    }
+
+    return "pink";
+
+}
+
+// Site-styled toast notifications, shown top-right.
+function showToast(message,type="success"){
+
+    const container=document.getElementById("toastContainer");
+
+    if(!container){
+
+        return;
+
+    }
+
+    const icon=(type==="success") ? "bi-check-circle-fill" : "bi-exclamation-circle-fill";
+
+    const toastEl=document.createElement("div");
+
+    toastEl.className=`site-toast ${type}`;
+
+    toastEl.innerHTML=`
+        <div class="toast-icon"><i class="bi ${icon}"></i></div>
+        <div class="toast-message">${message}</div>
+        <button type="button" class="toast-close" aria-label="Close"><i class="bi bi-x-lg"></i></button>
+    `;
+
+    container.appendChild(toastEl);
+
+    let dismissTimer;
+
+    function dismiss(){
+
+        clearTimeout(dismissTimer);
+
+        toastEl.classList.add("hiding");
+
+        toastEl.addEventListener("animationend",()=>toastEl.remove(),{once:true});
+
+    }
+
+    toastEl.querySelector(".toast-close").addEventListener("click",dismiss);
+
+    dismissTimer=setTimeout(dismiss,4000);
+
+}
+
+// All events as loaded from the API.
+let allEvents=[];
+
+// Page-based grid similar to the design.
+const PAGE_SIZE=6;
+let currentPage=1;
+
+// Current filter state.
+let searchTerm="";
+let categoryFilter="";
+let priceFilter="";
+let sortFilter="newest";
+
+function debounce(fn,delay){
+
+    let timer;
+
+    return function(...args){
+
+        clearTimeout(timer);
+
+        timer=setTimeout(()=>fn.apply(this,args),delay);
+
+    };
+
+}
+
+function getFilteredEvents(){
+
+    const term=searchTerm.trim().toLowerCase();
+
+    return allEvents.filter(event=>{
+
+        if(term){
+
+            const name=(event.event_name || "").toLowerCase();
+
+            const location=(event.location || "").toLowerCase();
+
+            if(!name.includes(term) && !location.includes(term)){
+
+                return false;
+
+            }
+
+        }
+
+        if(categoryFilter && event.event_category!==categoryFilter){
+
+            return false;
+
+        }
+
+        if(priceFilter){
+
+            const fee=Number(event.fee) || 0;
+
+            if(priceFilter==="free" && fee>0){
+
+                return false;
+
+            }
+
+            if(priceFilter==="paid" && fee<=0){
+
+                return false;
+
+            }
+
+        }
+
+        return true;
+
+    });
+
+}
+
+// Number of active (non-default) filters, shown as a badge on the filter button.
+function countActiveFilters(){
+
+    let count=0;
+
+    if(categoryFilter){
+        count++;
+    }
+
+    if(priceFilter){
+        count++;
+    }
+
+    if(sortFilter && sortFilter!=="newest"){
+        count++;
+    }
+
+    return count;
+
+}
+
+function updateFilterCountBadge(){
+
+    const badge=document.getElementById("filterCount");
+
+    const count=countActiveFilters();
+
+    badge.textContent=count;
+
+    badge.classList.toggle("d-none",count===0);
+
+}
+
+function syncCategoryControls(){
+
+    document.querySelectorAll("#quickCategoryButtons [data-category]").forEach(btn=>{
+        btn.classList.toggle("active",btn.dataset.category===categoryFilter);
+    });
+
+    const select=document.getElementById("categoryFilter");
+    if(select){
+        select.value=categoryFilter;
+    }
+
+    const moreSelect=document.getElementById("moreCategorySelect");
+    if(moreSelect){
+        const hasQuickMatch=!!document.querySelector(`#quickCategoryButtons [data-category="${categoryFilter}"]`);
+        moreSelect.value=hasQuickMatch ? "" : categoryFilter;
+    }
+
+}
+
+function renderEventCard(event){
+
+    const location=event.location || "Location TBA";
+    const dateBadge=formatDateBadge(event.event_date);
+    const timeLabel=formatEventTime(event);
+    const goingCount=Number(
+        event.going_count ||
+        event.attendees_count ||
+        event.current_attendees ||
+        event.bookings_count ||
+        0
+    );
+    const tagVariant=categoryTagVariant(event.event_category);
+
+    return `
+
+    <div class="col-lg-4 col-md-6 mb-4">
+
+        <article class="event-card h-100">
+
+            <div class="event-media">
+
+                ${event.poster ? `<img src="${event.poster}" alt="${event.event_name}">` : `<i class="bi bi-image"></i>`}
+
+                <span class="event-tag ${tagVariant}">${categoryLabel(event.event_category)}</span>
+
+                ${dateBadge ? `
+                <span class="event-date-badge">
+                    <span class="day">${dateBadge.day}</span>
+                    <span class="month">${dateBadge.month}</span>
+                </span>
+                ` : ""}
+
+                <button type="button" class="event-like-btn" aria-label="Save event">
+                    <i class="bi bi-heart"></i>
+                </button>
+
+            </div>
+
+            <div class="event-body">
+
+                <h4>
+
+                    ${event.event_name}
+
+                </h4>
+
+                <p class="event-desc">
+
+                    ${event.description || ""}
+
+                </p>
+
+                <div class="event-meta">
+
+                    <span>
+                        <i class="bi bi-geo-alt"></i>
+                        ${location}
+                    </span>
+
+                    <span>
+                        <i class="bi bi-clock"></i>
+                        ${timeLabel}
+                    </span>
+
+                    <span>
+                        <i class="bi bi-people"></i>
+                        ${Number.isFinite(goingCount) ? goingCount : 0} going
+                    </span>
+
+                </div>
+
+                <div class="event-footer">
+                    <a href="/event-details/${event.event_id}/" class="btn btn-primary">View Details</a>
+                    <button type="button" class="event-share-btn" aria-label="Share event">
+                        <i class="bi bi-upload"></i>
+                    </button>
+                </div>
+
+            </div>
+
+        </article>
+
+    </div>
+
+    `;
+
+}
+
+function renderEvents(){
+
+    const container=document.getElementById("eventContainer");
+    const paginationContainer=document.getElementById("paginationContainer");
+
+    if(allEvents.length===0){
+
+        container.innerHTML=`
+
+        <div class="col-12">
+
+            <div class="empty-state">
+
+                <i class="bi bi-calendar-x"></i>
+
+                <p>No events available right now. Check back soon, or be the first to host one.</p>
+
+                <a href="/hosting/" class="btn btn-primary">
+
+                    <i class="bi bi-plus-circle-fill me-1"></i> Host an Event
+
+                </a>
+
+            </div>
+
+        </div>
+
+        `;
+
+        paginationContainer.innerHTML="";
+
+        return;
+
+    }
+
+    const filtered=getFilteredEvents();
+
+    const sorted=filtered.slice().sort((a,b)=>{
+
+        if(sortFilter==="upcoming"){
+
+            const aKey=a.event_date ? new Date(a.event_date).getTime() : Infinity;
+
+            const bKey=b.event_date ? new Date(b.event_date).getTime() : Infinity;
+
+            return aKey-bKey;
+
+        }
+
+        if(sortFilter==="price_low" || sortFilter==="price_high"){
+
+            const aFee=Number(a.fee) || 0;
+
+            const bFee=Number(b.fee) || 0;
+
+            return sortFilter==="price_low" ? aFee-bFee : bFee-aFee;
+
+        }
+
+        // Default: newest first — fall back to event id if there's no event_date field.
+        const aKey=a.event_date ? new Date(a.event_date).getTime() : a.event_id;
+
+        const bKey=b.event_date ? new Date(b.event_date).getTime() : b.event_id;
+
+        return bKey-aKey;
+
+    });
+
+    if(sorted.length===0){
+
+        container.innerHTML=`
+
+        <div class="col-12">
+
+            <div class="empty-state">
+
+                <i class="bi bi-search"></i>
+
+                <p>No events match your search.</p>
+
+                <button type="button" class="clear-search-btn" onclick="resetFilters()">
+
+                    <i class="bi bi-x-circle"></i> Clear Search
+
+                </button>
+
+            </div>
+
+        </div>
+
+        `;
+
+        paginationContainer.innerHTML="";
+
+        return;
+
+    }
+
+    const totalPages=Math.max(1,Math.ceil(sorted.length/PAGE_SIZE));
+    currentPage=Math.min(Math.max(1,currentPage),totalPages);
+    const startIndex=(currentPage-1)*PAGE_SIZE;
+    const visibleEvents=sorted.slice(startIndex,startIndex+PAGE_SIZE);
+
+    container.innerHTML=visibleEvents.map(renderEventCard).join("");
+
+    renderPagination(sorted.length,totalPages);
+
+}
+
+function renderPagination(totalItems,totalPages){
+
+    const container=document.getElementById("paginationContainer");
+
+    if(totalItems<=PAGE_SIZE){
+        container.innerHTML="";
+        return;
+    }
+
+    const pages=[];
+
+    if(totalPages<=6){
+        for(let i=1;i<=totalPages;i++){
+            pages.push(i);
+        }
+    } else {
+        pages.push(1);
+
+        const start=Math.max(2,currentPage-1);
+        const end=Math.min(totalPages-1,currentPage+1);
+
+        if(start>2){
+            pages.push("...");
+        }
+
+        for(let i=start;i<=end;i++){
+            pages.push(i);
+        }
+
+        if(end<totalPages-1){
+            pages.push("...");
+        }
+
+        pages.push(totalPages);
+    }
+
+    const pageButtons=pages.map(page=>{
+        if(page==="..."){
+            return `<span class="ellipsis">...</span>`;
+        }
+
+        return `
+            <button type="button" data-page="${page}" class="${page===currentPage ? "active" : ""}">
+                ${page}
+            </button>
+        `;
+    }).join("");
+
+    container.innerHTML=`
+        <div class="explore-pagination">
+            <button type="button" data-dir="prev" ${currentPage===1 ? "disabled" : ""}>
+                <i class="bi bi-chevron-left"></i>
+            </button>
+            ${pageButtons}
+            <button type="button" data-dir="next" ${currentPage===totalPages ? "disabled" : ""}>
+                <i class="bi bi-chevron-right"></i>
+            </button>
+        </div>
+    `;
+
+    container.querySelectorAll("button[data-page]").forEach(button=>{
+        button.addEventListener("click",function(){
+            currentPage=Number(this.dataset.page);
+            renderEvents();
+        });
+    });
+
+    const prevBtn=container.querySelector("button[data-dir='prev']");
+    const nextBtn=container.querySelector("button[data-dir='next']");
+
+    if(prevBtn){
+        prevBtn.addEventListener("click",function(){
+            if(currentPage>1){
+                currentPage-=1;
+                renderEvents();
+            }
+        });
+    }
+
+    if(nextBtn){
+        nextBtn.addEventListener("click",function(){
+            if(currentPage<totalPages){
+                currentPage+=1;
+                renderEvents();
+            }
+        });
+    }
+
+}
+
+function resetFilters(){
+
+    searchTerm="";
+
+    categoryFilter="";
+
+    priceFilter="";
+
+    sortFilter="newest";
+
+    currentPage=1;
+
+    document.getElementById("searchInput").value="";
+
+    document.getElementById("categoryFilter").value="";
+
+    document.getElementById("priceFilter").value="";
+
+    document.getElementById("sortFilter").value="newest";
+
+    const moreCategorySelect=document.getElementById("moreCategorySelect");
+    if(moreCategorySelect){
+        moreCategorySelect.value="";
+    }
+
+    syncCategoryControls();
+    updateFilterCountBadge();
+
+    renderEvents();
+
+}
+
+async function loadEvents(){
+
+    const container=document.getElementById("eventContainer");
+
+    container.innerHTML=`
+        <div class="loading">
+            <div class="spinner-border" role="status"></div>
+            <div>Loading events...</div>
+        </div>
+    `;
+
+    try{
+
+        const events=await api("/hosting/events/");
+
+        allEvents=Array.isArray(events) ? await filterEventsByAgeLimit(events) : [];
+
+        currentPage=1;
+        renderEvents();
+
+    }
+
+    catch(error){
+
+        container.innerHTML=`
+
+        <div class="col-12">
+
+            <div class="error-state">
+
+                <i class="bi bi-exclamation-triangle-fill"></i>
+
+                <p>Unable to load events. Please check your connection and try again.</p>
+
+                <button type="button" class="btn btn-primary" onclick="loadEvents()">
+
+                    <i class="bi bi-arrow-clockwise me-1"></i> Retry
+
+                </button>
+
+            </div>
+
+        </div>
+
+        `;
+
+        document.getElementById("paginationContainer").innerHTML="";
+
+        showToast("Unable to load events right now.","danger");
+
+    }
+
+}
+
+document.getElementById("searchInput").addEventListener("input",debounce(function(e){
+
+    searchTerm=e.target.value;
+
+    currentPage=1;
+
+    renderEvents();
+
+},250));
+
+document.getElementById("sortFilter").addEventListener("change",function(e){
+    sortFilter=e.target.value;
+    currentPage=1;
+    updateFilterCountBadge();
+    renderEvents();
+});
+
+function setupQuickCategoryButtons(){
+
+    document.querySelectorAll("#quickCategoryButtons [data-category]").forEach(button=>{
+        button.addEventListener("click",function(){
+            categoryFilter=this.dataset.category || "";
+            currentPage=1;
+            syncCategoryControls();
+            updateFilterCountBadge();
+            renderEvents();
+        });
+    });
+
+    const moreCategorySelect=document.getElementById("moreCategorySelect");
+
+    if(moreCategorySelect){
+        moreCategorySelect.addEventListener("change",function(){
+            if(this.value){
+                categoryFilter=this.value;
+                currentPage=1;
+                syncCategoryControls();
+                updateFilterCountBadge();
+                renderEvents();
+            }
+        });
+    }
+
+}
+
+// Filter dropdown: opens on hover (via CSS) and on click/tap for touch devices,
+// closes on outside click or Escape.
+function setupFilterDropdown(){
+
+    const filterMenu=document.getElementById("filterMenu");
+
+    const filterBtn=document.getElementById("filterBtn");
+
+    const filterDropdown=document.getElementById("filterDropdown");
+
+    const pageHeader=document.querySelector(".page-header");
+
+    const categorySelect=document.getElementById("categoryFilter");
+
+    const priceSelect=document.getElementById("priceFilter");
+
+    const sortSelect=document.getElementById("sortFilter");
+
+    // Measures how far the popover's bottom edge extends past the header
+    // and stores that as a CSS variable, so the :has() rule above can push
+    // the event grid down by exactly enough to avoid overlapping it -
+    // no more, no less - even if the popover's content or the viewport
+    // width changes.
+    function updateDropdownSpacing(){
+
+        const dropdownRect=filterDropdown.getBoundingClientRect();
+
+        const anchorRect=filterMenu.getBoundingClientRect();
+
+        const breathingRoom=16;
+
+        const needed=Math.max(8,Math.ceil(dropdownRect.bottom-anchorRect.bottom+breathingRoom));
+
+        pageHeader.style.setProperty("--filter-dropdown-space",needed+"px");
+
+    }
+
+    updateDropdownSpacing();
+
+    window.addEventListener("resize",updateDropdownSpacing);
+
+    window.addEventListener("load",updateDropdownSpacing);
+
+    function openMenu(){
+
+        updateDropdownSpacing();
+
+        filterMenu.classList.add("open");
+
+        filterBtn.setAttribute("aria-expanded","true");
+
+    }
+
+    function closeMenu(){
+
+        filterMenu.classList.remove("open");
+
+        filterBtn.setAttribute("aria-expanded","false");
+
+    }
+
+    filterBtn.addEventListener("click",function(event){
+
+        event.stopPropagation();
+
+        filterMenu.classList.contains("open") ? closeMenu() : openMenu();
+
+    });
+
+    document.addEventListener("click",function(event){
+
+        if(!filterMenu.contains(event.target)){
+
+            closeMenu();
+
+        }
+
+    });
+
+    document.addEventListener("keydown",function(event){
+
+        if(event.key==="Escape"){
+
+            closeMenu();
+
+        }
+
+    });
+
+    function applyFilters(){
+
+        categoryFilter=categorySelect.value;
+
+        priceFilter=priceSelect.value;
+
+        sortFilter=sortSelect.value;
+
+        currentPage=1;
+
+        syncCategoryControls();
+        updateFilterCountBadge();
+
+        renderEvents();
+
+        closeMenu();
+
+    }
+
+    document.getElementById("filterApplyBtn").addEventListener("click",applyFilters);
+
+    // Also apply immediately when a dropdown value changes, for faster feedback.
+    [categorySelect,priceSelect].forEach(select=>{
+
+        select.addEventListener("change",applyFilters);
+
+    });
+
+    document.getElementById("filterClearBtn").addEventListener("click",function(){
+
+        categoryFilter="";
+
+        priceFilter="";
+
+        sortFilter="newest";
+
+        categorySelect.value="";
+
+        priceSelect.value="";
+
+        sortSelect.value="newest";
+
+        const moreCategorySelect=document.getElementById("moreCategorySelect");
+        if(moreCategorySelect){
+            moreCategorySelect.value="";
+        }
+
+        currentPage=1;
+
+        syncCategoryControls();
+        updateFilterCountBadge();
+
+        renderEvents();
+
+        closeMenu();
+
+    });
+
+}
+
+function initializeSearchFromUrl(){
+
+    const params=new URLSearchParams(window.location.search);
+
+    const initialQuery=params.get("q") || "";
+
+    const shouldFocus=params.get("focus")==="search";
+
+    const searchInput=document.getElementById("searchInput");
+
+    if(initialQuery){
+
+        searchTerm=initialQuery;
+
+        searchInput.value=initialQuery;
+
+    }
+
+    if(shouldFocus || initialQuery){
+
+        setTimeout(()=>{
+
+            searchInput.focus();
+
+            if(initialQuery){
+                searchInput.select();
+            }
+
+        },0);
+
+    }
+
+}
+
+populateCategoryOptions();
+
+setupFilterDropdown();
+setupQuickCategoryButtons();
+syncCategoryControls();
+updateFilterCountBadge();
+
+initializeSearchFromUrl();
+
+loadEvents();
+
+</script>
+
+{% endblock %}
