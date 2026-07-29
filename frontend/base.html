@@ -986,6 +986,12 @@
                     </li>
 
                     <li class="nav-item">
+                        <a href="/hosting/" class="nav-link">
+                            Host Event
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
                         <a href="/support/" class="nav-link">
                             Contact us
                         </a>
@@ -999,13 +1005,6 @@
                         <a href="/login/" class="btn btn-outline-primary btn-sm px-3">
                             Login
                         </a>
-                    </li>
-
-                    <li class="nav-item d-none" id="notificationsNavItem">
-                        <button class="navbar-icon-btn" type="button" aria-label="Notifications">
-                            <i class="bi bi-bell"></i>
-                            <span class="dot"></span>
-                        </button>
                     </li>
 
                     <li class="nav-item d-none profile-menu" id="profileMenuItem">
@@ -1430,8 +1429,6 @@
 
             const loginItem = document.getElementById("loginNavItem");
 
-            const notificationsNavItem = document.getElementById("notificationsNavItem");
-
             const profileMenuItem = document.getElementById("profileMenuItem");
 
             const profileMenuAvatarInitial = document.getElementById("profileMenuAvatarInitial");
@@ -1444,10 +1441,6 @@
 
             if (profileMenuItem) {
                 profileMenuItem.classList.toggle("d-none", !loggedIn);
-            }
-
-            if (notificationsNavItem) {
-                notificationsNavItem.classList.toggle("d-none", !loggedIn);
             }
 
             if (!loggedIn) {
