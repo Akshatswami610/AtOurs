@@ -608,10 +608,12 @@
 
         footer.site-footer {
             margin-top: auto;
-            background: #09070f;
+            background: radial-gradient(circle at top right, rgba(168, 85, 247, .12), transparent 38%),
+                        radial-gradient(circle at top left, rgba(236, 72, 153, .08), transparent 34%),
+                        #09070f;
             border-top: 1px solid var(--border);
             color: var(--text-muted);
-            padding: 34px 20px 16px;
+            padding: 38px 20px 18px;
         }
 
         .footer-grid {
@@ -620,11 +622,19 @@
             gap: 32px;
             max-width: 1140px;
             margin: 0 auto;
+            align-items: start;
         }
 
         @media (max-width: 767px) {
             .footer-grid {
                 grid-template-columns: 1fr 1fr;
+                gap: 24px;
+            }
+        }
+
+        @media (max-width: 575px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -636,13 +646,12 @@
 
         .footer-connect {
             max-width: 1140px;
-            margin: 24px auto 0;
-            padding-top: 18px;
-            border-top: 1px solid var(--border);
+            margin: 28px auto 0;
+            padding: 0;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
+            gap: 18px;
             flex-wrap: wrap;
         }
 
@@ -654,24 +663,80 @@
             margin: 0;
         }
 
-        .footer-social a {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
+        .footer-connect-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .footer-connect .footer-social a {
             display: flex;
             align-items: center;
             justify-content: center;
-            background: transparent;
-            border: 1px solid var(--border);
             color: #ded8e7;
-            font-size: 1rem;
-            transition: color .25s var(--ease), background .25s var(--ease), border-color .25s var(--ease);
+            font-size: 1.1rem;
+            transition: color .25s var(--ease), transform .25s var(--ease);
         }
 
-        .footer-social a:hover {
+        .footer-connect .footer-social a:hover {
+            color: var(--pink);
+            transform: translateY(-1px);
+        }
+
+        .footer-subscribe {
+            margin: 0;
+            flex: 1;
+            max-width: 280px;
+        }
+
+        .subscribe-label {
+            display: block;
+            color: var(--text-secondary);
+            font-size: .88rem;
+            font-weight: 600;
+            margin-bottom: 9px;
+        }
+
+        .footer-subscribe .form-control {
+            background: rgba(255, 255, 255, .03);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            font-size: .9rem;
+            padding: 10px 12px;
+        }
+
+        .footer-subscribe .form-control::placeholder {
+            color: var(--text-muted);
+        }
+
+        .footer-subscribe .form-control:focus {
+            background: rgba(255, 255, 255, .05);
+            color: var(--text-primary);
+            border-color: rgba(236, 72, 153, .65);
+            box-shadow: 0 0 0 .2rem rgba(236, 72, 153, .16);
+        }
+
+        .footer-subscribe .btn {
+            border: 0;
+            background: var(--gradient-brand);
             color: #fff;
-            background: rgba(255, 255, 255, .07);
-            border-color: rgba(255, 255, 255, .25);
+            font-size: .88rem;
+            font-weight: 700;
+            padding: 10px 10px;
+            white-space: nowrap;
+        }
+
+        .footer-subscribe .btn:hover {
+            color: #fff;
+            filter: brightness(1.03);
+        }
+
+        .subscribe-note {
+            margin: 8px 0 0;
+            color: var(--text-muted);
+            font-size: .8rem;
+            letter-spacing: .01em;
         }
 
         .footer-brand {
@@ -687,7 +752,7 @@
             font-size: .94rem;
             line-height: 1.6;
             max-width: 260px;
-            margin-bottom: 18px;
+            margin-bottom: 0;
         }
 
         .footer-col h6 {
@@ -760,6 +825,23 @@
             .footer-col a,
             .footer-tagline {
                 font-size: .88rem;
+            }
+
+            .footer-connect {
+                padding: 0;
+            }
+        }
+
+        @media (max-width: 575px) {
+            .footer-connect-left {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .footer-subscribe {
+                width: 100%;
+                max-width: 100%;
             }
         }
 
@@ -1145,18 +1227,23 @@
         </div>
 
         <div class="footer-connect">
-            <h6>Let's Connect</h6>
-            <div class="footer-social">
-
-                <a href="https://instagram.com/helloatours" target="_blank" rel="noopener" aria-label="Instagram">
-                    <i class="bi bi-instagram"></i>
-                </a>
-
-                <a href="https://twitter.com/helloatours" target="_blank" rel="noopener" aria-label="Twitter">
-                    <i class="bi bi-twitter-x"></i>
-                </a>
-
+            <div class="footer-connect-left">
+                <h6>Connect with us:</h6>
+                <div class="footer-social">
+                    <a href="https://www.instagram.com/helloatours/" target="_blank" rel="noopener noreferrer" aria-label="Follow us on Instagram"><i class="bi bi-instagram"></i></a>
+                    <a href="https://www.x.com/helloatours/" target="_blank" rel="noopener noreferrer" aria-label="Follow us on Twitter"><i class="bi bi-twitter-x"></i></a>
+                </div>
             </div>
+
+            <form class="footer-subscribe" action="#" method="post">
+                <label for="footer-newsletter" class="subscribe-label">Subscribe for news and updates</label>
+                <div class="input-group">
+                    <input type="email" id="footer-newsletter" name="email" class="form-control"
+                        placeholder="Enter your email" required>
+                    <button class="btn" type="submit">Subscribe</button>
+                </div>
+                <p class="subscribe-note">No spam, ever. Unsubscribe anytime.</p>
+            </form>
         </div>
 
         <div class="footer-bottom">
