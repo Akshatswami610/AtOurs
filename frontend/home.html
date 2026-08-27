@@ -253,14 +253,20 @@ Home
         font-size: .84rem;
     }
 
-    .view-categories-wrap {
+    .view-categories-wrap,
+    .events-view-wrap {
         display: flex;
         justify-content: center;
         margin-top: 16px;
     }
 
-    .view-categories-wrap .btn {
+    .view-categories-wrap .btn,
+    .events-view-wrap .btn {
         min-width: 220px;
+    }
+
+    #eventContainer {
+        margin-top: 0 !important;
     }
 
     .section-heading {
@@ -295,12 +301,7 @@ Home
     }
 
     .section-heading .view-all {
-        color: var(--pink);
-        font-size: .86rem;
-        font-weight: 700;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
+        display: none;
     }
 
     .event-card {
@@ -579,10 +580,7 @@ Home
 
         <div class="hero-inner">
             <div class="hero-left">
-                <span class="hero-eyebrow">
-                    <i class="bi bi-lightning-charge-fill"></i>
-                    Welcome to AtOurs
-                </span>
+                
 
                 <h1 class="fw-bold">
                     <span class="white">Good Vibes.</span><br>
@@ -677,20 +675,22 @@ Home
             <i class="bi bi-lightning-charge-fill"></i>
             <div>
                 <h3>Upcoming Events</h3>
-                <p>Happening soon. Don't miss out!</p>
             </div>
         </div>
-        <a href="/explore/" class="view-all">
-            View All Events
-            <i class="bi bi-arrow-right"></i>
-        </a>
     </div>
 
-    <div class="row mt-2" id="eventContainer">
+    <div class="row" id="eventContainer">
         <div class="loading">
             <div class="spinner-border" role="status"></div>
             <div>Loading events...</div>
         </div>
+    </div>
+
+    <div class="events-view-wrap">
+        <a href="/explore/" class="btn btn-outline-primary btn-lg">
+            View All Events
+            <i class="bi bi-arrow-right ms-1"></i>
+        </a>
     </div>
 
     <section class="how-it-works">
@@ -875,7 +875,7 @@ function renderEventCard(event){
 
     return `
 
-    <div class="col-lg-4 col-md-6 mb-4">
+    <div class="col-lg-4 col-md-6 mb-1">
 
         <div class="card event-card h-100">
 
