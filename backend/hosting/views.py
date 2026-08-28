@@ -1,7 +1,11 @@
 from rest_framework import generics, permissions
 from rest_framework.permissions import BasePermission
-from .models import Event
-from .serializers import EventSerializer
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Event, SavedEvent
+from .serializers import EventSerializer, SavedEventSerializer
 
 
 class IsOwnerOrReadOnly(BasePermission):
@@ -70,3 +74,111 @@ class EventDetailView(generics.RetrieveUpdateDestroyAPIView):
 
         # Login required for update/delete
         return [permissions.IsAuthenticated(), IsOwnerOrReadOnly()]
+
+# --------------------------------------------------
+# SAVE EVENT
+# --------------------------------------------------
+
+class SaveEventView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, event_id):
+
+        try:
+            event = Event.objects.get(event_id=event_id)
+
+        except Event.DoesNotExist:
+
+            return Response(
+                {
+                    "error": "Event not found."
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        saved_event, created = SavedEvent.objects.get_or_create(
+            user=request.user,
+            event=event
+        )
+
+        if not created:
+
+            return Response(
+                {
+                    "message": "Event already saved."
+                },
+                status=status.HTTP_200_OK
+            )
+
+        serializer = SavedEventSerializer(saved_event)
+
+        return Response(
+            {
+                "message": "Event saved successfully.",
+                "data": serializer.data
+            },
+            status=status.HTTP_201_CREATED
+        )
+
+
+# --------------------------------------------------
+# REMOVE SAVED EVENT
+# --------------------------------------------------
+
+class RemoveSavedEventView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, event_id):
+
+        try:
+
+            saved_event = SavedEvent.objects.get(
+                user=request.user,
+                event__event_id=event_id
+            )
+
+        except SavedEvent.DoesNotExist:
+
+            return Response(
+                {
+                    "error": "Saved event not found."
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        saved_event.delete()
+
+        return Response(
+            {
+                "message": "Event removed from saved list."
+            },
+            status=status.HTTP_200_OK
+        )
+
+
+# --------------------------------------------------
+# GET SAVED EVENTS
+# --------------------------------------------------
+
+class SavedEventListView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        saved_events = SavedEvent.objects.filter(
+            user=request.user
+        ).select_related(
+            "event"
+        ).order_by(
+            "-created_at"
+        )
+
+        serializer = SavedEventSerializer(
+            saved_events,
+            many=True
+        )
+
+        return Response(serializer.data)
