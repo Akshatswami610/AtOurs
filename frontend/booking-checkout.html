@@ -8,162 +8,284 @@ Checkout
 
 <style>
 
-    .checkout-header {
-        text-align: center;
-        margin-bottom: 28px;
-    }
+.checkout-page { padding: 8px 0 56px; }
 
-    .checkout-header h1 {
-        font-size: 1.6rem;
-        margin-bottom: 6px;
-    }
+/* ── Back link ── */
+.co-back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--text-muted); font-size: .82rem; font-weight: 600;
+    text-decoration: none; margin-bottom: 24px;
+    transition: color .2s;
+}
+.co-back-link:hover { color: var(--pink); }
 
-    .checkout-header p {
-        color: var(--text-muted);
-        font-size: .88rem;
-        margin: 0;
-    }
+/* ── Progress Stepper ── */
+.co-stepper {
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 36px;
+}
+.co-step {
+    display: flex; align-items: center; gap: 8px;
+    font-size: .78rem; font-weight: 600;
+    color: rgba(255,255,255,.32);
+}
+.co-step-circle {
+    width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .78rem;
+    border: 2px solid rgba(255,255,255,.16);
+    background: transparent; color: rgba(255,255,255,.32);
+}
+.co-step.s-done .co-step-circle {
+    background: var(--pink); border-color: var(--pink); color: #fff;
+}
+.co-step.s-active .co-step-circle {
+    background: var(--pink); border-color: var(--pink); color: #fff;
+    box-shadow: 0 0 0 4px rgba(236,72,153,.22);
+}
+.co-step.s-active { color: var(--pink); }
+.co-step.s-done   { color: rgba(255,255,255,.6); }
+.co-step-line {
+    width: 60px; height: 2px; flex-shrink: 0;
+    background: rgba(255,255,255,.1); margin: 0 6px;
+}
+.co-step-line.done { background: var(--pink); }
 
-    .event-summary-card {
-        display: flex;
-        gap: 18px;
-        padding: 20px;
-        align-items: center;
-    }
+/* ── Checkout card ── */
+.checkout-card {
+    background: #17151c;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 16px; overflow: hidden;
+    margin-bottom: 12px;
+}
 
-    .event-summary-media {
-        width: 84px;
-        height: 84px;
-        border-radius: var(--radius-sm);
-        background: linear-gradient(135deg, #1c1c20, #131316);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text-muted);
-        font-size: 1.5rem;
-        flex-shrink: 0;
-        overflow: hidden;
-        position: relative;
-    }
+/* ── Section header ── */
+.co-section-header {
+    display: flex; align-items: center; gap: 16px;
+    padding: 0 0 22px;
+}
+.co-header-icon {
+    width: 62px; height: 62px; flex-shrink: 0; border-radius: 50%;
+    background: rgba(236,72,153,.1); border: 1px solid rgba(236,72,153,.22);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--pink); font-size: 1.5rem;
+}
+.co-header-text h1 {
+    font-size: 1.75rem; font-weight: 900; margin: 0 0 4px; line-height: 1.1;
+}
+.co-header-text h1 span {
+    background: var(--gradient-brand);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.co-header-text p { color: var(--text-muted); font-size: .84rem; margin: 0; }
 
-    .event-summary-media img {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
+/* ── Event summary ── */
+.event-summary {
+    display: flex; gap: 16px; align-items: center;
+    padding: 16px 18px;
+}
+.event-poster {
+    width: 130px; height: 82px; flex-shrink: 0;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #1c1921, #130f18);
+    border: 1px solid rgba(255,255,255,.07);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,.18); font-size: 1.5rem;
+    overflow: hidden; position: relative;
+}
+.event-poster img {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+}
+.event-info h4 {
+    margin: 0 0 8px;
+    font-size: 1.08rem; font-weight: 800; line-height: 1.3; color: var(--text-primary);
+}
+.badge-category {
+    display: inline-flex; align-items: center;
+    background: rgba(236,72,153,.12); color: var(--pink);
+    border: 1px solid rgba(236,72,153,.24);
+    font-size: .68rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: .05em;
+    padding: 4px 10px; border-radius: 999px;
+}
 
-    .event-summary-info h4 {
-        font-size: 1.1rem;
-        margin-bottom: 4px;
-    }
+/* ── Info rows ── */
+.info-list { padding: 6px 18px 8px; }
+.info-row {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.info-row:last-child { border-bottom: none; }
+.info-icon {
+    width: 34px; height: 34px; flex-shrink: 0; border-radius: 9px;
+    background: rgba(236,72,153,.08); border: 1px solid rgba(236,72,153,.14);
+    color: var(--pink); display: flex; align-items: center; justify-content: center;
+    font-size: .88rem;
+}
+.info-content { flex: 1; min-width: 0; }
+.info-label {
+    display: block; font-size: .68rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .05em;
+    color: var(--text-muted); margin-bottom: 2px;
+}
+.info-value { font-size: .9rem; font-weight: 600; color: var(--text-primary); }
+.info-sub   { display: block; font-size: .78rem; color: var(--text-muted); margin-top: 2px; }
+.info-link {
+    display: flex; align-items: center; gap: 4px; flex-shrink: 0;
+    color: var(--pink); font-size: .76rem; font-weight: 700;
+    text-decoration: none; transition: opacity .2s;
+}
+.info-link:hover { opacity: .75; color: var(--pink); }
 
-    .event-summary-info .badge-category {
-        display: inline-block;
-        background: var(--accent-dim);
-        color: var(--accent);
-        border: 1px solid rgba(245, 200, 76, .25);
-        font-size: .7rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: .04em;
-        padding: 4px 10px;
-        border-radius: 999px;
-    }
+/* ── Trust grid ── */
+.trust-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1px; background: rgba(255,255,255,.07);
+    border-radius: 16px; overflow: hidden;
+    border: 1px solid rgba(255,255,255,.08);
+    margin-bottom: 0;
+}
+.trust-item {
+    background: #17151c; padding: 16px;
+    display: flex; flex-direction: column; gap: 5px;
+}
+.trust-icon { color: var(--pink); font-size: 1.1rem; }
+.trust-title { font-size: .82rem; font-weight: 800; color: var(--text-primary); }
+.trust-desc { font-size: .71rem; color: var(--text-muted); line-height: 1.45; }
 
-    .info-list {
-        margin-top: 4px;
-    }
+/* ── Order card ── */
+.order-card {
+    background: #17151c; border: 1px solid rgba(255,255,255,.08);
+    border-radius: 16px; padding: 22px 20px;
+    flex: 1;
+}
+.order-heading { font-size: 1.08rem; font-weight: 800; margin: 0 0 18px; }
 
-    .info-list .info-row {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 14px 4px;
-        border-bottom: 1px solid var(--border);
-    }
+.order-tickets-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px;
+}
+.order-tickets-label { font-size: .88rem; font-weight: 600; color: var(--text-secondary); }
+.ticket-count-badge {
+    background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12);
+    color: var(--text-primary); font-size: .75rem; font-weight: 700;
+    padding: 4px 12px; border-radius: 999px;
+}
 
-    .info-list .info-row:last-child {
-        border-bottom: none;
-    }
+.order-line {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    padding: 6px 0; gap: 8px;
+}
+.ol-name { font-size: .85rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1px; }
+.ol-sub  { font-size: .74rem; color: var(--text-muted); }
+.ol-label {
+    display: flex; align-items: center; gap: 4px;
+    font-size: .84rem; color: var(--text-secondary);
+}
+.ol-label i { font-size: .68rem; opacity: .6; }
+.ol-price { font-size: .86rem; font-weight: 700; color: var(--text-primary); flex-shrink: 0; }
 
-    .info-list .info-icon {
-        width: 34px;
-        height: 34px;
-        flex-shrink: 0;
-        border-radius: 9px;
-        background: var(--accent-dim);
-        border: 1px solid rgba(245, 200, 76, .25);
-        color: var(--accent);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: .9rem;
-    }
+.order-separator { height: 1px; background: rgba(255,255,255,.08); margin: 14px 0; }
 
-    .info-list .info-label {
-        display: block;
-        font-size: .72rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: .04em;
-        color: var(--text-muted);
-        margin-bottom: 2px;
-    }
+.order-total-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 18px;
+}
+.order-total-label { font-size: .95rem; font-weight: 800; }
+.order-total-value { font-size: 1.75rem; font-weight: 900; }
 
-    .info-list .info-value {
-        font-size: .92rem;
-        font-weight: 600;
-        color: var(--text-primary);
-    }
+/* ── Coupon ── */
+.coupon-box {
+    display: flex; align-items: center;
+    border: 1.5px dashed rgba(236,72,153,.4);
+    border-radius: 12px; overflow: hidden;
+    margin-bottom: 12px;
+}
+.coupon-input {
+    flex: 1; background: transparent; border: none;
+    color: var(--pink); font-size: .84rem; font-weight: 600;
+    padding: 11px 14px; outline: none;
+}
+.coupon-input::placeholder { color: rgba(236,72,153,.5); }
+.coupon-apply {
+    background: transparent; border: none;
+    border-left: 1.5px dashed rgba(236,72,153,.4);
+    color: var(--pink); font-size: .82rem; font-weight: 800;
+    padding: 11px 14px; cursor: pointer;
+    transition: background .2s;
+}
+.coupon-apply:hover { background: rgba(236,72,153,.06); }
 
-    .ticket-qty-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 4px 0;
-    }
+/* ── Buyer protection ── */
+.buyer-protection {
+    display: flex; align-items: center; gap: 14px;
+    background: rgba(236,72,153,.05);
+    border: 1px solid rgba(236,72,153,.18);
+    border-radius: 14px; padding: 14px 16px; margin-bottom: 16px;
+}
+.bp-logo {
+    flex-shrink: 0; position: relative; width: 46px; height: 52px;
+}
+.bp-logo svg { width: 100%; height: 100%; }
+.bp-text-wrap { flex: 1; min-width: 0; }
+.bp-title { font-size: .84rem; font-weight: 800; color: var(--text-primary); margin-bottom: 3px; }
+.bp-desc  { font-size: .73rem; color: var(--text-muted); line-height: 1.45; }
 
-    .qty-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: var(--bg-secondary);
-        border: 1px solid var(--border);
-        padding: 8px 16px;
-        border-radius: 999px;
-        font-weight: 700;
-        color: var(--text-primary);
-        font-size: .92rem;
-    }
+/* ── Pay button ── */
+.pay-btn {
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px; width: 100%; min-height: 54px;
+    border-radius: 14px; border: none;
+    background: linear-gradient(120deg, #ff2f95 0%, #ff8a2a 100%);
+    color: #fff; font-size: 1rem; font-weight: 800; letter-spacing: .01em;
+    box-shadow: 0 12px 28px -10px rgba(236,72,153,.65);
+    cursor: pointer;
+    transition: transform .2s var(--ease), filter .2s, box-shadow .2s;
+    margin-bottom: 8px;
+}
+.pay-btn:hover:not(:disabled) {
+    transform: translateY(-2px); filter: brightness(1.06);
+    box-shadow: 0 16px 32px -12px rgba(236,72,153,.8);
+}
+.pay-btn:active:not(:disabled) { transform: translateY(0); }
+.pay-btn:disabled { opacity: .55; cursor: not-allowed; }
+.pay-btn .lock-icon {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: rgba(0,0,0,.2); border: 1px solid rgba(255,255,255,.2);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: .72rem; flex-shrink: 0;
+}
+.pay-note {
+    text-align: center; font-size: .73rem;
+    color: var(--text-muted); margin: 0 0 4px;
+}
 
-    .qty-note {
-        color: var(--text-muted);
-        font-size: .78rem;
-        margin-top: 6px;
-    }
+/* ── Status messages ── */
+.pay-status { margin-top: 8px; }
+.pay-status-msg {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 14px; border-radius: 12px;
+    font-size: .86rem; font-weight: 600;
+}
+.pay-status-msg.success {
+    background: rgba(78,203,141,.1); border: 1px solid rgba(78,203,141,.28); color: #4ecb8d;
+}
+.pay-status-msg.danger {
+    background: rgba(239,91,106,.1); border: 1px solid rgba(239,91,106,.28); color: #ef5b6a;
+}
 
-    .total-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 18px 0 6px;
-        border-top: 1px solid var(--border);
-        margin-top: 18px;
-    }
-
-    .total-row .total-label {
-        color: var(--text-secondary);
-        font-size: .95rem;
-        font-weight: 600;
-    }
-
-    .total-row .total-value {
-        font-size: 1.5rem;
-        font-weight: 800;
-        color: var(--accent);
-    }
+@media (max-width: 991px) {
+    .co-step-line { width: 32px; }
+}
+@media (max-width: 767px) {
+    .trust-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 576px) {
+    .event-poster { width: 88px; height: 72px; }
+    .co-header-icon { width: 48px; height: 48px; font-size: 1.2rem; }
+    .co-header-text h1 { font-size: 1.4rem; }
+}
 
 </style>
 
@@ -171,131 +293,210 @@ Checkout
 
 {% block content %}
 
-<div class="row justify-content-center fade-in">
+<div class="checkout-page fade-in">
 
+  <!-- Back link -->
+  <a href="javascript:history.back()" class="co-back-link">
+    <i class="bi bi-arrow-left"></i> Back to Event
+  </a>
+
+  <!-- Progress stepper -->
+  <div class="co-stepper">
+    <div class="co-step s-done">
+      <div class="co-step-circle"><i class="bi bi-check-lg"></i></div>
+      <span class="co-step-label">1. Details</span>
+    </div>
+    <div class="co-step-line done"></div>
+    <div class="co-step s-active">
+      <div class="co-step-circle"><i class="bi bi-bag-check-fill"></i></div>
+      <span class="co-step-label">2. Checkout</span>
+    </div>
+    <div class="co-step-line"></div>
+    <div class="co-step">
+      <div class="co-step-circle"><i class="bi bi-calendar3"></i></div>
+      <span class="co-step-label">3. Payment</span>
+    </div>
+    <div class="co-step-line"></div>
+    <div class="co-step">
+      <div class="co-step-circle"><i class="bi bi-check-circle"></i></div>
+      <span class="co-step-label">4. Confirmation</span>
+    </div>
+  </div>
+
+  <!-- Section header (full-width, above the two-column grid) -->
+  <div class="co-section-header">
+    <div class="co-header-icon"><i class="bi bi-bag-check-fill"></i></div>
+    <div class="co-header-text">
+      <h1>Booking <span>Checkout</span></h1>
+      <p>Review your booking details before confirming payment.</p>
+    </div>
+  </div>
+
+  <!-- 2-column layout -->
+  <div class="row g-4 align-items-stretch">
+
+    <!-- Left column -->
     <div class="col-lg-7">
 
-        <div class="checkout-header">
+      <!-- Event card -->
+      <div class="checkout-card">
+        <div class="event-summary">
+          <div class="event-poster" id="posterWrap">
+            <i class="bi bi-image"></i>
+          </div>
+          <div class="event-info">
+            <h4 id="event_title">Loading...</h4>
+            <span class="badge-category" id="category">-</span>
+          </div>
+        </div>
+      </div>
 
-            <h1 class="fw-bold">Booking Checkout</h1>
+      <!-- Info rows card -->
+      <div class="checkout-card">
+        <div class="info-list">
 
-            <p>Review your event and booking details before payment.</p>
+          <div class="info-row">
+            <div class="info-icon"><i class="bi bi-calendar-event"></i></div>
+            <div class="info-content">
+              <span class="info-label">Date &amp; Time</span>
+              <span class="info-value" id="event_date">-</span>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-icon"><i class="bi bi-geo-alt-fill"></i></div>
+            <div class="info-content">
+              <span class="info-label">Location</span>
+              <span class="info-value" id="location">-</span>
+            </div>
+            <a href="#" class="info-link" id="map_link" target="_blank" rel="noopener">
+              View on map <i class="bi bi-box-arrow-up-right"></i>
+            </a>
+          </div>
+
+          <div class="info-row">
+            <div class="info-icon"><i class="bi bi-person-fill"></i></div>
+            <div class="info-content">
+              <span class="info-label">Hosted By</span>
+              <span class="info-value" id="host_name">-</span>
+            </div>
+            <a href="#" class="info-link" id="host_link" target="_blank" rel="noopener">
+              View Host Profile <i class="bi bi-box-arrow-up-right"></i>
+            </a>
+          </div>
+
+          <div class="info-row">
+            <div class="info-icon"><i class="bi bi-person-badge-fill"></i></div>
+            <div class="info-content">
+              <span class="info-label">Booking For</span>
+              <span class="info-value" id="booking_user">-</span>
+              <span class="info-sub" id="booking_user_email"></span>
+            </div>
+          </div>
 
         </div>
+      </div>
 
-        <div class="card event-summary-card mb-4">
-
-            <div class="event-summary-media" id="posterWrap">
-                <i class="bi bi-image"></i>
-            </div>
-
-            <div class="event-summary-info">
-
-                <h4 id="event_title">Loading...</h4>
-
-                <span class="badge-category" id="category">-</span>
-
-            </div>
-
+      <!-- Trust grid -->
+      <div class="trust-grid">
+        <div class="trust-item">
+          <div class="trust-icon"><i class="bi bi-shield-check"></i></div>
+          <div class="trust-title">Secure Payment</div>
+          <div class="trust-desc">Your payments are safe and encrypted</div>
         </div>
-
-        <div class="card mb-4">
-
-            <div class="card-body">
-
-                <div class="info-list">
-
-                    <div class="info-row">
-
-                        <div class="info-icon"><i class="bi bi-calendar-event"></i></div>
-
-                        <div>
-                            <span class="info-label">Date &amp; Time</span>
-                            <span class="info-value" id="event_date">-</span>
-                        </div>
-
-                    </div>
-
-                    <div class="info-row">
-
-                        <div class="info-icon"><i class="bi bi-geo-alt-fill"></i></div>
-
-                        <div>
-                            <span class="info-label">Location</span>
-                            <span class="info-value" id="location">-</span>
-                        </div>
-
-                    </div>
-
-                    <div class="info-row">
-
-                        <div class="info-icon"><i class="bi bi-person-fill"></i></div>
-
-                        <div>
-                            <span class="info-label">Hosted By</span>
-                            <span class="info-value" id="host_name">-</span>
-                        </div>
-
-                    </div>
-
-                    <div class="info-row">
-
-                        <div class="info-icon"><i class="bi bi-ticket-perforated-fill"></i></div>
-
-                        <div>
-                            <span class="info-label">Booking For</span>
-                            <span class="info-value" id="booking_user">-</span>
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
+        <div class="trust-item">
+          <div class="trust-icon"><i class="bi bi-arrow-counterclockwise"></i></div>
+          <div class="trust-title">Instant 24hr Refund</div>
+          <div class="trust-desc">Get a full refund if the event is cancelled</div>
         </div>
-
-        <div class="card">
-
-            <div class="card-body">
-
-                <div class="ticket-qty-row">
-
-                    <span class="info-label" style="text-transform:none; font-size:.85rem; color:var(--text-secondary);">Number of Tickets</span>
-
-                    <span class="qty-badge"><i class="bi bi-ticket-perforated-fill"></i> 1 Ticket</span>
-
-                </div>
-
-                <p class="qty-note">Only one ticket can be booked per person for this event.</p>
-
-                <div class="total-row">
-
-                    <span class="total-label">Total Amount</span>
-
-                    <span class="total-value">₹<span id="total">0</span></span>
-
-                </div>
-
-                <button
-                    id="payBtn"
-                    class="btn btn-primary btn-lg w-100 mt-3"
-                    onclick="payNow()">
-
-                    <i class="bi bi-lock-fill me-1"></i>
-
-                    Proceed to Pay
-
-                </button>
-
-                <div id="paymentStatus" class="mt-3"></div>
-
-            </div>
-
+        <div class="trust-item">
+          <div class="trust-icon"><i class="bi bi-lock-fill"></i></div>
+          <div class="trust-title">SSL Encrypted</div>
+          <div class="trust-desc">Your data is protected with 256-bit SSL</div>
         </div>
+      </div>
 
     </div>
 
+    <!-- Right column: Order Summary -->
+    <div class="col-lg-5 d-flex flex-column">
+      <div class="order-card">
+
+        <h3 class="order-heading">Order Summary</h3>
+
+        <div class="order-tickets-row">
+          <span class="order-tickets-label">Tickets</span>
+          <span class="ticket-count-badge">1 Ticket</span>
+        </div>
+
+        <div class="order-line-items">
+          <div class="order-line">
+            <div class="ol-name" id="ticket_type_name">General Admission</div>
+            <span class="ol-price">₹<span id="fee_ticket_display">0</span></span>
+          </div>
+          <div class="order-line">
+            <span class="ol-label">Platform Fee <i class="bi bi-info-circle-fill"></i></span>
+            <span class="ol-price">₹<span id="fee_platform">0</span></span>
+          </div>
+          <div class="order-line">
+            <span class="ol-label">Service Fee <i class="bi bi-info-circle-fill"></i></span>
+            <span class="ol-price">₹<span id="fee_service">0</span></span>
+          </div>
+        </div>
+
+        <div class="order-separator"></div>
+
+        <div class="order-total-row">
+          <span class="order-total-label">Total Amount</span>
+          <span class="order-total-value">₹<span id="total">0</span></span>
+        </div>
+
+        <!-- Coupon -->
+        <div class="coupon-box">
+          <input type="text" class="coupon-input" id="couponInput" placeholder="Have a coupon code?">
+          <button class="coupon-apply" type="button">Apply</button>
+        </div>
+
+        <!-- Buyer protection -->
+        <div class="buyer-protection">
+          <!-- Shield logo with checkmark -->
+          <div class="bp-logo">
+            <svg viewBox="0 0 46 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="shieldGrad" x1="0" y1="0" x2="46" y2="52" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#ff2f95"/>
+                  <stop offset="100%" stop-color="#ff8a2a"/>
+                </linearGradient>
+              </defs>
+              <!-- Shield body -->
+              <path d="M23 2L4 10v14c0 11.6 8.1 22.4 19 25 10.9-2.6 19-13.4 19-25V10L23 2z"
+                    fill="url(#shieldGrad)" opacity="0.15"/>
+              <path d="M23 2L4 10v14c0 11.6 8.1 22.4 19 25 10.9-2.6 19-13.4 19-25V10L23 2z"
+                    stroke="url(#shieldGrad)" stroke-width="2" stroke-linejoin="round" fill="none"/>
+              <!-- Checkmark -->
+              <path d="M15 26l6 6 10-12" stroke="url(#shieldGrad)"
+                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="bp-text-wrap">
+            <div class="bp-title">AtOurs Buyer Protection</div>
+            <div class="bp-desc">Every booking is protected. Get help 24/7 in case of any issues.</div>
+          </div>
+        </div>
+
+        <!-- Pay button -->
+        <button id="payBtn" class="pay-btn" onclick="payNow()">
+          <span class="lock-icon"><i class="bi bi-lock-fill"></i></span>
+          Proceed to Payment
+        </button>
+        <p class="pay-note">You'll be redirected to a secure payment page.</p>
+
+        <div id="paymentStatus" class="pay-status"></div>
+
+      </div>
+    </div>
+
+  </div>
 </div>
 
 {% endblock %}
@@ -333,16 +534,43 @@ async function loadEvent(){
 
         document.getElementById("category").textContent=event.event_category || "-";
 
+        if(event.ticket_type || event.tier){
+            document.getElementById("ticket_type_name").textContent=event.ticket_type || event.tier;
+        } else {
+            document.getElementById("ticket_type_name").textContent=eventName;
+        }
+
         const eventDate=event.event_date || "Not Available";
         const eventTime=event.event_time || "";
 
-        document.getElementById("event_date").textContent=eventTime ? `${eventDate} at ${eventTime}` : eventDate;
+        let timeStr="";
+        if(eventTime){
+            const [h,m]=eventTime.split(":");
+            const hour=parseInt(h,10);
+            const ampm=hour>=12?"PM":"AM";
+            const hr12=hour%12||12;
+            timeStr=`${hr12}:${m} ${ampm}`;
+        }
 
-        document.getElementById("location").textContent=event.location || "Not Available";
+        document.getElementById("event_date").textContent=timeStr ? `${eventDate} • ${timeStr} onwards` : eventDate;
+
+        const locationText=event.location || "Not Available";
+
+        document.getElementById("location").textContent=locationText;
+
+        if(locationText!=="Not Available"){
+            document.getElementById("map_link").href=`https://maps.google.com/?q=${encodeURIComponent(locationText)}`;
+        }
 
         const host=event.user || event.host || null;
 
-        document.getElementById("host_name").textContent=(host && host.name) || event.host_name || "Host";
+        const hostName=(host && host.name) || event.host_name || "Host";
+
+        document.getElementById("host_name").textContent=hostName;
+
+        if(host && host.id){
+            document.getElementById("host_link").href=`/profile/${host.id}/`;
+        }
 
         if(event.poster){
 
@@ -352,7 +580,19 @@ async function loadEvent(){
 
         ticketPrice=parseFloat(event.fee) || 0;
 
-        document.getElementById("total").textContent=ticketPrice;
+        const platformFee=parseFloat(event.platform_fee) || 0;
+
+        const serviceFee=parseFloat(event.service_fee) || 0;
+
+        const totalAmount=ticketPrice + platformFee + serviceFee;
+
+        document.getElementById("fee_ticket_display").textContent=ticketPrice;
+
+        document.getElementById("fee_platform").textContent=platformFee;
+
+        document.getElementById("fee_service").textContent=serviceFee;
+
+        document.getElementById("total").textContent=totalAmount || ticketPrice;
 
     }
 
@@ -370,7 +610,11 @@ async function loadCurrentUser(){
 
         const user=await api("/accounts/me/");
 
-        document.getElementById("booking_user").textContent=`${user.name} (${user.email})`;
+        document.getElementById("booking_user").textContent=user.name || "";
+
+        const emailEl=document.getElementById("booking_user_email");
+
+        if(emailEl) emailEl.textContent=user.email || "";
 
         currentUser={
 
@@ -447,7 +691,7 @@ async function payNow(){
 
             theme: {
 
-                color: "#F5C84C"
+                color: "#ec4899"
 
             },
 
@@ -476,8 +720,8 @@ async function payNow(){
                     );
 
                     status.innerHTML=`
-                        <div class="alert alert-success">
-                            Payment Successful!
+                        <div class="pay-status-msg success">
+                            <i class="bi bi-check-circle-fill"></i> Payment Successful! Redirecting…
                         </div>
                     `;
 
@@ -492,8 +736,8 @@ async function payNow(){
                 catch(err){
 
                     status.innerHTML=`
-                        <div class="alert alert-danger">
-                            Payment verification failed.
+                        <div class="pay-status-msg danger">
+                            <i class="bi bi-exclamation-circle-fill"></i> Payment verification failed.
                         </div>
                     `;
 
@@ -510,8 +754,8 @@ async function payNow(){
         rzp.on("payment.failed", function (response) {
 
             status.innerHTML=`
-                <div class="alert alert-danger">
-                    ${response.error.description}
+                <div class="pay-status-msg danger">
+                    <i class="bi bi-exclamation-circle-fill"></i> ${response.error.description}
                 </div>
             `;
 
@@ -528,8 +772,8 @@ async function payNow(){
     catch(error){
 
         status.innerHTML=`
-            <div class="alert alert-danger">
-                Unable to initiate payment.
+            <div class="pay-status-msg danger">
+                <i class="bi bi-exclamation-circle-fill"></i> Unable to initiate payment.
             </div>
         `;
 
