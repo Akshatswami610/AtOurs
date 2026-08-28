@@ -1107,7 +1107,8 @@ function formatEventDateTime(dateStr,timeStr){
             d.setHours(hours,minutes,0,0);
             const timeText=d.toLocaleTimeString([],{
                 hour:"numeric",
-                minute:"2-digit"
+                minute:"2-digit",
+                hour12:true
             });
             return `${dateText}, ${timeText} onwards`;
         }
@@ -1118,7 +1119,8 @@ function formatEventDateTime(dateStr,timeStr){
     if(!Number.isNaN(parsed.getTime())){
         const timeText=parsed.toLocaleTimeString([],{
             hour:"numeric",
-            minute:"2-digit"
+            minute:"2-digit",
+            hour12:true
         });
         return `${dateText}, ${timeText} onwards`;
     }
