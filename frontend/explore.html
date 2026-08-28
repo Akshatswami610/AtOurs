@@ -906,7 +906,8 @@ function formatEventTime(event){
                 date.setHours(hours,minutes,0,0);
                 return date.toLocaleTimeString([],{
                     hour:"numeric",
-                    minute:"2-digit"
+                    minute:"2-digit",
+                    hour12:true
                 });
             }
         }
@@ -916,7 +917,8 @@ function formatEventTime(event){
         if(!Number.isNaN(parsedRaw.getTime())){
             return parsedRaw.toLocaleTimeString([],{
                 hour:"numeric",
-                minute:"2-digit"
+                minute:"2-digit",
+                hour12:true
             });
         }
 
@@ -942,7 +944,8 @@ function formatEventTime(event){
 
     return parsed.toLocaleTimeString([],{
         hour:"numeric",
-        minute:"2-digit"
+        minute:"2-digit",
+        hour12:true
     });
 
 }
