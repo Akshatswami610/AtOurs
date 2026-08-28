@@ -9,6 +9,7 @@ Home
 <style>
     .home-shell {
         padding-top: 10px;
+        padding-bottom: 24px;
     }
 
     .hero-wrap {
@@ -18,6 +19,7 @@ Home
         border: 1px solid rgba(255, 255, 255, .13);
         min-height: 420px;
         isolation: isolate;
+        margin-bottom: 42px;
     }
 
     .hero-bg {
@@ -194,12 +196,13 @@ Home
     }
 
     .vibe-section {
-        padding-top: 14px;
+        padding-top: 10px;
+        margin-bottom: 18px;
     }
 
     .section-center-head {
         text-align: center;
-        margin-bottom: 14px;
+        margin-bottom: 18px;
     }
 
     .section-center-head h2 {
@@ -273,7 +276,7 @@ Home
         display: flex;
         justify-content: space-between;
         align-items: flex-end;
-        margin: 18px 0 10px;
+        margin: 32px 0 12px;
         gap: 12px;
     }
 
@@ -443,8 +446,12 @@ Home
     }
 
     .how-it-works {
-        padding-top: 8px;
+        padding-top: 42px;
         padding-bottom: 8px;
+    }
+
+    #eventContainer {
+        margin-bottom: 12px;
     }
 
     .steps-grid {
@@ -809,19 +816,52 @@ function formatEventDate(dateStr){
 
 function formatEventTime(event){
 
-    const rawTime=event.start_time || event.event_time || event.time || event.event_date || "";
+    const rawTime=(event.event_time || event.start_time || event.time || "").toString().trim();
 
-    if(!rawTime){
+    if(rawTime){
+
+        const timeOnlyMatch=rawTime.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+
+        if(timeOnlyMatch){
+            const hours=Number(timeOnlyMatch[1]);
+            const minutes=Number(timeOnlyMatch[2]);
+
+            if(Number.isFinite(hours) && Number.isFinite(minutes) && hours>=0 && hours<=23 && minutes>=0 && minutes<=59){
+                const date=new Date();
+                date.setHours(hours,minutes,0,0);
+                return date.toLocaleTimeString([],{
+                    hour:"numeric",
+                    minute:"2-digit",
+                    hour12:true
+                });
+            }
+        }
+
+        const parsedRaw=new Date(rawTime);
+
+        if(!Number.isNaN(parsedRaw.getTime())){
+            return parsedRaw.toLocaleTimeString([],{
+                hour:"numeric",
+                minute:"2-digit",
+                hour12:true
+            });
+        }
+
+    }
+
+    const dateTimeSource=(event.event_date || "").toString().trim();
+
+    if(!dateTimeSource){
         return "Time TBA";
     }
 
-    const parsed=new Date(rawTime);
+    const parsed=new Date(dateTimeSource);
 
     if(Number.isNaN(parsed.getTime())){
         return "Time TBA";
     }
 
-    const hasTimeValue=typeof rawTime==="string" && (rawTime.includes("T") || rawTime.includes(":"));
+    const hasTimeValue=dateTimeSource.includes("T") || dateTimeSource.includes(":");
 
     if(!hasTimeValue){
         return "Time TBA";
@@ -829,7 +869,8 @@ function formatEventTime(event){
 
     return parsed.toLocaleTimeString([],{
         hour:"numeric",
-        minute:"2-digit"
+        minute:"2-digit",
+        hour12:true
     });
 
 }
