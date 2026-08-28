@@ -534,7 +534,40 @@ Home
 
     .empty-state p,
     .error-state p {
-        margin-bottom: 18px;
+        margin-bottom: 20px;
+    }
+
+    .retry-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 0 20px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, .16);
+        background: rgba(255, 255, 255, .04);
+        color: var(--text-primary);
+        font-size: .9rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background .2s var(--ease), border-color .2s var(--ease), transform .2s var(--ease);
+    }
+
+    .retry-btn:hover {
+        background: rgba(255, 255, 255, .08);
+        border-color: rgba(255, 255, 255, .28);
+        transform: translateY(-1px);
+    }
+
+    .retry-btn:active {
+        transform: translateY(0);
+    }
+
+    .retry-btn i {
+        font-size: .9rem;
+        color: var(--pink);
+        display: inline;
+        margin: 0;
     }
 
     @media (max-width: 1199px) {
@@ -1121,10 +1154,8 @@ async function loadEvents(){
 
                 <p>Unable to load events. Please check your connection and try again.</p>
 
-                <button type="button" class="btn btn-primary" onclick="loadEvents()">
-
-                    <i class="bi bi-arrow-clockwise me-1"></i> Retry
-
+                <button type="button" class="retry-btn" onclick="loadEvents()">
+                    <i class="bi bi-arrow-clockwise"></i> Try Again
                 </button>
 
             </div>
