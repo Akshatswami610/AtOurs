@@ -30,8 +30,8 @@ def bookingcheckout(request):
 def hosting(request):
     return render(request, "hosting.html")
 
-def likedevents(request):
-    return render(request, "liked-events.html")
+def savedevents(request):
+    return render(request, "saved-events.html")
 
 def profile(request, id=None):
     return render(request, "profile.html")
