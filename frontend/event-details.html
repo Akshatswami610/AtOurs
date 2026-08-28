@@ -254,16 +254,34 @@ Event Details
     }
 
     .hero-action-btn {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        border: 1px solid rgba(255, 255, 255, .22);
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, .2);
         background: rgba(11, 9, 16, .62);
-        color: #f0ebf7;
+        color: #d9d3e3;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.18rem;
+        font-size: 1rem;
+        transition: all .18s var(--ease);
+    }
+
+    .hero-action-btn:hover {
+        border-color: rgba(255, 255, 255, .34);
+        background: rgba(255, 255, 255, .05);
+        color: #fff;
+    }
+
+    .hero-save-btn.saved {
+        color: var(--pink);
+        border-color: rgba(236, 72, 153, .45);
+        background: rgba(236, 72, 153, .12);
+    }
+
+    .hero-action-btn:disabled {
+        opacity: .65;
+        cursor: not-allowed;
     }
 
     .hero-meta-item {
@@ -845,11 +863,17 @@ Event Details
                     </div>
 
                     <div class="hero-actions">
-                        <button type="button" class="hero-action-btn" aria-label="Share event">
-                            <i class="bi bi-box-arrow-up-right"></i>
+                        <button type="button" class="hero-action-btn hero-share-btn" onclick="shareEventDetails()" aria-label="Share event">
+                            <i class="bi bi-upload"></i>
                         </button>
-                        <button type="button" class="hero-action-btn" aria-label="Save event">
-                            <i class="bi bi-heart"></i>
+                        <button
+                            type="button"
+                            id="heroSaveBtn"
+                            class="hero-action-btn hero-save-btn"
+                            onclick="toggleSavedEvent()"
+                            aria-label="Save event"
+                            aria-pressed="false">
+                            <i id="heroSaveIcon" class="bi bi-bookmark"></i>
                         </button>
                     </div>
                 </div>
@@ -1047,9 +1071,17 @@ Event Details
 <script>
 
 const eventId=window.location.pathname.split("/").filter(Boolean).pop();
+const eventIdNumber=Number(eventId);
 let hostProfileId=null;
+let isEventSaved=false;
+let isSavingEventState=false;
 
 loadEvent();
+syncSaveButtonState();
+loadSavedState().catch(error=>{
+    const message=(error && error.message) ? error.message : "Unable to load saved state.";
+    showToast(message,"danger");
+});
 
 function escapeHtml(value){
 
@@ -1072,6 +1104,159 @@ function categoryLabel(key){
         .replaceAll("_"," ")
         .toLowerCase()
         .replace(/\b\w/g,char=>char.toUpperCase());
+
+}
+
+function getEventShareUrl(){
+
+    return `${API_BASE}/event-details/${eventId}/`;
+
+}
+
+async function copyToClipboard(text){
+
+    if(navigator.clipboard && window.isSecureContext){
+        await navigator.clipboard.writeText(text);
+        return;
+    }
+
+    const textArea=document.createElement("textarea");
+    textArea.value=text;
+    textArea.setAttribute("readonly","");
+    textArea.style.position="absolute";
+    textArea.style.left="-9999px";
+    document.body.appendChild(textArea);
+    textArea.select();
+
+    const copied=document.execCommand("copy");
+    document.body.removeChild(textArea);
+
+    if(!copied){
+        throw new Error("Unable to copy event link.");
+    }
+
+}
+
+async function shareEventDetails(){
+
+    const shareUrl=getEventShareUrl();
+    const titleText=document.getElementById("title") ? document.getElementById("title").textContent.trim() : "AtOurs Event";
+    const shareTitle=titleText || "AtOurs Event";
+    const shareText=`Check out this event on AtOurs: ${shareTitle}`;
+
+    if(navigator.share){
+        try{
+            await navigator.share({
+                title:shareTitle,
+                text:shareText,
+                url:shareUrl
+            });
+            return;
+        } catch(error){
+            if(error && error.name==="AbortError"){
+                return;
+            }
+        }
+    }
+
+    try{
+        await copyToClipboard(shareUrl);
+        showToast("Event link copied to clipboard.","success");
+    } catch(error){
+        showToast("Unable to share this event right now.","danger");
+    }
+
+}
+
+function syncSaveButtonState(){
+
+    const button=document.getElementById("heroSaveBtn");
+    const icon=document.getElementById("heroSaveIcon");
+
+    if(!button || !icon){
+        return;
+    }
+
+    button.classList.toggle("saved",isEventSaved);
+    button.disabled=isSavingEventState;
+    button.setAttribute("aria-label",isEventSaved ? "Remove saved event" : "Save event");
+    button.setAttribute("aria-pressed",isEventSaved ? "true" : "false");
+    icon.className=`bi ${isEventSaved ? "bi-bookmark-fill" : "bi-bookmark"}`;
+
+}
+
+async function loadSavedState(){
+
+    if(!Number.isFinite(eventIdNumber)){
+        isEventSaved=false;
+        syncSaveButtonState();
+        return;
+    }
+
+    if(!getToken()){
+        isEventSaved=false;
+        syncSaveButtonState();
+        return;
+    }
+
+    const response=await api("/hosting/saved-events/");
+
+    if(!Array.isArray(response)){
+        const message=(response && (response.error || response.detail)) || "Unable to load saved state.";
+        throw new Error(message);
+    }
+
+    isEventSaved=response.some(item=>Number(item && item.event && item.event.event_id)===eventIdNumber);
+    syncSaveButtonState();
+
+}
+
+async function toggleSavedEvent(){
+
+    if(!Number.isFinite(eventIdNumber)){
+        showToast("Invalid event id.","danger");
+        return;
+    }
+
+    if(!getToken()){
+        showToast("You need to login to save events.","danger");
+        setTimeout(()=>{
+            window.location="/login/";
+        },1200);
+        return;
+    }
+
+    if(isSavingEventState){
+        return;
+    }
+
+    isSavingEventState=true;
+    syncSaveButtonState();
+
+    const endpoint=isEventSaved
+        ? `/hosting/events/${eventIdNumber}/unsave/`
+        : `/hosting/events/${eventIdNumber}/save/`;
+    const method=isEventSaved ? "DELETE" : "POST";
+
+    try{
+        const response=await api(endpoint,method);
+
+        if(response && (response.error || response.detail)){
+            throw new Error(response.error || response.detail);
+        }
+
+        isEventSaved=!isEventSaved;
+        showToast(
+            (response && response.message) || (isEventSaved ? "Event saved successfully." : "Event removed from saved list."),
+            "success"
+        );
+    } catch(error){
+        const message=(error && error.message) ? error.message : "Unable to update saved event.";
+        showToast(message,"danger");
+    } finally{
+        isSavingEventState=false;
+        syncSaveButtonState();
+    }
 
 }
 
