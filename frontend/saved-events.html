@@ -1,10 +1,1049 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block title %}
+Saved Events
+{% endblock %}
+
+{% block css %}
+<style>
+    .saved-shell {
+        padding-top: 14px;
+        padding-bottom: 8px;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 24px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+        transition: padding-bottom .25s var(--ease);
+    }
+
+    .page-header:has(.filter-menu.open),
+    .page-header:has(.filter-menu:hover) {
+        padding-bottom: var(--filter-dropdown-space, 8px);
+    }
+
+    .page-header h1 {
+        margin: 0 0 10px;
+        font-size: clamp(2rem, 3.2vw, 3.15rem);
+        letter-spacing: -.02em;
+    }
+
+    .page-header h1 .accent {
+        color: var(--pink);
+    }
+
+    .page-header p {
+        margin: 0;
+        color: var(--text-secondary);
+        max-width: 420px;
+        font-size: 1.02rem;
+        line-height: 1.45;
+    }
+
+    .search-filter-bar {
+        display: flex;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .search-wrap {
+        position: relative;
+        min-width: 390px;
+    }
+
+    .search-wrap i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1rem;
+        color: var(--text-muted);
+    }
+
+    .search-wrap input {
+        width: 100%;
+        min-height: 50px;
+        border-radius: 12px;
+        font-size: .95rem;
+        background: rgba(255, 255, 255, .01);
+        border: 1px solid rgba(255, 255, 255, .16);
+        padding-left: 42px;
+    }
+
+    .filter-menu,
+    .sort-wrap {
+        position: relative;
+        flex: 0 0 auto;
+    }
+
+    .filter-btn,
+    .sort-wrap .sort-select {
+        min-height: 50px;
+        min-width: 118px;
+        padding: .5rem .95rem;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, .16);
+        background: rgba(255, 255, 255, .01);
+        color: var(--text-primary);
+        font-weight: 600;
+    }
+
+    .filter-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 140px;
+    }
+
+    .sort-wrap .sort-select {
+        min-width: 150px;
+        cursor: pointer;
+        appearance: none;
+        padding-right: 34px;
+    }
+
+    .sort-wrap::after {
+        content: "\F282";
+        font-family: bootstrap-icons;
+        position: absolute;
+        right: 13px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        pointer-events: none;
+        font-size: .8rem;
+    }
+
+    .filter-btn .filter-btn-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 16px;
+        height: 16px;
+        padding: 0 4px;
+        border-radius: 999px;
+        background: var(--gradient-brand);
+        color: #fff;
+        font-size: .68rem;
+        font-weight: 800;
+        line-height: 1;
+    }
+
+    .filter-dropdown {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 10px);
+        width: 260px;
+        padding: 16px;
+        border-radius: 12px;
+        background: #17151c;
+        border: 1px solid var(--border);
+        box-shadow: 0 18px 44px -16px rgba(0, 0, 0, .8);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-6px);
+        transition: opacity .2s var(--ease), transform .2s var(--ease), visibility .2s var(--ease);
+        z-index: 1040;
+    }
+
+    .filter-dropdown::before {
+        content: '';
+        position: absolute;
+        top: -18px;
+        left: 0;
+        right: 0;
+        height: 18px;
+    }
+
+    .filter-menu:hover .filter-dropdown,
+    .filter-menu.open .filter-dropdown {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .filter-dropdown .filter-group {
+        margin-bottom: 16px;
+    }
+
+    .filter-dropdown label.filter-label {
+        display: block;
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+    }
+
+    .filter-dropdown select.form-select {
+        font-size: .88rem;
+        padding: .5rem .65rem;
+    }
+
+    .filter-dropdown .filter-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        padding-top: 12px;
+        border-top: 1px solid var(--border);
+    }
+
+    .filter-dropdown .filter-clear-btn {
+        background: transparent;
+        border: none;
+        color: var(--text-secondary);
+        font-size: .84rem;
+        font-weight: 600;
+    }
+
+    .filter-dropdown .filter-apply-btn {
+        border: none;
+        border-radius: 10px;
+        padding: .45rem 1rem;
+        font-size: .82rem;
+        font-weight: 700;
+        color: #fff;
+        background: var(--gradient-brand);
+    }
+
+    .category-strip {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        margin-bottom: 18px;
+        scrollbar-width: none;
+    }
+
+    .category-strip::-webkit-scrollbar {
+        display: none;
+    }
+
+    .quick-chip {
+        border: 1px solid rgba(255, 255, 255, .16);
+        border-radius: 12px;
+        min-height: 44px;
+        padding: 0 16px;
+        color: #ddd7e8;
+        background: rgba(255, 255, 255, .01);
+        font-weight: 600;
+        font-size: .95rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+    }
+
+    .quick-chip i {
+        color: var(--pink);
+    }
+
+    .quick-chip:hover {
+        border-color: rgba(255, 255, 255, .3);
+        background: rgba(255, 255, 255, .03);
+    }
+
+    .quick-chip.active {
+        color: #fff;
+        border-color: transparent;
+        background: var(--gradient-brand);
+    }
+
+    .quick-chip.active i {
+        color: #fff;
+    }
+
+    .more-chip {
+        position: relative;
+        padding-right: 30px;
+    }
+
+    .more-chip i:last-child {
+        color: var(--text-muted);
+    }
+
+    .more-chip select {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .saved-meta-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    #savedCount {
+        margin: 0;
+        font-size: 1.9rem;
+        font-weight: 800;
+        color: var(--pink);
+        line-height: 1;
+    }
+
+    #savedCount span {
+        color: var(--text-primary);
+        font-weight: 600;
+        font-size: 1.05rem;
+        margin-left: 8px;
+    }
+
+    .clear-all-btn {
+        border: none;
+        background: none;
+        color: var(--pink);
+        font-weight: 700;
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+        padding: 4px 0;
+    }
+
+    .clear-all-btn[disabled] {
+        opacity: .5;
+        cursor: not-allowed;
+    }
+
+    .saved-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .saved-card {
+        background: #0f1017;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 18px 44px -28px rgba(0, 0, 0, .85);
+    }
+
+    .saved-media {
+        position: relative;
+    }
+
+    .saved-poster {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        background: #151720;
+    }
+
+    .saved-bookmark-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        border: 1px solid rgba(236, 72, 153, .5);
+        background: rgba(0, 0, 0, .45);
+        color: var(--pink);
+    }
+
+    .saved-tag {
+        position: absolute;
+        left: 10px;
+        bottom: 10px;
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid rgba(236, 72, 153, .45);
+        background: rgba(15, 16, 23, .8);
+        color: #f5bfd8;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: .76rem;
+        font-weight: 600;
+    }
+
+    .saved-body {
+        padding: 14px;
+    }
+
+    .saved-title {
+        margin: 0 0 8px;
+        font-size: 1.72rem;
+        line-height: 1.2;
+    }
+
+    .saved-line {
+        margin: 0 0 7px;
+        color: var(--text-secondary);
+        font-size: .95rem;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .saved-line i {
+        color: var(--pink);
+    }
+
+    .saved-foot {
+        margin-top: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .saved-attendees {
+        font-size: .84rem;
+        color: var(--text-secondary);
+        border: 1px solid rgba(236, 72, 153, .35);
+        background: rgba(236, 72, 153, .08);
+        border-radius: 999px;
+        padding: 3px 10px;
+    }
+
+    .saved-view-link {
+        min-width: 112px;
+    }
+
+    .state-card {
+        padding: 34px 18px;
+        text-align: center;
+        color: var(--text-secondary);
+        border-radius: 16px;
+    }
+
+    .state-card i {
+        font-size: 1.4rem;
+        margin-bottom: 10px;
+        display: inline-block;
+    }
+
+    .saved-empty-state {
+        max-width: 560px;
+        margin: 0 auto;
+        background: linear-gradient(180deg, rgba(236, 72, 153, .08) 0%, rgba(236, 72, 153, .02) 100%);
+        border: 1px solid rgba(236, 72, 153, .28);
+    }
+
+    .saved-empty-state .empty-icon-wrap {
+        width: 52px;
+        height: 52px;
+        margin: 0 auto 10px;
+        border-radius: 999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(236, 72, 153, .16);
+        border: 1px solid rgba(236, 72, 153, .34);
+    }
+
+    .saved-empty-state .empty-icon-wrap i {
+        margin: 0;
+        color: var(--pink);
+    }
+
+    .saved-empty-state h3 {
+        margin: 0 0 6px;
+        color: var(--text-primary);
+        font-size: 1.2rem;
+    }
+
+    .saved-empty-state p {
+        margin: 0 0 14px;
+        color: var(--text-secondary);
+    }
+
+    .saved-empty-btn {
+        min-width: 170px;
+        border-radius: 10px;
+        font-weight: 700;
+        padding: .58rem 1rem;
+        box-shadow: 0 10px 24px -14px rgba(236, 72, 153, .75);
+    }
+
+    @media (max-width: 991px) {
+        .saved-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .search-wrap { min-width: 100%; }
+        .search-filter-bar { width: 100%; flex-wrap: wrap; }
+    }
+
+    @media (max-width: 767px) {
+        .page-header h1 { font-size: 2rem; }
+        .category-strip { gap: 8px; }
+        .quick-chip {
+            min-height: 40px;
+            font-size: .86rem;
+            padding: 0 12px;
+        }
+        .saved-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="saved-shell">
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <h1 class="fw-bold">Saved <span class="accent">Events</span></h1>
+                <p>Discover all your bookmarked experiences in one place.</p>
+            </div>
+            <div class="search-filter-bar">
+                <div class="search-wrap">
+                    <i class="bi bi-search"></i>
+                    <input class="form-control" id="savedSearchInput" type="text" placeholder="Search events, parties, music...">
+                </div>
+                <div class="filter-menu" id="filterMenu">
+                    <button type="button" class="filter-btn" id="filterBtn" aria-haspopup="true" aria-expanded="false">
+                        <i class="bi bi-sliders"></i>
+                        <span>Filter</span>
+                        <span class="filter-btn-count d-none" id="filterCount">0</span>
+                    </button>
+                    <div class="filter-dropdown" id="filterDropdown">
+                        <div class="filter-group">
+                            <label class="filter-label" for="savedCategoryFilter">Category</label>
+                            <select class="form-select" id="savedCategoryFilter">
+                                <option value="">All categories</option>
+                            </select>
+                        </div>
+                        <div class="filter-actions">
+                            <button type="button" class="filter-clear-btn" id="filterClearBtn">
+                                <i class="bi bi-x-circle me-1"></i>Clear
+                            </button>
+                            <button type="button" class="filter-apply-btn" id="filterApplyBtn">Apply</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="sort-wrap">
+                    <select id="savedSortSelect" class="sort-select form-select" aria-label="Sort saved events">
+                        <option value="newest">Sort by</option>
+                        <option value="oldest">Oldest first</option>
+                        <option value="name-asc">Name A-Z</option>
+                        <option value="name-desc">Name Z-A</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div id="quickCategoryButtons" class="category-strip">
+            <button type="button" class="quick-chip active" data-category="">All</button>
+            <button type="button" class="quick-chip" data-category="HOUSE_PARTY"><i class="bi bi-cup-straw"></i>Parties</button>
+            <button type="button" class="quick-chip" data-category="LIVE_MUSIC"><i class="bi bi-headphones"></i>Music</button>
+            <button type="button" class="quick-chip" data-category="NETWORKING"><i class="bi bi-people"></i>Meetups</button>
+            <button type="button" class="quick-chip" data-category="DINNER_PARTY"><i class="bi bi-fork-knife"></i>Dinner</button>
+            <button type="button" class="quick-chip" data-category="GAME_NIGHT"><i class="bi bi-controller"></i>Game Night</button>
+            <button type="button" class="quick-chip" data-category="OTHER"><i class="bi bi-sunrise"></i>Rooftop</button>
+            <label class="quick-chip more-chip">
+                <i class="bi bi-grid-3x3-gap"></i>
+                <span>More</span>
+                <i class="bi bi-chevron-down"></i>
+                <select id="moreCategorySelect" aria-label="More categories">
+                    <option value="">More</option>
+                </select>
+            </label>
+        </div>
+
+        <div class="saved-meta-row">
+            <div>
+                <p id="savedCount"></p>
+            </div>
+            <button id="clearAllBtn" type="button" class="clear-all-btn d-none" onclick="clearAllSavedEvents()">
+                Clear All <i class="bi bi-trash3"></i>
+            </button>
+        </div>
+        <div id="savedContainer"></div>
+    </div>
+</section>
+{% endblock %}
+
+{% block js %}
+<script>
+const CATEGORY_LABELS={
+    HOUSE_PARTY:"House Party",
+    DINNER_PARTY:"Dinner Party",
+    GAME_NIGHT:"Game Night",
+    LIVE_MUSIC:"Live Music",
+    KARAOKE:"Karaoke",
+    NETWORKING:"Networking",
+    BOOK_CLUB:"Book Club",
+    MOVIE_NIGHT:"Movie Night",
+    COOKING_CLASS:"Cooking Class",
+    WELLNESS:"Wellness",
+    ART_CRAFT:"Art & Craft",
+    COFFEE_MEETUP:"Coffee Meetup",
+    CELEBRATION:"Celebration",
+    DANCE_PARTY:"Dance Party",
+    WATCH_PARTY:"Watch Party",
+    CULTURAL_MEETUP:"Cultural Meetup",
+    WORKSHOP:"Workshop",
+    OPEN_MIC:"Open Mic",
+    OTHER:"Other"
+};
+
+let savedEventsData=[];
+let isClearingAll=false;
+const pendingRemoveIds=new Set();
+let categoryFilter="";
+const QUICK_CATEGORIES=new Set([
+    "HOUSE_PARTY",
+    "LIVE_MUSIC",
+    "NETWORKING",
+    "DINNER_PARTY",
+    "GAME_NIGHT",
+    "OTHER"
+]);
+
+function escapeHtml(value){
+    return String(value || "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#39;");
+}
+
+function categoryLabel(key){
+    return CATEGORY_LABELS[key] || key || "Other";
+}
+
+function formatDate(dateStr){
+    if(!dateStr){
+        return "Date TBA";
+    }
+    const dateObj=new Date(dateStr);
+    if(Number.isNaN(dateObj.getTime())){
+        return dateStr;
+    }
+    return dateObj.toLocaleDateString(undefined,{
+        day:"numeric",
+        month:"short",
+        year:"numeric"
+    });
+}
+
+function formatTime(timeStr){
+    const raw=(timeStr || "").toString().trim();
+    if(!raw){
+        return "Time TBA";
+    }
+
+    const timeOnlyMatch=raw.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+    if(timeOnlyMatch){
+        const h=Number(timeOnlyMatch[1]);
+        const m=Number(timeOnlyMatch[2]);
+        if(Number.isFinite(h) && Number.isFinite(m) && h>=0 && h<=23 && m>=0 && m<=59){
+            const d=new Date();
+            d.setHours(h,m,0,0);
+            return d.toLocaleTimeString([],{
+                hour:"numeric",
+                minute:"2-digit",
+                hour12:true
+            });
+        }
+    }
+
+    const parsed=new Date(raw);
+    if(!Number.isNaN(parsed.getTime())){
+        return parsed.toLocaleTimeString([],{
+            hour:"numeric",
+            minute:"2-digit",
+            hour12:true
+        });
+    }
+
+    return raw;
+}
+
+function formatDateTimeLabel(event){
+    const dateText=formatDate(event.event_date);
+    const timeText=formatTime(event.event_time);
+    if(timeText==="Time TBA"){
+        return dateText;
+    }
+    return `${dateText} · ${timeText}`;
+}
+
+function renderSavedCard(savedItem){
+    const event=savedItem.event || {};
+    const eventId=event.event_id;
+    const location=escapeHtml(event.location || "Location TBA");
+    const dateTimeText=escapeHtml(formatDateTimeLabel(event));
+    const category=escapeHtml(categoryLabel(event.event_category));
+    const poster=event.poster || "";
+    const posterUrl=poster ? (/^https?:\/\//i.test(poster) ? poster : `${API_BASE}${poster}`) : "";
+    const title=escapeHtml(event.event_name || "Untitled event");
+    const removing=pendingRemoveIds.has(eventId);
+    const hostEventsCount=Number(event.host_events);
+
+    return `
+        <article class="saved-card" data-event-id="${eventId}">
+            <div class="saved-media">
+                ${posterUrl ? `<img class="saved-poster" src="${posterUrl}" alt="${title}">` : `<div class="saved-poster d-flex align-items-center justify-content-center text-muted"><i class="bi bi-image"></i></div>`}
+                <button type="button" class="saved-bookmark-btn" onclick="removeSavedEvent(${eventId})" ${removing ? "disabled" : ""} aria-label="Remove saved event">
+                    <i class="bi bi-bookmark-fill"></i>
+                </button>
+                <span class="saved-tag">${category}</span>
+            </div>
+            <div class="saved-body">
+                <h4 class="saved-title">${title}</h4>
+                <p class="saved-line"><i class="bi bi-calendar-event"></i>${dateTimeText}</p>
+                <p class="saved-line"><i class="bi bi-geo-alt"></i>${location}</p>
+                <div class="saved-foot">
+                    <a class="btn btn-primary btn-sm saved-view-link" href="/event-details/${eventId}/">View Details</a>
+                </div>
+            </div>
+        </article>
+    `;
+}
+
+function getFilteredSavedEvents(){
+    const q=(document.getElementById("savedSearchInput").value || "").trim().toLowerCase();
+    const sort=(document.getElementById("savedSortSelect").value || "newest").trim();
+
+    const filtered=savedEventsData.filter(item=>{
+        const event=item.event || {};
+        const title=(event.event_name || "").toLowerCase();
+        const location=(event.location || "").toLowerCase();
+        const matchQuery=(!q || title.includes(q) || location.includes(q));
+        const matchCategory=(!categoryFilter || event.event_category===categoryFilter);
+        return matchQuery && matchCategory;
+    });
+
+    function dateScore(event){
+        const eventDate=(event.event_date || "").toString().trim();
+        const eventTime=(event.event_time || "").toString().trim();
+
+        if(!eventDate){
+            return 0;
+        }
+
+        const composed=eventTime ? `${eventDate}T${eventTime}` : eventDate;
+        const parsed=new Date(composed);
+
+        if(!Number.isNaN(parsed.getTime())){
+            return parsed.getTime();
+        }
+
+        const fallbackDate=new Date(eventDate);
+        return Number.isNaN(fallbackDate.getTime()) ? 0 : fallbackDate.getTime();
+    }
+
+    return [...filtered].sort((a,b)=>{
+        const eventA=a.event || {};
+        const eventB=b.event || {};
+
+        if(sort==="name-asc"){
+            return (eventA.event_name || "").localeCompare(eventB.event_name || "");
+        }
+
+        if(sort==="name-desc"){
+            return (eventB.event_name || "").localeCompare(eventA.event_name || "");
+        }
+
+        const aScore=dateScore(eventA);
+        const bScore=dateScore(eventB);
+        return sort==="oldest" ? (aScore-bScore) : (bScore-aScore);
+    });
+}
+
+function renderCategoryOptions(){
+    const categorySelect=document.getElementById("savedCategoryFilter");
+    const moreSelect=document.getElementById("moreCategorySelect");
+    const categories=new Set();
+
+    savedEventsData.forEach(item=>{
+        const key=item && item.event && item.event.event_category;
+        if(key){
+            categories.add(key);
+        }
+    });
+
+    const sortedCategories=Array.from(categories).sort((a,b)=>categoryLabel(a).localeCompare(categoryLabel(b)));
+
+    categorySelect.innerHTML=`<option value="">All categories</option>${sortedCategories.map(
+        key=>`<option value="${escapeHtml(key)}">${escapeHtml(categoryLabel(key))}</option>`
+    ).join("")}`;
+
+    const moreOptions=sortedCategories
+        .filter(key=>!QUICK_CATEGORIES.has(key))
+        .map(key=>`<option value="${escapeHtml(key)}">${escapeHtml(categoryLabel(key))}</option>`)
+        .join("");
+    moreSelect.innerHTML=`<option value="">More</option>${moreOptions}`;
+
+    if(categoryFilter && !sortedCategories.includes(categoryFilter)){
+        categoryFilter="";
+    }
+
+    syncCategoryControls();
+}
+
+function updateFilterCount(){
+    const filterCount=document.getElementById("filterCount");
+    const count=categoryFilter ? 1 : 0;
+    filterCount.textContent=String(count);
+    filterCount.classList.toggle("d-none",count===0);
+}
+
+function syncCategoryControls(){
+    document.querySelectorAll("#quickCategoryButtons button[data-category]").forEach(btn=>{
+        btn.classList.toggle("active",(btn.dataset.category || "")===categoryFilter);
+    });
+
+    const categorySelect=document.getElementById("savedCategoryFilter");
+    if(categorySelect){
+        categorySelect.value=categoryFilter || "";
+    }
+
+    const moreSelect=document.getElementById("moreCategorySelect");
+    if(moreSelect){
+        const hasQuickMatch=!!document.querySelector(`#quickCategoryButtons button[data-category="${categoryFilter}"]`);
+        moreSelect.value=hasQuickMatch ? "" : categoryFilter;
+    }
+
+    updateFilterCount();
+}
+
+function setSavedCount(total){
+    const savedCountEl=document.getElementById("savedCount");
+    savedCountEl.innerHTML=`${total}<span>Events Saved</span>`;
+    document.getElementById("clearAllBtn").classList.toggle("d-none",total===0);
+}
+
+function renderSavedEvents(){
+    const container=document.getElementById("savedContainer");
+    const filtered=getFilteredSavedEvents();
+    setSavedCount(filtered.length);
+
+    if(filtered.length===0){
+        const hasAny=savedEventsData.length>0;
+        renderState(hasAny
+            ? `<div class="card state-card"><i class="bi bi-search"></i><p class="mb-0">No events match your search/filter.</p></div>`
+            : `
+                <div class="card state-card saved-empty-state">
+                    <div class="empty-icon-wrap"><i class="bi bi-bookmark-heart-fill"></i></div>
+                    <h3>No saved events yet</h3>
+                    <p>Save events you like and they’ll appear here for quick access.</p>
+                    <a href="/explore/" class="btn btn-primary saved-empty-btn">Explore Events</a>
+                </div>
+            `
+        );
+        return;
+    }
+
+    container.innerHTML=`<div class="saved-grid">${filtered.map(renderSavedCard).join("")}</div>`;
+}
+
+function renderState(html){
+    document.getElementById("savedContainer").innerHTML=html;
+}
+
+async function removeSavedEvent(eventId){
+    if(!eventId){
+        showToast("Invalid event id.","danger");
+        return;
+    }
+
+    if(pendingRemoveIds.has(eventId)){
+        return;
+    }
+
+    pendingRemoveIds.add(eventId);
+    renderSavedEvents();
+
+    try{
+        const response=await api(`/hosting/events/${eventId}/unsave/`,"DELETE");
+
+        if(response && response.error){
+            pendingRemoveIds.delete(eventId);
+            renderSavedEvents();
+            showToast(response.error,"danger");
+            return;
+        }
+
+        savedEventsData=savedEventsData.filter(item=>Number(item && item.event && item.event.event_id)!==Number(eventId));
+        pendingRemoveIds.delete(eventId);
+        renderCategoryOptions();
+        renderSavedEvents();
+        showToast((response && response.message) || "Event removed from saved list.","success");
+    } catch(error){
+        pendingRemoveIds.delete(eventId);
+        renderSavedEvents();
+        showToast("Unable to remove saved event right now.","danger");
+    }
+}
+
+async function clearAllSavedEvents(){
+    if(isClearingAll){
+        return;
+    }
+
+    const visibleIds=getFilteredSavedEvents()
+        .map(item=>item && item.event && item.event.event_id)
+        .filter(Boolean);
+
+    if(visibleIds.length===0){
+        return;
+    }
+
+    isClearingAll=true;
+    const clearBtn=document.getElementById("clearAllBtn");
+    clearBtn.disabled=true;
+
+    try{
+        for(const eventId of visibleIds){
+            const response=await api(`/hosting/events/${eventId}/unsave/`,"DELETE");
+            if(response && response.error){
+                throw new Error(response.error);
+            }
+            savedEventsData=savedEventsData.filter(item=>Number(item && item.event && item.event.event_id)!==Number(eventId));
+        }
+        renderCategoryOptions();
+        renderSavedEvents();
+        showToast("Saved events cleared.","success");
+    } catch(error){
+        showToast("Unable to clear all saved events right now.","danger");
+    } finally{
+        isClearingAll=false;
+        clearBtn.disabled=false;
+    }
+}
+
+async function loadSavedEvents(){
+    if(!getToken()){
+        setSavedCount(0);
+        renderState(`
+            <div class="card state-card">
+                <i class="bi bi-lock-fill"></i>
+                <p class="mb-2">You need to login to view saved events.</p>
+                <a href="/login/" class="btn btn-primary btn-sm">Login</a>
+            </div>
+        `);
+        return;
+    }
+
+    renderState(`
+        <div class="card state-card">
+            <i class="bi bi-hourglass-split"></i>
+            <p class="mb-0">Loading saved events...</p>
+        </div>
+    `);
+
+    try{
+        const savedEvents=await api("/hosting/saved-events/");
+
+        if(!Array.isArray(savedEvents)){
+            const message=(savedEvents && (savedEvents.error || savedEvents.detail)) || "Unable to load saved events.";
+            setSavedCount(0);
+            renderState(`<div class="alert alert-danger">${message}</div>`);
+            showToast(message,"danger");
+            return;
+        }
+
+        savedEventsData=savedEvents;
+        renderCategoryOptions();
+        renderSavedEvents();
+    } catch(error){
+        setSavedCount(0);
+        renderState(`
+            <div class="card state-card">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <p class="mb-2">Unable to load saved events right now.</p>
+                <button type="button" class="btn btn-primary btn-sm" onclick="loadSavedEvents()">Retry</button>
+            </div>
+        `);
+        showToast("Unable to load saved events right now.","danger");
+    }
+}
+
+document.getElementById("savedSearchInput").addEventListener("input",renderSavedEvents);
+document.getElementById("savedSortSelect").addEventListener("change",renderSavedEvents);
+document.getElementById("quickCategoryButtons").addEventListener("click",function(event){
+    const chip=event.target.closest("button[data-category]");
+    if(!chip){
+        return;
+    }
+
+    categoryFilter=chip.dataset.category || "";
+    syncCategoryControls();
+    renderSavedEvents();
+});
+
+const moreCategorySelect=document.getElementById("moreCategorySelect");
+if(moreCategorySelect){
+    moreCategorySelect.addEventListener("change",function(){
+        categoryFilter=this.value || "";
+        syncCategoryControls();
+        renderSavedEvents();
+    });
+}
+
+const filterMenu=document.getElementById("filterMenu");
+const filterBtn=document.getElementById("filterBtn");
+const pageHeader=document.querySelector(".page-header");
+
+function syncFilterDropdownSpace(){
+    const dropdown=document.getElementById("filterDropdown");
+    if(!pageHeader || !dropdown){
+        return;
+    }
+    const extraSpace=Math.max(8,dropdown.offsetHeight+12);
+    pageHeader.style.setProperty("--filter-dropdown-space",`${extraSpace}px`);
+}
+
+function openFilterMenu(){
+    filterMenu.classList.add("open");
+    filterBtn.setAttribute("aria-expanded","true");
+    syncFilterDropdownSpace();
+}
+
+function closeFilterMenu(){
+    filterMenu.classList.remove("open");
+    filterBtn.setAttribute("aria-expanded","false");
+}
+
+filterBtn.addEventListener("click",function(event){
+    event.stopPropagation();
+    filterMenu.classList.contains("open") ? closeFilterMenu() : openFilterMenu();
+});
+
+document.addEventListener("click",function(event){
+    if(!filterMenu.contains(event.target)){
+        closeFilterMenu();
+    }
+});
+
+window.addEventListener("resize",syncFilterDropdownSpace);
+
+document.getElementById("filterApplyBtn").addEventListener("click",function(){
+    const categorySelect=document.getElementById("savedCategoryFilter");
+    categoryFilter=categorySelect ? categorySelect.value : "";
+    syncCategoryControls();
+    renderSavedEvents();
+    closeFilterMenu();
+});
+
+document.getElementById("filterClearBtn").addEventListener("click",function(){
+    categoryFilter="";
+    const categorySelect=document.getElementById("savedCategoryFilter");
+    if(categorySelect){
+        categorySelect.value="";
+    }
+    syncCategoryControls();
+    renderSavedEvents();
+    closeFilterMenu();
+});
+
+loadSavedEvents();
+</script>
+{% endblock %}
