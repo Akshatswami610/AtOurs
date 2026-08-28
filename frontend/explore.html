@@ -358,7 +358,7 @@ Events
         font-weight: 700;
     }
 
-    .event-like-btn {
+    .event-save-btn {
         position: absolute;
         right: 14px;
         bottom: 12px;
@@ -369,6 +369,23 @@ Events
         padding: 0;
         line-height: 1;
         text-shadow: 0 4px 12px rgba(0, 0, 0, .6);
+    }
+
+    .event-save-btn i {
+        transition: transform .15s var(--ease), color .15s var(--ease);
+    }
+
+    .event-save-btn.saved i {
+        color: var(--pink);
+    }
+
+    .event-save-btn:hover i {
+        transform: scale(1.06);
+    }
+
+    .event-save-btn:disabled {
+        opacity: .65;
+        cursor: not-allowed;
     }
 
     .event-body {
@@ -1028,6 +1045,8 @@ function showToast(message,type="success"){
 
 // All events as loaded from the API.
 let allEvents=[];
+let savedEventIds=new Set();
+const savingEventIds=new Set();
 
 // Page-based grid similar to the design.
 const PAGE_SIZE=6;
@@ -1038,6 +1057,170 @@ let searchTerm="";
 let categoryFilter="";
 let priceFilter="";
 let sortFilter="newest";
+
+function parseEventId(value){
+
+    const parsed=Number(value);
+
+    return Number.isFinite(parsed) ? parsed : null;
+
+}
+
+function getEventShareUrl(eventId){
+
+    return `${API_BASE}/event-details/${eventId}/`;
+
+}
+
+async function loadSavedEventIds(){
+
+    if(!getToken()){
+        savedEventIds=new Set();
+        return;
+    }
+
+    const response=await api("/hosting/saved-events/");
+
+    if(!Array.isArray(response)){
+
+        const message=(response && (response.error || response.detail)) || "Unable to load saved events.";
+        throw new Error(message);
+
+    }
+
+    const nextSavedIds=new Set();
+
+    response.forEach(savedItem=>{
+        const eventId=parseEventId(savedItem && savedItem.event && savedItem.event.event_id);
+        if(eventId!==null){
+            nextSavedIds.add(eventId);
+        }
+    });
+
+    savedEventIds=nextSavedIds;
+
+}
+
+async function copyToClipboard(text){
+
+    if(navigator.clipboard && window.isSecureContext){
+        await navigator.clipboard.writeText(text);
+        return;
+    }
+
+    const textArea=document.createElement("textarea");
+    textArea.value=text;
+    textArea.setAttribute("readonly","");
+    textArea.style.position="absolute";
+    textArea.style.left="-9999px";
+    document.body.appendChild(textArea);
+    textArea.select();
+
+    const copied=document.execCommand("copy");
+    document.body.removeChild(textArea);
+
+    if(!copied){
+        throw new Error("Unable to copy event link.");
+    }
+
+}
+
+async function shareEvent(eventId){
+
+    const safeEventId=parseEventId(eventId);
+
+    if(safeEventId===null){
+        showToast("Invalid event link.","danger");
+        return;
+    }
+
+    const event=allEvents.find(item=>parseEventId(item.event_id)===safeEventId) || null;
+    const shareUrl=getEventShareUrl(safeEventId);
+    const shareTitle=(event && event.event_name) ? event.event_name : "AtOurs Event";
+    const shareText=`Check out this event on AtOurs: ${shareTitle}`;
+
+    if(navigator.share){
+        try{
+            await navigator.share({
+                title:shareTitle,
+                text:shareText,
+                url:shareUrl
+            });
+            return;
+        } catch(error){
+            if(error && error.name==="AbortError"){
+                return;
+            }
+        }
+    }
+
+    try{
+        await copyToClipboard(shareUrl);
+        showToast("Event link copied to clipboard.","success");
+    } catch(error){
+        showToast("Unable to share this event right now.","danger");
+    }
+
+}
+
+async function toggleSavedEvent(eventId){
+
+    const safeEventId=parseEventId(eventId);
+
+    if(safeEventId===null){
+        showToast("Invalid event id.","danger");
+        return;
+    }
+
+    if(!getToken()){
+        showToast("You need to login to save events.","danger");
+        setTimeout(()=>{
+            window.location="/login/";
+        },1200);
+        return;
+    }
+
+    if(savingEventIds.has(safeEventId)){
+        return;
+    }
+
+    const isSaved=savedEventIds.has(safeEventId);
+    savingEventIds.add(safeEventId);
+    renderEvents();
+
+    try{
+        const response=await api(
+            isSaved
+                ? `/hosting/events/${safeEventId}/unsave/`
+                : `/hosting/events/${safeEventId}/save/`,
+            isSaved ? "DELETE" : "POST"
+        );
+
+        if(response && (response.error || response.detail)){
+            throw new Error(response.error || response.detail);
+        }
+
+        if(isSaved){
+            savedEventIds.delete(safeEventId);
+            showToast((response && response.message) || "Event removed from saved list.","success");
+        } else {
+            savedEventIds.add(safeEventId);
+            showToast((response && response.message) || "Event saved successfully.","success");
+        }
+
+    } catch(error){
+
+        const message=(error && error.message) ? error.message : "Unable to update saved event.";
+        showToast(message,"danger");
+
+    } finally{
+
+        savingEventIds.delete(safeEventId);
+        renderEvents();
+
+    }
+
+}
 
 function debounce(fn,delay){
 
@@ -1157,9 +1340,12 @@ function syncCategoryControls(){
 
 function renderEventCard(event){
 
+    const eventId=parseEventId(event.event_id);
     const location=event.location || "Location TBA";
     const dateBadge=formatDateBadge(event.event_date);
     const timeLabel=formatEventTime(event);
+    const isSaved=eventId!==null && savedEventIds.has(eventId);
+    const isSaving=eventId!==null && savingEventIds.has(eventId);
     const goingCount=Number(
         event.going_count ||
         event.attendees_count ||
@@ -1188,8 +1374,15 @@ function renderEventCard(event){
                 </span>
                 ` : ""}
 
-                <button type="button" class="event-like-btn" aria-label="Save event">
-                    <i class="bi bi-heart"></i>
+                <button
+                    type="button"
+                    class="event-save-btn ${isSaved ? "saved" : ""}"
+                    data-event-id="${eventId===null ? "" : eventId}"
+                    aria-label="${isSaved ? "Remove saved event" : "Save event"}"
+                    aria-pressed="${isSaved ? "true" : "false"}"
+                    ${isSaving ? "disabled" : ""}
+                >
+                    <i class="bi ${isSaved ? "bi-bookmark-fill" : "bi-bookmark"}"></i>
                 </button>
 
             </div>
@@ -1229,7 +1422,12 @@ function renderEventCard(event){
 
                 <div class="event-footer">
                     <a href="/event-details/${event.event_id}/" class="btn btn-primary">View Details</a>
-                    <button type="button" class="event-share-btn" aria-label="Share event">
+                    <button
+                        type="button"
+                        class="event-share-btn"
+                        data-event-id="${eventId===null ? "" : eventId}"
+                        aria-label="Share event"
+                    >
                         <i class="bi bi-upload"></i>
                     </button>
                 </div>
@@ -1241,6 +1439,37 @@ function renderEventCard(event){
     </div>
 
     `;
+
+}
+
+function setupEventCardActions(){
+
+    const container=document.getElementById("eventContainer");
+
+    container.addEventListener("click",function(event){
+
+        const saveBtn=event.target.closest(".event-save-btn");
+
+        if(saveBtn){
+            const eventId=parseEventId(saveBtn.dataset.eventId);
+            if(eventId!==null){
+                toggleSavedEvent(eventId);
+            }
+            return;
+        }
+
+        const shareBtn=event.target.closest(".event-share-btn");
+
+        if(shareBtn){
+            const eventId=parseEventId(shareBtn.dataset.eventId);
+            if(eventId!==null){
+                shareEvent(eventId);
+            } else {
+                showToast("Unable to share this event.","danger");
+            }
+        }
+
+    });
 
 }
 
@@ -1489,6 +1718,13 @@ async function loadEvents(){
     try{
 
         const events=await api("/hosting/events/");
+        try{
+            await loadSavedEventIds();
+        } catch(error){
+            savedEventIds=new Set();
+            const message=(error && error.message) ? error.message : "Unable to load saved state.";
+            showToast(message,"danger");
+        }
 
         allEvents=Array.isArray(events) ? await filterEventsByAgeLimit(events) : [];
 
@@ -1761,6 +1997,7 @@ populateCategoryOptions();
 
 setupFilterDropdown();
 setupQuickCategoryButtons();
+setupEventCardActions();
 syncCategoryControls();
 updateFilterCountBadge();
 
