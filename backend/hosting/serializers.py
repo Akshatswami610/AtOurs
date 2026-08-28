@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Event
+from .models import Event, SavedEvent
 from accounts.models import User
 from django.utils import timezone
 
@@ -80,3 +80,19 @@ class EventSerializer(serializers.ModelSerializer):
 
     def get_host_events(self, obj):
         return Event.objects.filter(user=obj.user).count()
+
+class SavedEventSerializer(serializers.ModelSerializer):
+
+    event = EventSerializer(read_only=True)
+
+    class Meta:
+        model = SavedEvent
+        fields = [
+            "id",
+            "event",
+            "created_at",
+        ]
+        read_only_fields = [
+            "id",
+            "created_at",
+        ]
