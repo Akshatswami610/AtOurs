@@ -534,38 +534,236 @@ Events
         margin-bottom: 18px;
     }
 
-    .clear-search-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: .66rem 1.24rem;
-        border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, .14);
-        color: #fff;
-        font-weight: 700;
-        font-size: .9rem;
-        letter-spacing: .01em;
-        background: var(--gradient-brand);
-        box-shadow: 0 12px 26px -10px rgba(236, 72, 153, .6);
-        transition: transform .2s var(--ease), box-shadow .2s var(--ease), filter .2s var(--ease);
+    .empty-state.empty-state-host {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 26px 0 8px;
+        border: none;
+        background: transparent;
+        box-shadow: none;
     }
 
-    .clear-search-btn i {
-        width: 22px;
-        height: 22px;
+    .empty-state-host h3 {
+        margin: 0 0 8px;
+        font-size: clamp(1.5rem, 2.5vw, 2.3rem);
+        font-weight: 900;
+        line-height: 1.06;
+        letter-spacing: -.02em;
+        color: var(--text-primary);
+    }
+
+    .empty-state-host h3 .empty-title-highlight {
+        background: linear-gradient(120deg, #ec4899 0%, #f97316 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .empty-state-host p {
+        margin: 0 auto 0;
+        max-width: 560px;
+        font-size: 1.01rem;
+        color: var(--text-secondary);
+    }
+
+    .host-empty-divider {
+        width: min(370px, 72%);
+        height: 1px;
+        margin: 18px auto 20px;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, .18), rgba(255, 255, 255, 0));
+        position: relative;
+    }
+
+    .host-empty-divider::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        background: #ff4ca2;
+        box-shadow: 0 0 0 3px rgba(255, 76, 162, .15);
+    }
+
+    .host-event-cta {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 56px;
+        min-width: 238px;
+        padding: 0 20px;
+        border-radius: 999px;
+        font-weight: 800;
+        font-size: 1rem;
+        letter-spacing: .01em;
+        border: 1px solid rgba(255, 255, 255, .18);
+        color: #fff;
+        background: linear-gradient(120deg, #ff2f95 0%, #ff8a2a 100%);
+        box-shadow:
+            0 16px 34px -14px rgba(236, 72, 153, .78),
+            inset 0 1px 0 rgba(255, 255, 255, .26);
+        transition: transform .2s var(--ease), filter .2s var(--ease), box-shadow .2s var(--ease), border-color .2s var(--ease);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .host-event-cta:hover {
+        color: #fff;
+        transform: translateY(-2px);
+        filter: brightness(1.05);
+        border-color: rgba(255, 255, 255, .3);
+        box-shadow:
+            0 20px 42px -16px rgba(236, 72, 153, .86),
+            inset 0 1px 0 rgba(255, 255, 255, .3);
+    }
+
+    .host-event-cta:active {
+        transform: translateY(0);
+        filter: brightness(1.01);
+    }
+
+    .host-event-cta:focus-visible {
+        outline: none;
+        box-shadow:
+            0 0 0 3px rgba(255, 76, 162, .26),
+            0 16px 34px -14px rgba(236, 72, 153, .78),
+            inset 0 1px 0 rgba(255, 255, 255, .26);
+    }
+
+    .host-event-cta .cta-icon {
+        width: 18px;
+        height: 18px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.06rem;
+        line-height: 1;
+        flex: 0 0 auto;
+    }
+
+    .host-event-cta .cta-icon i {
+        display: block;
+        line-height: 1;
+    }
+
+    .host-event-cta .cta-separator {
+        width: 1px;
+        height: 18px;
+        background: rgba(255, 255, 255, .42);
+        flex: 0 0 auto;
+    }
+
+    .host-event-cta .cta-label {
+        font-size: 1.02rem;
+        line-height: 1;
+    }
+
+    .empty-state.empty-state-search {
+        max-width: 620px;
+        margin-inline: auto;
+        padding: 12px 0 2px;
+    }
+
+    .empty-state-search .search-empty-icon {
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 12px;
         border-radius: 50%;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: rgba(255, 255, 255, .18);
-        font-size: .74rem;
+        border: 1px solid rgba(255, 255, 255, .1);
+        background: rgba(255, 255, 255, .03);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .02);
+    }
+
+    .empty-state-search .search-empty-icon i {
+        margin: 0;
+        font-size: 1.35rem;
+        color: #d1c8de;
+    }
+
+    .empty-state-search h4 {
+        margin: 0 0 10px;
+        font-size: clamp(1.45rem, 2.3vw, 1.95rem);
+        line-height: 1.12;
+        color: #f3effa;
+        font-weight: 850;
+    }
+
+    .empty-state-search h4 .search-title-highlight {
+        background: linear-gradient(120deg, #ec4899 0%, #f97316 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .empty-state-search p {
+        margin: 0 auto;
+        max-width: 500px;
+        color: #b8b2c8;
+        font-size: .98rem;
+    }
+
+    .search-empty-divider {
+        width: min(320px, 78%);
+        height: 1px;
+        margin: 14px auto 16px;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, .15), rgba(255, 255, 255, 0));
+        position: relative;
+    }
+
+    .search-empty-divider::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        background: #ff4ca2;
+        box-shadow: 0 0 0 3px rgba(255, 76, 162, .14);
+    }
+
+    .clear-search-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 0 16px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, .18);
+        color: #fff;
+        font-weight: 750;
+        font-size: .88rem;
+        letter-spacing: .01em;
+        background: rgba(255, 255, 255, .03);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .02);
+        transition: transform .2s var(--ease), box-shadow .2s var(--ease), filter .2s var(--ease), border-color .2s var(--ease), background .2s var(--ease);
+    }
+
+    .clear-search-btn i {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, .14);
+        font-size: .62rem;
     }
 
     .clear-search-btn:hover {
         color: #fff;
         transform: translateY(-2px);
-        filter: brightness(1.04);
-        box-shadow: 0 16px 30px -10px rgba(236, 72, 153, .72);
+        filter: brightness(1.03);
+        border-color: rgba(255, 255, 255, .3);
+        background: rgba(255, 255, 255, .06);
+        box-shadow: 0 12px 24px -12px rgba(236, 72, 153, .62);
     }
 
     .clear-search-btn:active {
@@ -623,6 +821,72 @@ Events
 
         .event-footer .btn {
             min-width: 130px;
+        }
+
+        .empty-state.empty-state-host {
+            padding-top: 8px;
+        }
+
+        .empty-state-host h3 {
+            font-size: 1.85rem;
+        }
+
+        .empty-state-host p {
+            font-size: .96rem;
+            margin-bottom: 0;
+        }
+
+        .host-empty-divider {
+            margin: 14px auto 14px;
+        }
+
+        .host-event-cta {
+            min-height: 46px;
+            min-width: 188px;
+            padding: 0 14px;
+            gap: 8px;
+        }
+
+        .host-event-cta .cta-icon {
+            width: 14px;
+            height: 14px;
+            font-size: .92rem;
+        }
+
+        .host-event-cta .cta-separator {
+            height: 14px;
+        }
+
+        .host-event-cta .cta-label {
+            font-size: .94rem;
+        }
+
+        .empty-state.empty-state-search {
+            max-width: 100%;
+        }
+
+        .empty-state-search h4 {
+            font-size: 1.2rem;
+        }
+
+        .empty-state-search p {
+            font-size: .92rem;
+        }
+
+        .search-empty-divider {
+            width: min(240px, 78%);
+            margin: 12px auto 14px;
+        }
+
+        .clear-search-btn {
+            min-height: 40px;
+            padding: 0 13px;
+            font-size: .82rem;
+        }
+
+        .clear-search-btn i {
+            width: 16px;
+            height: 16px;
         }
     }
 
@@ -1484,17 +1748,20 @@ function renderEvents(){
 
         <div class="col-12">
 
-            <div class="empty-state">
+            <div class="empty-state empty-state-host">
 
-                <i class="bi bi-calendar-x"></i>
+                <h3>No events <span class="empty-title-highlight">available right now</span></h3>
 
-                <p>No events available right now. Check back soon, or be the first to host one.</p>
+                <p>No live events right now. Be the first to host one.</p>
 
-                <a href="/hosting/" class="btn btn-primary">
+                <div class="host-empty-divider" aria-hidden="true"></div>
 
-                    <i class="bi bi-plus-circle-fill me-1"></i> Host an Event
-
+                <a href="/hosting/" class="btn btn-primary host-event-cta">
+                    <span class="cta-icon"><i class="bi bi-plus-lg"></i></span>
+                    <span class="cta-separator" aria-hidden="true"></span>
+                    <span class="cta-label">Host an Event</span>
                 </a>
+
 
             </div>
 
@@ -1547,11 +1814,15 @@ function renderEvents(){
 
         <div class="col-12">
 
-            <div class="empty-state">
+            <div class="empty-state empty-state-search">
 
-                <i class="bi bi-search"></i>
+                <div class="search-empty-icon">
+                    <i class="bi bi-search"></i>
+                </div>
 
-                <p>No events match your search.</p>
+                <h4>No <span class="search-title-highlight">matching events</span> found</h4>
+                <p>Try a different keyword or reset filters to explore all upcoming events.</p>
+                <div class="search-empty-divider" aria-hidden="true"></div>
 
                 <button type="button" class="clear-search-btn" onclick="resetFilters()">
 
