@@ -82,3 +82,15 @@ class Event(models.Model):
     @property
     def is_sold_out(self):
         return self.available_seats <= 0
+
+class SavedEvent(models.Model):
+
+    user = models.ForeignKey( settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="saved_events" )
+    event = models.ForeignKey( Event, on_delete=models.CASCADE, related_name="saved_by" )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "event")
+
+    def __str__(self):
+        return f"{self.user} saved {self.event.event_name}"
