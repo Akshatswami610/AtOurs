@@ -826,7 +826,7 @@ Event Details
 
                 <div class="detail-kicker">
 
-                    <span class="badge-category" id="category_badge">
+                    <span class="badge-category" id="status_badge">
                         &nbsp;
                     </span>
 
@@ -928,6 +928,14 @@ Event Details
 
                 </div>
 
+                <div class="stat-tile">
+
+                    <strong><i class="bi bi-activity"></i> Status</strong>
+
+                    <span id="status"></span>
+
+                </div>
+
             </div>
 
         </div>
@@ -978,6 +986,11 @@ Event Details
                     <div class="booking-mini-item">
                         <span>Category</span>
                         <span id="category_sidebar"></span>
+                    </div>
+
+                    <div class="booking-mini-item">
+                        <span>Status</span>
+                        <span id="status_sidebar"></span>
                     </div>
 
                     <div class="booking-mini-item">
@@ -1356,12 +1369,13 @@ async function loadEvent(){
         document.getElementById("rules").textContent=event.rules || "No rules specified.";
 
         const category=categoryLabel(event.event_category) || "Not Available";
+        const status=(event.status || "Upcoming").toString().trim() || "Upcoming";
         const fee=event.fee ?? "0";
         const guests=event.max_members ?? "0";
 
         document.getElementById("category").textContent=category;
 
-        document.getElementById("category_badge").textContent=category;
+        document.getElementById("status_badge").textContent=status;
 
         document.getElementById("price").textContent=fee;
 
@@ -1370,10 +1384,12 @@ async function loadEvent(){
         document.getElementById("age_limit").textContent=event.age_limit ? `${event.age_limit}+` : "No age limit";
 
         document.getElementById("category_sidebar").textContent=category;
+        document.getElementById("status_sidebar").textContent=status;
 
         document.getElementById("price_sidebar").textContent=fee;
 
         document.getElementById("guests_sidebar").textContent=guests;
+        document.getElementById("status").textContent=status;
 
         document.getElementById("date").textContent=formatEventDateTime(event.event_date,event.event_time);
 
