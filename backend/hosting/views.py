@@ -22,7 +22,7 @@ class EventListCreateView(generics.ListCreateAPIView):
     serializer_class = EventSerializer
 
     def get_queryset(self):
-        queryset = Event.objects.all()
+        queryset = Event.objects.select_related("user", "user__profile")
 
         # Optional host filter used by profile pages to show only events
         # created by a specific host.
@@ -63,7 +63,7 @@ class EventListCreateView(generics.ListCreateAPIView):
 
 class EventDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = EventSerializer
-    queryset = Event.objects.all()
+    queryset = Event.objects.select_related("user", "user__profile")
     lookup_field = "event_id"
     permission_classes = [IsOwnerOrReadOnly]
 
@@ -111,7 +111,10 @@ class SaveEventView(APIView):
                 status=status.HTTP_200_OK
             )
 
-        serializer = SavedEventSerializer(saved_event)
+        serializer = SavedEventSerializer(
+            saved_event,
+            context={"request": request}
+        )
 
         return Response(
             {
@@ -171,14 +174,17 @@ class SavedEventListView(APIView):
         saved_events = SavedEvent.objects.filter(
             user=request.user
         ).select_related(
-            "event"
+            "event",
+            "event__user",
+            "event__user__profile",
         ).order_by(
             "-created_at"
         )
 
         serializer = SavedEventSerializer(
             saved_events,
-            many=True
+            many=True,
+            context={"request": request}
         )
 
         return Response(serializer.data)
