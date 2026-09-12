@@ -2011,6 +2011,14 @@ async function loadEvents(){
         }
 
         allEvents=Array.isArray(events) ? await filterEventsByAgeLimit(events) : [];
+        
+        // Filter out completed events older than 2 days
+        const twoDaysAgo = new Date();
+        twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+        allEvents = allEvents.filter(event => {
+            const eventDate = event.event_date ? new Date(event.event_date) : null;
+            return !eventDate || eventDate >= twoDaysAgo;
+        });
 
         currentPage=1;
         renderEvents();
