@@ -1,15 +1,19 @@
 from django.db import models
 from django.conf import settings
-from datetime import time
+from datetime import time, datetime
 from django.db.models import Sum
+from django.utils import timezone
 import uuid
 import os
 
+
 User = settings.AUTH_USER_MODEL
 
+
 def event_poster_upload_path(instance, filename):
-    ext = os.path.splitext(filename)[1]   # .jpg, .png, .jpeg
+    ext = os.path.splitext(filename)[1]
     return f"event_posters/{uuid.uuid4()}{ext}"
+
 
 class EventCategory(models.TextChoices):
     HOUSE_PARTY = "HOUSE_PARTY", "House Party"
@@ -42,22 +46,20 @@ class Gender(models.TextChoices):
 
 class Event(models.Model):
     event_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    event_name = models.CharField(max_length=100)
-    event_category = models.CharField( max_length=100, choices=EventCategory.choices, db_index=True )
+    user = models.ForeignKey( User, on_delete=models.CASCADE )
+    event_name = models.CharField( max_length=100 )
+    event_category = models.CharField( max_length=100, choices=EventCategory.choices, db_index=True)
     description = models.TextField()
     rules = models.TextField()
     poster = models.ImageField(upload_to=event_poster_upload_path)
     max_members = models.PositiveIntegerField()
     fee = models.PositiveIntegerField(default=0)
-    gender = models.CharField( max_length=10, choices=Gender.choices, default=Gender.ANY )
+    gender = models.CharField(max_length=10, choices=Gender.choices, default=Gender.ANY)
     age_limit = models.PositiveIntegerField()
     location = models.CharField(max_length=255)
-
     event_date = models.DateField(db_index=True)
-    event_time = models.TimeField(default=time(22, 0))
-
+    event_time = models.TimeField(default=time(21, 0))
+    event_end_time = models.TimeField(default=time(23, 0))
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -67,26 +69,73 @@ class Event(models.Model):
     def __str__(self):
         return self.event_name
 
+    # -----------------------------------
+    # EVENT STATUS
+    # -----------------------------------
+
+    @property
+    def status(self):
+        now = timezone.localtime()
+        start = timezone.make_aware(
+            datetime.combine(
+                self.event_date,
+                self.event_time
+            )
+        )
+
+        end = timezone.make_aware(
+            datetime.combine(
+                self.event_date,
+                self.event_end_time
+            )
+        )
+
+        if now < start:
+            return "Upcoming"
+
+        elif start <= now < end:
+            return "Ongoing"
+
+        return "Completed"
+
+    # -----------------------------------
+    # BOOKED SEATS
+    # -----------------------------------
+
     @property
     def booked_seats(self):
         return (
-                self.bookings.filter(
-                    booking_status__in=["pending", "confirmed"]
-                ).aggregate(total=Sum("quantity"))["total"] or 0
+            self.bookings.filter(
+                booking_status__in=["pending", "confirmed"]
+            ).aggregate(
+                total=Sum("quantity")
+            )["total"] or 0
         )
+
+    # -----------------------------------
+    # AVAILABLE SEATS
+    # -----------------------------------
 
     @property
     def available_seats(self):
-        return self.max_members - self.booked_seats
+        return max(
+            self.max_members - self.booked_seats,
+            0
+        )
+
+    # -----------------------------------
+    # SOLD OUT
+    # -----------------------------------
 
     @property
     def is_sold_out(self):
         return self.available_seats <= 0
 
+
 class SavedEvent(models.Model):
 
-    user = models.ForeignKey( settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="saved_events" )
-    event = models.ForeignKey( Event, on_delete=models.CASCADE, related_name="saved_by" )
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name="saved_events")
+    event = models.ForeignKey(Event,on_delete=models.CASCADE,related_name="saved_by")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
