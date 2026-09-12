@@ -329,6 +329,10 @@ Events
         background: rgba(249, 115, 22, .9);
     }
 
+    .event-tag.green {
+        background: rgba(34, 197, 94, .92);
+    }
+
     .event-date-badge {
         position: absolute;
         top: 10px;
@@ -1250,17 +1254,19 @@ function formatDateBadge(dateStr){
 
 }
 
-function categoryTagVariant(category){
+function statusTagVariant(status){
 
-    if(category==="LIVE_MUSIC" || category==="MEETUP" || category==="NETWORKING"){
-        return "purple";
-    }
+    const normalized=(status || "").toString().trim().toLowerCase();
 
-    if(category==="DINNER_PARTY" || category==="MOVIE_NIGHT" || category==="GAME_NIGHT"){
+    if(normalized==="ongoing"){
         return "orange";
     }
 
-    return "pink";
+    if(normalized==="completed"){
+        return "pink";
+    }
+
+    return "green";
 
 }
 
@@ -1608,6 +1614,8 @@ function renderEventCard(event){
     const location=event.location || "Location TBA";
     const dateBadge=formatDateBadge(event.event_date);
     const timeLabel=formatEventTime(event);
+    const statusLabel=(event.status || "Upcoming").toString().trim();
+    const categoryName=categoryLabel(event.event_category);
     const isSaved=eventId!==null && savedEventIds.has(eventId);
     const isSaving=eventId!==null && savingEventIds.has(eventId);
     const goingCount=Number(
@@ -1617,7 +1625,7 @@ function renderEventCard(event){
         event.bookings_count ||
         0
     );
-    const tagVariant=categoryTagVariant(event.event_category);
+    const tagVariant=statusTagVariant(statusLabel);
 
     return `
 
@@ -1629,7 +1637,7 @@ function renderEventCard(event){
 
                 ${event.poster ? `<img src="${event.poster}" alt="${event.event_name}">` : `<i class="bi bi-image"></i>`}
 
-                <span class="event-tag ${tagVariant}">${categoryLabel(event.event_category)}</span>
+                <span class="event-tag ${tagVariant}">${statusLabel}</span>
 
                 ${dateBadge ? `
                 <span class="event-date-badge">
@@ -1680,6 +1688,11 @@ function renderEventCard(event){
                     <span>
                         <i class="bi bi-people"></i>
                         ${Number.isFinite(goingCount) ? goingCount : 0} going
+                    </span>
+
+                    <span>
+                        <i class="bi bi-grid"></i>
+                        ${categoryName}
                     </span>
 
                 </div>
