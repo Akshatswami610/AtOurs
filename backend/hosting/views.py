@@ -6,6 +6,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Event, SavedEvent
 from .serializers import EventSerializer, SavedEventSerializer
+from django.utils import timezone
+from datetime import timedelta
+from django.db.models import Q
 
 
 class IsOwnerOrReadOnly(BasePermission):
@@ -23,6 +26,11 @@ class EventListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         queryset = Event.objects.select_related("user", "user__profile")
+
+        # Filter out completed events older than 2 days
+        # Keep events from the last 2 days onwards
+        two_days_ago = timezone.localdate() - timedelta(days=2)
+        queryset = queryset.filter(event_date__gte=two_days_ago)
 
         # Optional host filter used by profile pages to show only events
         # created by a specific host.
