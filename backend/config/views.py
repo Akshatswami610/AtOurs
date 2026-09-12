@@ -19,7 +19,7 @@ def explore(request):
     return render(request, "explore.html")
 
 def earning(request):
-    return render(request, "earning.html")
+    return render(request, "my-earning.html")
 
 def eventdetails(request, id):
     return render(request, "event-details.html")
