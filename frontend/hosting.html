@@ -998,6 +998,19 @@ Host Event
 
                 </div>
 
+                <div class="form-row-split mb-3">
+
+                    <div>
+                        <label class="form-label mb-1 d-block" for="event_end_time">Event End Time</label>
+                        <input
+                            class="form-control"
+                            id="event_end_time"
+                            type="time"
+                            value="23:00">
+                    </div>
+
+                </div>
+
 
             </div>
 
@@ -1174,6 +1187,18 @@ Host Event
                         <input
                             class="form-control"
                             id="edit_event_time"
+                            type="time">
+                    </div>
+
+                </div>
+
+                <div class="form-row-split mb-3">
+
+                    <div>
+                        <label class="form-label mb-1 d-block" for="edit_event_end_time">Event End Time</label>
+                        <input
+                            class="form-control"
+                            id="edit_event_end_time"
                             type="time">
                     </div>
 
@@ -1601,6 +1626,7 @@ function previewPoster(e,targetId="posterPreviewWrap"){
 function renderEventCard(event,index=0){
 
     const dateLabel=formatHostDate(event.event_date);
+    const statusLabel=(event.status || "Upcoming").toString().trim();
 
     return `
 
@@ -1665,6 +1691,11 @@ function renderEventCard(event,index=0){
                 <p class="event-desc">${event.description || ""}</p>
 
                 <div class="event-mgmt-meta">
+
+                    <div class="meta-item">
+                        <span class="meta-label"><i class="bi bi-activity"></i> Status</span>
+                        <span class="meta-value">${statusLabel}</span>
+                    </div>
 
                     <div class="meta-item">
                         <span class="meta-label"><i class="bi bi-tag-fill"></i> Category</span>
@@ -1790,6 +1821,8 @@ async function createHostEvent(){
 
         const eventTimeEl=document.getElementById("event_time");
 
+        const eventEndTimeEl=document.getElementById("event_end_time");
+
         if(!titleEl || !descriptionEl || !rulesEl || !categoryEl || !posterEl || !ticketPriceEl || !maxGuestsEl || !ageLimitEl || !genderEl || !locationEl || !eventDateEl){
 
             showToast("Something went wrong loading the form. Please refresh the page and try again.","danger");
@@ -1821,6 +1854,8 @@ async function createHostEvent(){
         const event_date=eventDateEl.value;
 
         const event_time=eventTimeEl ? eventTimeEl.value : "";
+
+        const event_end_time=eventEndTimeEl ? eventEndTimeEl.value : "";
 
         if(
 
@@ -1907,6 +1942,12 @@ async function createHostEvent(){
         if(event_time){
 
             formData.append("event_time",event_time);
+
+        }
+
+        if(event_end_time){
+
+            formData.append("event_end_time",event_end_time);
 
         }
 
@@ -2268,6 +2309,8 @@ function editEvent(id){
 
     document.getElementById("edit_event_time").value=event.event_time || "";
 
+    document.getElementById("edit_event_end_time").value=event.event_end_time || "";
+
     document.getElementById("edit_poster").value="";
 
     document.getElementById("editPosterPreviewWrap").innerHTML=event.poster ?
@@ -2312,6 +2355,8 @@ async function updateHostEvent(){
 
         const eventTimeEl=document.getElementById("edit_event_time");
 
+        const eventEndTimeEl=document.getElementById("edit_event_end_time");
+
         const title=titleEl.value.trim();
 
         const description=descriptionEl.value.trim();
@@ -2335,6 +2380,8 @@ async function updateHostEvent(){
         const event_date=eventDateEl.value;
 
         const event_time=eventTimeEl ? eventTimeEl.value : "";
+
+        const event_end_time=eventEndTimeEl ? eventEndTimeEl.value : "";
 
         if(
 
@@ -2423,6 +2470,12 @@ async function updateHostEvent(){
         if(event_time){
 
             formData.append("event_time",event_time);
+
+        }
+
+        if(event_end_time){
+
+            formData.append("event_end_time",event_end_time);
 
         }
 
