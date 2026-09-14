@@ -1022,17 +1022,17 @@ function renderProfile(user,events){
         : (Array.isArray(user.interests) ? user.interests : []);
 
     if(interests.length > 0){
-        const interestsHtml = interests.map(interest => 
+        const interestsHtml = interests.map(interest =>
             `<span class="interest-badge"><i class="bi ${iconForInterest(interest && interest.name)}"></i>${(interest && interest.name) ? interest.name : "Interest"}</span>`
         ).join("");
-        
+
         const interestsSection = document.getElementById("interestsSection");
         const profileInterests = document.getElementById("profileInterests");
-        
+
         if(profileInterests){
             profileInterests.innerHTML = interestsHtml;
         }
-        
+
         if(interestsSection){
             interestsSection.style.display = "";
         }
