@@ -256,6 +256,11 @@ Home
         font-size: .84rem;
     }
 
+    .vibe-count {
+        color: #fff;
+        font-weight: 800;
+    }
+
     .view-categories-wrap,
     .events-view-wrap {
         display: flex;
@@ -673,32 +678,32 @@ Home
             <div class="vibe-card">
                 <i class="bi bi-cup-straw"></i>
                 <h6>Parties</h6>
-                <p>128 Events</p>
+                <p><span class="vibe-count" data-vibe-categories="HOUSE_PARTY">0</span> Events</p>
             </div>
             <div class="vibe-card">
                 <i class="bi bi-headphones"></i>
                 <h6>Music</h6>
-                <p>95 Events</p>
+                <p><span class="vibe-count" data-vibe-categories="LIVE_MUSIC">0</span> Events</p>
             </div>
             <div class="vibe-card">
                 <i class="bi bi-people"></i>
                 <h6>Meetups</h6>
-                <p>76 Events</p>
+                <p><span class="vibe-count" data-vibe-categories="NETWORKING">0</span> Events</p>
             </div>
             <div class="vibe-card">
                 <i class="bi bi-cup-hot"></i>
                 <h6>Dinner</h6>
-                <p>58 Events</p>
+                <p><span class="vibe-count" data-vibe-categories="DINNER_PARTY">0</span> Events</p>
             </div>
             <div class="vibe-card">
                 <i class="bi bi-controller"></i>
                 <h6>Game Night</h6>
-                <p>42 Events</p>
+                <p><span class="vibe-count" data-vibe-categories="GAME_NIGHT">0</span> Events</p>
             </div>
             <div class="vibe-card">
                 <i class="bi bi-sunrise"></i>
                 <h6>Rooftop</h6>
-                <p>34 Events</p>
+                <p><span class="vibe-count" data-vibe-categories="OTHER">0</span> Events</p>
             </div>
         </div>
 
@@ -824,6 +829,36 @@ const CATEGORY_LABELS={
 function categoryLabel(key){
 
     return CATEGORY_LABELS[key] || key || "Uncategorized";
+
+}
+
+function updateVibeCounts(events){
+
+    const countsByCategory={};
+
+    (Array.isArray(events) ? events : []).forEach(event=>{
+
+        const key=String(event && event.event_category || "").trim();
+
+        if(!key){
+            return;
+        }
+
+        countsByCategory[key]=(countsByCategory[key] || 0)+1;
+
+    });
+
+    document.querySelectorAll(".vibe-count[data-vibe-categories]").forEach(element=>{
+
+        const categories=String(element.dataset.vibeCategories || "")
+            .split(",")
+            .map(value=>value.trim())
+            .filter(Boolean);
+
+        const total=categories.reduce((sum,category)=>sum+(countsByCategory[category] || 0),0);
+        element.textContent=total;
+
+    });
 
 }
 
@@ -1139,6 +1174,7 @@ async function loadEvents(){
         const ageEligibleEvents=Array.isArray(events) ? await filterEventsByAgeLimit(events) : [];
         allEvents=ageEligibleEvents.filter((event)=>String(event.status || "").trim().toLowerCase()==="upcoming");
 
+        updateVibeCounts(allEvents);
         renderEvents();
 
     }
@@ -1167,6 +1203,7 @@ async function loadEvents(){
 
         showToast("Unable to load events right now.","danger");
 
+        updateVibeCounts([]);
         renderTrending([]);
 
     }
